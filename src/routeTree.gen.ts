@@ -14,6 +14,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
+import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
+import { Route as SSlugProductProductIdRouteImport } from './routes/s.$slug.product.$productId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,19 +42,33 @@ const SSlugIndexRoute = SSlugIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SSlugRoute,
 } as any)
+const SSlugCartRoute = SSlugCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugProductProductIdRoute = SSlugProductProductIdRouteImport.update({
+  id: '/product/$productId',
+  path: '/product/$productId',
+  getParentRoute: () => SSlugRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
   '/s/$slug': typeof SSlugRouteWithChildren
+  '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
+  '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug': typeof SSlugIndexRoute
+  '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -60,14 +76,37 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
   '/s/$slug': typeof SSlugRouteWithChildren
+  '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/pricing' | '/s/$slug' | '/s/$slug/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/pricing'
+    | '/s/$slug'
+    | '/s/$slug/cart'
+    | '/s/$slug/'
+    | '/s/$slug/product/$productId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/pricing' | '/s/$slug'
-  id: '__root__' | '/' | '/auth' | '/pricing' | '/s/$slug' | '/s/$slug/'
+  to:
+    | '/'
+    | '/auth'
+    | '/pricing'
+    | '/s/$slug/cart'
+    | '/s/$slug'
+    | '/s/$slug/product/$productId'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/pricing'
+    | '/s/$slug'
+    | '/s/$slug/cart'
+    | '/s/$slug/'
+    | '/s/$slug/product/$productId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -114,15 +153,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugIndexRouteImport
       parentRoute: typeof SSlugRoute
     }
+    '/s/$slug/cart': {
+      id: '/s/$slug/cart'
+      path: '/cart'
+      fullPath: '/s/$slug/cart'
+      preLoaderRoute: typeof SSlugCartRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/product/$productId': {
+      id: '/s/$slug/product/$productId'
+      path: '/product/$productId'
+      fullPath: '/s/$slug/product/$productId'
+      preLoaderRoute: typeof SSlugProductProductIdRouteImport
+      parentRoute: typeof SSlugRoute
+    }
   }
 }
 
 interface SSlugRouteChildren {
+  SSlugCartRoute: typeof SSlugCartRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
+  SSlugProductProductIdRoute: typeof SSlugProductProductIdRoute
 }
 
 const SSlugRouteChildren: SSlugRouteChildren = {
+  SSlugCartRoute: SSlugCartRoute,
   SSlugIndexRoute: SSlugIndexRoute,
+  SSlugProductProductIdRoute: SSlugProductProductIdRoute,
 }
 
 const SSlugRouteWithChildren = SSlugRoute._addFileChildren(SSlugRouteChildren)
