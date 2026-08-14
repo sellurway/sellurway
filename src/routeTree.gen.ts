@@ -12,9 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ReportSlugRouteImport } from './routes/report.$slug'
 import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
+import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
+import { Route as SSlugConfirmationRouteImport } from './routes/s.$slug.confirmation'
+import { Route as SSlugOrderProductIdRouteImport } from './routes/s.$slug.order.$productId'
 import { Route as SSlugProductProductIdRouteImport } from './routes/s.$slug.product.$productId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -32,6 +36,11 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportSlugRoute = ReportSlugRouteImport.update({
+  id: '/report/$slug',
+  path: '/report/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SSlugRoute = SSlugRouteImport.update({
   id: '/s/$slug',
   path: '/s/$slug',
@@ -47,6 +56,21 @@ const SSlugCartRoute = SSlugCartRouteImport.update({
   path: '/cart',
   getParentRoute: () => SSlugRoute,
 } as any)
+const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugConfirmationRoute = SSlugConfirmationRouteImport.update({
+  id: '/confirmation',
+  path: '/confirmation',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugOrderProductIdRoute = SSlugOrderProductIdRouteImport.update({
+  id: '/order/$productId',
+  path: '/order/$productId',
+  getParentRoute: () => SSlugRoute,
+} as any)
 const SSlugProductProductIdRoute = SSlugProductProductIdRouteImport.update({
   id: '/product/$productId',
   path: '/product/$productId',
@@ -57,17 +81,25 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
+  '/report/$slug': typeof ReportSlugRoute
   '/s/$slug': typeof SSlugRouteWithChildren
   '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRoute
+  '/s/$slug/confirmation': typeof SSlugConfirmationRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
   '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
+  '/report/$slug': typeof ReportSlugRoute
   '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRoute
+  '/s/$slug/confirmation': typeof SSlugConfirmationRoute
   '/s/$slug': typeof SSlugIndexRoute
+  '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
   '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRoutesById {
@@ -75,9 +107,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/pricing': typeof PricingRoute
+  '/report/$slug': typeof ReportSlugRoute
   '/s/$slug': typeof SSlugRouteWithChildren
   '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRoute
+  '/s/$slug/confirmation': typeof SSlugConfirmationRoute
   '/s/$slug/': typeof SSlugIndexRoute
+  '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
   '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRouteTypes {
@@ -86,26 +122,38 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/pricing'
+    | '/report/$slug'
     | '/s/$slug'
     | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/confirmation'
     | '/s/$slug/'
+    | '/s/$slug/order/$productId'
     | '/s/$slug/product/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/pricing'
+    | '/report/$slug'
     | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/confirmation'
     | '/s/$slug'
+    | '/s/$slug/order/$productId'
     | '/s/$slug/product/$productId'
   id:
     | '__root__'
     | '/'
     | '/auth'
     | '/pricing'
+    | '/report/$slug'
     | '/s/$slug'
     | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/confirmation'
     | '/s/$slug/'
+    | '/s/$slug/order/$productId'
     | '/s/$slug/product/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -113,6 +161,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   PricingRoute: typeof PricingRoute
+  ReportSlugRoute: typeof ReportSlugRoute
   SSlugRoute: typeof SSlugRouteWithChildren
 }
 
@@ -139,6 +188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/report/$slug': {
+      id: '/report/$slug'
+      path: '/report/$slug'
+      fullPath: '/report/$slug'
+      preLoaderRoute: typeof ReportSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/s/$slug': {
       id: '/s/$slug'
       path: '/s/$slug'
@@ -160,6 +216,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugCartRouteImport
       parentRoute: typeof SSlugRoute
     }
+    '/s/$slug/checkout': {
+      id: '/s/$slug/checkout'
+      path: '/checkout'
+      fullPath: '/s/$slug/checkout'
+      preLoaderRoute: typeof SSlugCheckoutRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/confirmation': {
+      id: '/s/$slug/confirmation'
+      path: '/confirmation'
+      fullPath: '/s/$slug/confirmation'
+      preLoaderRoute: typeof SSlugConfirmationRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/order/$productId': {
+      id: '/s/$slug/order/$productId'
+      path: '/order/$productId'
+      fullPath: '/s/$slug/order/$productId'
+      preLoaderRoute: typeof SSlugOrderProductIdRouteImport
+      parentRoute: typeof SSlugRoute
+    }
     '/s/$slug/product/$productId': {
       id: '/s/$slug/product/$productId'
       path: '/product/$productId'
@@ -172,13 +249,19 @@ declare module '@tanstack/react-router' {
 
 interface SSlugRouteChildren {
   SSlugCartRoute: typeof SSlugCartRoute
+  SSlugCheckoutRoute: typeof SSlugCheckoutRoute
+  SSlugConfirmationRoute: typeof SSlugConfirmationRoute
   SSlugIndexRoute: typeof SSlugIndexRoute
+  SSlugOrderProductIdRoute: typeof SSlugOrderProductIdRoute
   SSlugProductProductIdRoute: typeof SSlugProductProductIdRoute
 }
 
 const SSlugRouteChildren: SSlugRouteChildren = {
   SSlugCartRoute: SSlugCartRoute,
+  SSlugCheckoutRoute: SSlugCheckoutRoute,
+  SSlugConfirmationRoute: SSlugConfirmationRoute,
   SSlugIndexRoute: SSlugIndexRoute,
+  SSlugOrderProductIdRoute: SSlugOrderProductIdRoute,
   SSlugProductProductIdRoute: SSlugProductProductIdRoute,
 }
 
@@ -188,6 +271,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   PricingRoute: PricingRoute,
+  ReportSlugRoute: ReportSlugRoute,
   SSlugRoute: SSlugRouteWithChildren,
 }
 export const routeTree = rootRouteImport

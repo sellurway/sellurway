@@ -235,7 +235,7 @@ function ProductPage() {
                   <Link
                     to="/s/$slug/order/$productId"
                     params={{ slug, productId: product.id }}
-                    search={{ qty, variant: variantLabel ?? undefined }}
+                    search={variantLabel ? { qty, variant: variantLabel } : { qty }}
                     className="w-full px-5 py-3 text-center text-sm font-semibold"
                     style={{
                       background: showCart ? "transparent" : "var(--sf-accent)",

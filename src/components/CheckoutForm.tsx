@@ -70,15 +70,24 @@ export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (busy) return;
-    if (form.name.trim().length < 2) return toast.error("Enter your name.");
-    if (!/^[\d\s+()-]{6,20}$/.test(form.phone.trim())) return toast.error("Enter a valid phone number.");
-    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
-      return toast.error("Enter a valid email address.");
-    if (fulfillment === "delivery" && form.address.trim().length < 5)
-      return toast.error("Enter your delivery address.");
-    if (fulfillment === "delivery" && (areas?.length ?? 0) > 0 && !areaId)
-      return toast.error("Choose your delivery area.");
-    if (!lines.length) return toast.error("Your order is empty.");
+    const problem =
+      form.name.trim().length < 2
+        ? "Enter your name."
+        : !/^[\d\s+()-]{6,20}$/.test(form.phone.trim())
+          ? "Enter a valid phone number."
+          : form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())
+            ? "Enter a valid email address."
+            : fulfillment === "delivery" && form.address.trim().length < 5
+              ? "Enter your delivery address."
+              : fulfillment === "delivery" && (areas?.length ?? 0) > 0 && !areaId
+                ? "Choose your delivery area."
+                : !lines.length
+                  ? "Your order is empty."
+                  : null;
+    if (problem) {
+      toast.error(problem);
+      return;
+    }
 
     setBusy(true);
     try {
