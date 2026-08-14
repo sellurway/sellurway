@@ -1,0 +1,14 @@
+{
+  "name": "Sellurway — Sell your way",
+  "short_name": "Sellurway",
+  "description": "Launch your online store and take orders your way.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6d3df5",
+  "icons": [
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

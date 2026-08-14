@@ -10,33 +10,203 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedUpgradeRouteImport } from './routes/_authenticated/upgrade'
+import { Route as ReportSlugRouteImport } from './routes/report.$slug'
+import { Route as SSlugRouteImport } from './routes/s.$slug'
+import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
+import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
+import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
+import { Route as SSlugConfirmationRouteImport } from './routes/s.$slug.confirmation'
+import { Route as SSlugOrderProductIdRouteImport } from './routes/s.$slug.order.$productId'
+import { Route as SSlugProductProductIdRouteImport } from './routes/s.$slug.product.$productId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedUpgradeRoute = AuthenticatedUpgradeRouteImport.update({
+  id: '/upgrade',
+  path: '/upgrade',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ReportSlugRoute = ReportSlugRouteImport.update({
+  id: '/report/$slug',
+  path: '/report/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SSlugRoute = SSlugRouteImport.update({
+  id: '/s/$slug',
+  path: '/s/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SSlugIndexRoute = SSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugCartRoute = SSlugCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugCheckoutRoute = SSlugCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugConfirmationRoute = SSlugConfirmationRouteImport.update({
+  id: '/confirmation',
+  path: '/confirmation',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugOrderProductIdRoute = SSlugOrderProductIdRouteImport.update({
+  id: '/order/$productId',
+  path: '/order/$productId',
+  getParentRoute: () => SSlugRoute,
+} as any)
+const SSlugProductProductIdRoute = SSlugProductProductIdRouteImport.update({
+  id: '/product/$productId',
+  path: '/product/$productId',
+  getParentRoute: () => SSlugRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/pricing': typeof PricingRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/upgrade': typeof AuthenticatedUpgradeRoute
+  '/report/$slug': typeof ReportSlugRoute
+  '/s/$slug': typeof SSlugRouteWithChildren
+  '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRoute
+  '/s/$slug/confirmation': typeof SSlugConfirmationRoute
+  '/s/$slug/': typeof SSlugIndexRoute
+  '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
+  '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/pricing': typeof PricingRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/upgrade': typeof AuthenticatedUpgradeRoute
+  '/report/$slug': typeof ReportSlugRoute
+  '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRoute
+  '/s/$slug/confirmation': typeof SSlugConfirmationRoute
+  '/s/$slug': typeof SSlugIndexRoute
+  '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
+  '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/pricing': typeof PricingRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/upgrade': typeof AuthenticatedUpgradeRoute
+  '/report/$slug': typeof ReportSlugRoute
+  '/s/$slug': typeof SSlugRouteWithChildren
+  '/s/$slug/cart': typeof SSlugCartRoute
+  '/s/$slug/checkout': typeof SSlugCheckoutRoute
+  '/s/$slug/confirmation': typeof SSlugConfirmationRoute
+  '/s/$slug/': typeof SSlugIndexRoute
+  '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
+  '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/pricing'
+    | '/dashboard'
+    | '/onboarding'
+    | '/upgrade'
+    | '/report/$slug'
+    | '/s/$slug'
+    | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/confirmation'
+    | '/s/$slug/'
+    | '/s/$slug/order/$productId'
+    | '/s/$slug/product/$productId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/pricing'
+    | '/dashboard'
+    | '/onboarding'
+    | '/upgrade'
+    | '/report/$slug'
+    | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/confirmation'
+    | '/s/$slug'
+    | '/s/$slug/order/$productId'
+    | '/s/$slug/product/$productId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/pricing'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/onboarding'
+    | '/_authenticated/upgrade'
+    | '/report/$slug'
+    | '/s/$slug'
+    | '/s/$slug/cart'
+    | '/s/$slug/checkout'
+    | '/s/$slug/confirmation'
+    | '/s/$slug/'
+    | '/s/$slug/order/$productId'
+    | '/s/$slug/product/$productId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  PricingRoute: typeof PricingRoute
+  ReportSlugRoute: typeof ReportSlugRoute
+  SSlugRoute: typeof SSlugRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +218,149 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/upgrade': {
+      id: '/_authenticated/upgrade'
+      path: '/upgrade'
+      fullPath: '/upgrade'
+      preLoaderRoute: typeof AuthenticatedUpgradeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/report/$slug': {
+      id: '/report/$slug'
+      path: '/report/$slug'
+      fullPath: '/report/$slug'
+      preLoaderRoute: typeof ReportSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$slug': {
+      id: '/s/$slug'
+      path: '/s/$slug'
+      fullPath: '/s/$slug'
+      preLoaderRoute: typeof SSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$slug/': {
+      id: '/s/$slug/'
+      path: '/'
+      fullPath: '/s/$slug/'
+      preLoaderRoute: typeof SSlugIndexRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/cart': {
+      id: '/s/$slug/cart'
+      path: '/cart'
+      fullPath: '/s/$slug/cart'
+      preLoaderRoute: typeof SSlugCartRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/checkout': {
+      id: '/s/$slug/checkout'
+      path: '/checkout'
+      fullPath: '/s/$slug/checkout'
+      preLoaderRoute: typeof SSlugCheckoutRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/confirmation': {
+      id: '/s/$slug/confirmation'
+      path: '/confirmation'
+      fullPath: '/s/$slug/confirmation'
+      preLoaderRoute: typeof SSlugConfirmationRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/order/$productId': {
+      id: '/s/$slug/order/$productId'
+      path: '/order/$productId'
+      fullPath: '/s/$slug/order/$productId'
+      preLoaderRoute: typeof SSlugOrderProductIdRouteImport
+      parentRoute: typeof SSlugRoute
+    }
+    '/s/$slug/product/$productId': {
+      id: '/s/$slug/product/$productId'
+      path: '/product/$productId'
+      fullPath: '/s/$slug/product/$productId'
+      preLoaderRoute: typeof SSlugProductProductIdRouteImport
+      parentRoute: typeof SSlugRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedUpgradeRoute: typeof AuthenticatedUpgradeRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedUpgradeRoute: AuthenticatedUpgradeRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface SSlugRouteChildren {
+  SSlugCartRoute: typeof SSlugCartRoute
+  SSlugCheckoutRoute: typeof SSlugCheckoutRoute
+  SSlugConfirmationRoute: typeof SSlugConfirmationRoute
+  SSlugIndexRoute: typeof SSlugIndexRoute
+  SSlugOrderProductIdRoute: typeof SSlugOrderProductIdRoute
+  SSlugProductProductIdRoute: typeof SSlugProductProductIdRoute
+}
+
+const SSlugRouteChildren: SSlugRouteChildren = {
+  SSlugCartRoute: SSlugCartRoute,
+  SSlugCheckoutRoute: SSlugCheckoutRoute,
+  SSlugConfirmationRoute: SSlugConfirmationRoute,
+  SSlugIndexRoute: SSlugIndexRoute,
+  SSlugOrderProductIdRoute: SSlugOrderProductIdRoute,
+  SSlugProductProductIdRoute: SSlugProductProductIdRoute,
+}
+
+const SSlugRouteWithChildren = SSlugRoute._addFileChildren(SSlugRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  PricingRoute: PricingRoute,
+  ReportSlugRoute: ReportSlugRoute,
+  SSlugRoute: SSlugRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
