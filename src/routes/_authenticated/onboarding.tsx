@@ -67,11 +67,20 @@ function Onboarding() {
 
   async function createStore() {
     if (!user) return;
-    if (form.name.trim().length < 2) return toast.error("Give your store a name.");
-    if (form.slug.length < 3) return toast.error("Choose a store link of at least 3 characters.");
-    if (slugState === "taken") return toast.error("That store link is taken.");
-    if (form.selling_mode !== "full_checkout" && form.selling_mode === "whatsapp" && !form.whatsapp_number.trim())
-      return toast.error("Add your WhatsApp number.");
+    const problem =
+      form.name.trim().length < 2
+        ? "Give your store a name."
+        : form.slug.length < 3
+          ? "Choose a store link of at least 3 characters."
+          : slugState === "taken"
+            ? "That store link is taken."
+            : form.selling_mode === "whatsapp" && !form.whatsapp_number.trim()
+              ? "Add your WhatsApp number."
+              : null;
+    if (problem) {
+      toast.error(problem);
+      return;
+    }
 
     setBusy(true);
     try {
@@ -95,11 +104,11 @@ function Onboarding() {
         })
         .select("slug")
         .single();
+      void data;
       if (error) throw error;
       refresh();
       toast.success("Your store is live.");
       navigate({ to: "/dashboard" });
-      return data;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Could not create your store.";
       toast.error(msg.includes("duplicate") ? "That store link is already taken." : msg);
