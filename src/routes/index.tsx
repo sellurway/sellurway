@@ -116,12 +116,13 @@ function Landing() {
                 Free forever for your first 5 products
               </span>
               <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-                Your shop, online in
+                Set up your online shop in
                 <span className="text-gradient"> ten minutes.</span>
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Sellurway gives you a real storefront with a link you can share anywhere. Take orders through
-                full checkout, direct delivery, or WhatsApp — whichever way your customers already buy.
+                Sellurway gives you a real storefront with one link you can share anywhere. Pick a template,
+                upload your products, and take orders by full checkout, direct delivery or WhatsApp — whichever
+                way your customers already buy.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg" className="h-12 px-6 text-base">
