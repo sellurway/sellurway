@@ -18,6 +18,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedUpgradeRouteImport } from './routes/_authenticated/upgrade'
 import { Route as ReportSlugRouteImport } from './routes/report.$slug'
 import { Route as SSlugRouteImport } from './routes/s.$slug'
+import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products.index'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
 import { Route as SSlugCheckoutRouteImport } from './routes/s.$slug.checkout'
@@ -69,6 +70,12 @@ const SSlugRoute = SSlugRouteImport.update({
   path: '/s/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProductsIndexRoute =
+  AuthenticatedProductsIndexRouteImport.update({
+    id: '/products/',
+    path: '/products/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const SSlugIndexRoute = SSlugIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -112,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRoute
   '/s/$slug/confirmation': typeof SSlugConfirmationRoute
+  '/products/': typeof AuthenticatedProductsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
   '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
@@ -127,6 +135,7 @@ export interface FileRoutesByTo {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRoute
   '/s/$slug/confirmation': typeof SSlugConfirmationRoute
+  '/products': typeof AuthenticatedProductsIndexRoute
   '/s/$slug': typeof SSlugIndexRoute
   '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
   '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
@@ -145,6 +154,7 @@ export interface FileRoutesById {
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRoute
   '/s/$slug/confirmation': typeof SSlugConfirmationRoute
+  '/_authenticated/products/': typeof AuthenticatedProductsIndexRoute
   '/s/$slug/': typeof SSlugIndexRoute
   '/s/$slug/order/$productId': typeof SSlugOrderProductIdRoute
   '/s/$slug/product/$productId': typeof SSlugProductProductIdRoute
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/confirmation'
+    | '/products/'
     | '/s/$slug/'
     | '/s/$slug/order/$productId'
     | '/s/$slug/product/$productId'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/confirmation'
+    | '/products'
     | '/s/$slug'
     | '/s/$slug/order/$productId'
     | '/s/$slug/product/$productId'
@@ -195,6 +207,7 @@ export interface FileRouteTypes {
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
     | '/s/$slug/confirmation'
+    | '/_authenticated/products/'
     | '/s/$slug/'
     | '/s/$slug/order/$productId'
     | '/s/$slug/product/$productId'
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/products/': {
+      id: '/_authenticated/products/'
+      path: '/products'
+      fullPath: '/products/'
+      preLoaderRoute: typeof AuthenticatedProductsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/s/$slug/': {
       id: '/s/$slug/'
       path: '/'
@@ -323,12 +343,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedUpgradeRoute: typeof AuthenticatedUpgradeRoute
+  AuthenticatedProductsIndexRoute: typeof AuthenticatedProductsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedUpgradeRoute: AuthenticatedUpgradeRoute,
+  AuthenticatedProductsIndexRoute: AuthenticatedProductsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
