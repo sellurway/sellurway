@@ -106,8 +106,8 @@ function OrdersPage() {
   });
 
   const update = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Record<string, string> }) => {
-      const { error } = await supabase.from("orders").update(patch).eq("id", id);
+    mutationFn: async ({ id, patch }: { id: string; patch: { status?: OrderRow["status"]; delivery_status?: string } }) => {
+      const { error } = await supabase.from("orders").update(patch as never).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -222,7 +222,7 @@ function OrdersPage() {
                   <td className="p-3">
                     <Select
                       value={o.status}
-                      onValueChange={(v) => update.mutate({ id: o.id, patch: { status: v } })}
+                      onValueChange={(v) => update.mutate({ id: o.id, patch: { status: v as OrderRow["status"] } })}
                     >
                       <SelectTrigger className="h-8 w-36">
                         <SelectValue />
