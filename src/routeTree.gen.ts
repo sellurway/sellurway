@@ -19,6 +19,7 @@ import { Route as AuthenticatedUpgradeRouteImport } from './routes/_authenticate
 import { Route as ReportSlugRouteImport } from './routes/report.$slug'
 import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products.index'
+import { Route as AuthenticatedProductsProductIdRouteImport } from './routes/_authenticated/products.$productId'
 import { Route as AuthenticatedProductsNewRouteImport } from './routes/_authenticated/products.new'
 import { Route as SSlugIndexRouteImport } from './routes/s.$slug.index'
 import { Route as SSlugCartRouteImport } from './routes/s.$slug.cart'
@@ -77,6 +78,12 @@ const AuthenticatedProductsIndexRoute =
     path: '/products/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedProductsProductIdRoute =
+  AuthenticatedProductsProductIdRouteImport.update({
+    id: '/products/$productId',
+    path: '/products/$productId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProductsNewRoute =
   AuthenticatedProductsNewRouteImport.update({
     id: '/products/new',
@@ -123,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/upgrade': typeof AuthenticatedUpgradeRoute
   '/report/$slug': typeof ReportSlugRoute
   '/s/$slug': typeof SSlugRouteWithChildren
+  '/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRoute
@@ -140,6 +148,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/upgrade': typeof AuthenticatedUpgradeRoute
   '/report/$slug': typeof ReportSlugRoute
+  '/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRoute
@@ -160,6 +169,7 @@ export interface FileRoutesById {
   '/_authenticated/upgrade': typeof AuthenticatedUpgradeRoute
   '/report/$slug': typeof ReportSlugRoute
   '/s/$slug': typeof SSlugRouteWithChildren
+  '/_authenticated/products/$productId': typeof AuthenticatedProductsProductIdRoute
   '/_authenticated/products/new': typeof AuthenticatedProductsNewRoute
   '/s/$slug/cart': typeof SSlugCartRoute
   '/s/$slug/checkout': typeof SSlugCheckoutRoute
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/upgrade'
     | '/report/$slug'
     | '/s/$slug'
+    | '/products/$productId'
     | '/products/new'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/upgrade'
     | '/report/$slug'
+    | '/products/$productId'
     | '/products/new'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -216,6 +228,7 @@ export interface FileRouteTypes {
     | '/_authenticated/upgrade'
     | '/report/$slug'
     | '/s/$slug'
+    | '/_authenticated/products/$productId'
     | '/_authenticated/products/new'
     | '/s/$slug/cart'
     | '/s/$slug/checkout'
@@ -307,6 +320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/products/$productId': {
+      id: '/_authenticated/products/$productId'
+      path: '/products/$productId'
+      fullPath: '/products/$productId'
+      preLoaderRoute: typeof AuthenticatedProductsProductIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/products/new': {
       id: '/_authenticated/products/new'
       path: '/products/new'
@@ -363,6 +383,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedUpgradeRoute: typeof AuthenticatedUpgradeRoute
+  AuthenticatedProductsProductIdRoute: typeof AuthenticatedProductsProductIdRoute
   AuthenticatedProductsNewRoute: typeof AuthenticatedProductsNewRoute
   AuthenticatedProductsIndexRoute: typeof AuthenticatedProductsIndexRoute
 }
@@ -371,6 +392,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedUpgradeRoute: AuthenticatedUpgradeRoute,
+  AuthenticatedProductsProductIdRoute: AuthenticatedProductsProductIdRoute,
   AuthenticatedProductsNewRoute: AuthenticatedProductsNewRoute,
   AuthenticatedProductsIndexRoute: AuthenticatedProductsIndexRoute,
 }
