@@ -17,6 +17,7 @@ import { Route as AuthenticatedCustomersRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
+import { Route as AuthenticatedThemesRouteImport } from './routes/_authenticated/themes'
 import { Route as AuthenticatedUpgradeRouteImport } from './routes/_authenticated/upgrade'
 import { Route as ReportSlugRouteImport } from './routes/report.$slug'
 import { Route as SSlugRouteImport } from './routes/s.$slug'
@@ -67,6 +68,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
 const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedThemesRoute = AuthenticatedThemesRouteImport.update({
+  id: '/themes',
+  path: '/themes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedUpgradeRoute = AuthenticatedUpgradeRouteImport.update({
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/orders': typeof AuthenticatedOrdersRoute
+  '/themes': typeof AuthenticatedThemesRoute
   '/upgrade': typeof AuthenticatedUpgradeRoute
   '/report/$slug': typeof ReportSlugRoute
   '/s/$slug': typeof SSlugRouteWithChildren
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/orders': typeof AuthenticatedOrdersRoute
+  '/themes': typeof AuthenticatedThemesRoute
   '/upgrade': typeof AuthenticatedUpgradeRoute
   '/report/$slug': typeof ReportSlugRoute
   '/products/$productId': typeof AuthenticatedProductsProductIdRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
+  '/_authenticated/themes': typeof AuthenticatedThemesRoute
   '/_authenticated/upgrade': typeof AuthenticatedUpgradeRoute
   '/report/$slug': typeof ReportSlugRoute
   '/s/$slug': typeof SSlugRouteWithChildren
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/orders'
+    | '/themes'
     | '/upgrade'
     | '/report/$slug'
     | '/s/$slug'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/orders'
+    | '/themes'
     | '/upgrade'
     | '/report/$slug'
     | '/products/$productId'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
     | '/_authenticated/orders'
+    | '/_authenticated/themes'
     | '/_authenticated/upgrade'
     | '/report/$slug'
     | '/s/$slug'
@@ -328,6 +340,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof AuthenticatedOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/themes': {
+      id: '/_authenticated/themes'
+      path: '/themes'
+      fullPath: '/themes'
+      preLoaderRoute: typeof AuthenticatedThemesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/upgrade': {
@@ -422,6 +441,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
+  AuthenticatedThemesRoute: typeof AuthenticatedThemesRoute
   AuthenticatedUpgradeRoute: typeof AuthenticatedUpgradeRoute
   AuthenticatedProductsProductIdRoute: typeof AuthenticatedProductsProductIdRoute
   AuthenticatedProductsNewRoute: typeof AuthenticatedProductsNewRoute
@@ -433,6 +453,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
+  AuthenticatedThemesRoute: AuthenticatedThemesRoute,
   AuthenticatedUpgradeRoute: AuthenticatedUpgradeRoute,
   AuthenticatedProductsProductIdRoute: AuthenticatedProductsProductIdRoute,
   AuthenticatedProductsNewRoute: AuthenticatedProductsNewRoute,

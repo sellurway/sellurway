@@ -48,7 +48,7 @@ function ThemesPage() {
 
   const save = useMutation({
     mutationFn: async (patch: { theme?: string; theme_settings?: ThemeSettings }) => {
-      const { error } = await supabase.from("stores").update(patch).eq("id", activeStore!.id);
+      const { error } = await supabase.from("stores").update(patch as never).eq("id", activeStore!.id);
       if (error) throw error;
     },
     onSuccess: () => {
