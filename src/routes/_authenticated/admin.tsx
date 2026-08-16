@@ -115,6 +115,32 @@ function AdminPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const { data: claims } = useQuery({
+    queryKey: ["admin-upgrade-claims"],
+    enabled: isStaff,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("upgrade_claims")
+        .select("id,user_id,status,paypal_note,country,local_currency,local_amount,created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const reviewClaim = useMutation({
+    mutationFn: async ({ id, approve }: { id: string; approve: boolean }) => {
+      const { error } = await supabase.rpc("review_upgrade_claim", { _claim_id: id, _approve: approve });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-upgrade-claims"] });
+      toast.success("Payment claim updated");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   if (!isStaff) {
     return (
       <DashboardShell title="Staff admin">
