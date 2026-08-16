@@ -264,7 +264,7 @@ function AdminPage() {
             ))
           )}
         </TabsContent>
-        </TabsContent>
+
 
         <TabsContent value="payments" className="mt-4 space-y-3">
           {(claims ?? []).length === 0 ? (
