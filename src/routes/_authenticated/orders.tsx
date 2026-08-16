@@ -134,6 +134,7 @@ function OrdersPage() {
     (o) =>
       (status === "all" || o.status === status) &&
       (source === "all" || o.source === source) &&
+      withinRange(o.created_at, from, to) &&
       (q === "" ||
         o.order_number.toLowerCase().includes(q) ||
         (o.customer_name ?? "").toLowerCase().includes(q) ||
@@ -142,6 +143,7 @@ function OrdersPage() {
   );
   const open = all.find((o) => o.id === openId) ?? null;
   const revenue = filtered
+
     .filter((o) => o.status !== "cancelled" && o.status !== "refunded")
     .reduce((s, o) => s + Number(o.total), 0);
 
