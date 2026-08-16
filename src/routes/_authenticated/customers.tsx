@@ -37,6 +37,9 @@ function CustomersPage() {
   const { activeStore } = useAuth();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("recent");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [activity, setActivity] = useState("all");
 
   const { data: customers, isLoading } = useQuery({
     queryKey: ["customers", activeStore?.id],
@@ -63,10 +66,14 @@ function CustomersPage() {
   const rows = [...(customers ?? [])]
     .filter(
       (c) =>
-        q === "" ||
-        (c.name ?? "").toLowerCase().includes(q) ||
-        (c.email ?? "").toLowerCase().includes(q) ||
-        (c.phone ?? "").includes(q),
+        (q === "" ||
+          (c.name ?? "").toLowerCase().includes(q) ||
+          (c.email ?? "").toLowerCase().includes(q) ||
+          (c.phone ?? "").includes(q)) &&
+        (activity === "all" ||
+          (activity === "repeat" && c.orders_count > 1) ||
+          (activity === "new" && c.orders_count <= 1)) &&
+        withinRange(c.last_order_at ?? c.created_at, from, to),
     )
     .sort((a, b) => {
       if (sort === "spend") return Number(b.total_spent) - Number(a.total_spent);
@@ -74,15 +81,55 @@ function CustomersPage() {
       return new Date(b.last_order_at ?? b.created_at).getTime() - new Date(a.last_order_at ?? a.created_at).getTime();
     });
 
+  function exportCsv() {
+    if (rows.length === 0) {
+      toast.error("No customers match those filters.");
+      return;
+    }
+    const csv = toCsv(
+      ["Name", "Email", "Phone", "Orders", "Total spent", "Currency", "Last order", "First seen"],
+      rows.map((c) => [
+        c.name,
+        c.email,
+        c.phone,
+        c.orders_count,
+        c.total_spent,
+        activeStore!.currency,
+        c.last_order_at,
+        c.created_at,
+      ]),
+    );
+    downloadCsv(`customers-${new Date().toISOString().slice(0, 10)}`, csv);
+    toast.success(`Exported ${rows.length} customers`);
+  }
+
   return (
-    <DashboardShell title="Customers" description={`${rows.length} customer${rows.length === 1 ? "" : "s"}`}>
-      <div className="mb-4 flex flex-wrap gap-3">
+    <DashboardShell
+      title="Customers"
+      description={`${rows.length} customer${rows.length === 1 ? "" : "s"}`}
+      actions={
+        <Button variant="outline" onClick={exportCsv}>
+          <Download className="mr-1.5 h-4 w-4" /> Export CSV
+        </Button>
+      }
+    >
+      <div className="mb-4 flex flex-wrap items-end gap-3">
         <Input
           placeholder="Search name, email or phone"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
+        <Select value={activity} onValueChange={setActivity}>
+          <SelectTrigger className="w-44">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All customers</SelectItem>
+            <SelectItem value="repeat">Repeat buyers</SelectItem>
+            <SelectItem value="new">One order or fewer</SelectItem>
+          </SelectContent>
+        </Select>
         <Select value={sort} onValueChange={setSort}>
           <SelectTrigger className="w-48">
             <SelectValue />
@@ -93,7 +140,23 @@ function CustomersPage() {
             <SelectItem value="orders">Most orders</SelectItem>
           </SelectContent>
         </Select>
+        <div className="flex items-end gap-2">
+          <div className="space-y-1">
+            <label htmlFor="cfrom" className="block text-xs text-muted-foreground">From</label>
+            <Input id="cfrom" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="cto" className="block text-xs text-muted-foreground">To</label>
+            <Input id="cto" type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" />
+          </div>
+          {(from || to) && (
+            <Button variant="ghost" size="sm" onClick={() => { setFrom(""); setTo(""); }}>
+              Clear dates
+            </Button>
+          )}
+        </div>
       </div>
+
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading customers…</p>
