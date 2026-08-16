@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -108,7 +108,7 @@ function Onboarding() {
       if (error) throw error;
       refresh();
       toast.success("Your store is live.");
-      navigate({ to: "/dashboard" });
+      setStep(3);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Could not create your store.";
       toast.error(msg.includes("duplicate") ? "That store link is already taken." : msg);
@@ -117,7 +117,7 @@ function Onboarding() {
     }
   }
 
-  const steps = ["Basics", "How you sell", "Contact"];
+  const steps = ["Basics", "How you sell", "Contact", "Add products"];
 
   return (
     <div className="min-h-screen bg-background">
@@ -344,6 +344,35 @@ function Onboarding() {
               </Button>
               <Button className="flex-1" onClick={() => void createStore()} disabled={busy}>
                 {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create store
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-5">
+            <h1 className="font-display text-2xl font-bold tracking-tight">Add your products</h1>
+            <p className="text-sm text-muted-foreground">
+              Your store is live at <span className="font-medium">/s/{form.slug}</span>. Add up to 5 products on the free
+              plan, each with up to 5 photos. Lifetime unlocks unlimited products and every premium template.
+            </p>
+            <div className="rounded-xl border p-5">
+              <p className="text-sm font-semibold">Free plan</p>
+              <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                <li>5 products, 5 photos each</li>
+                <li>3 free templates (5 more with Lifetime)</li>
+                <li>Full checkout, direct order and WhatsApp selling</li>
+              </ul>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button className="flex-1" onClick={() => navigate({ to: "/products/new" })}>
+                <Plus className="mr-1.5 h-4 w-4" /> Add your first product
+              </Button>
+              <Button variant="outline" className="flex-1" onClick={() => navigate({ to: "/themes" })}>
+                Choose a template
+              </Button>
+              <Button variant="ghost" className="flex-1" onClick={() => navigate({ to: "/dashboard" })}>
+                Skip for now
               </Button>
             </div>
           </div>

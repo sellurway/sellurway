@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Receipt } from "lucide-react";
+import { Download, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
@@ -19,7 +19,9 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDateTime, formatMoney } from "@/lib/format";
+import { downloadCsv, toCsv, withinRange } from "@/lib/csv";
 import { DELIVERY_STATUSES, ORDER_STATUSES, labelize } from "@/lib/store-options";
+
 
 export const Route = createFileRoute("/_authenticated/orders")({
   head: () => ({
@@ -75,7 +77,10 @@ function OrdersPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [source, setSource] = useState("all");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+
   const queryClient = useQueryClient();
 
   const { data: orders, isLoading } = useQuery({
@@ -131,6 +136,7 @@ function OrdersPage() {
     (o) =>
       (status === "all" || o.status === status) &&
       (source === "all" || o.source === source) &&
+      withinRange(o.created_at, from, to) &&
       (q === "" ||
         o.order_number.toLowerCase().includes(q) ||
         (o.customer_name ?? "").toLowerCase().includes(q) ||
@@ -142,12 +148,71 @@ function OrdersPage() {
     .filter((o) => o.status !== "cancelled" && o.status !== "refunded")
     .reduce((s, o) => s + Number(o.total), 0);
 
+  function exportCsv() {
+    if (filtered.length === 0) {
+      toast.error("No orders match those filters.");
+      return;
+    }
+    const csv = toCsv(
+      [
+        "Order number",
+        "Date",
+        "Customer",
+        "Email",
+        "Phone",
+        "Channel",
+        "Order status",
+        "Delivery status",
+        "Payment status",
+        "Payment method",
+        "Fulfillment",
+        "Subtotal",
+        "Shipping",
+        "Total",
+        "Currency",
+        "Address",
+        "City",
+        "Postal code",
+        "Notes",
+      ],
+      filtered.map((o) => [
+        o.order_number,
+        o.created_at,
+        o.customer_name,
+        o.customer_email,
+        o.customer_phone,
+        labelize(o.source),
+        labelize(o.status),
+        o.delivery_status ? labelize(o.delivery_status) : "",
+        labelize(o.payment_status),
+        o.payment_method ? labelize(o.payment_method) : "",
+        labelize(o.fulfillment_type),
+        o.subtotal,
+        o.shipping,
+        o.total,
+        o.currency,
+        [o.delivery_address, o.delivery_apartment].filter(Boolean).join(", "),
+        o.delivery_city,
+        o.delivery_postal_code,
+        o.notes,
+      ]),
+    );
+    downloadCsv(`orders-${new Date().toISOString().slice(0, 10)}`, csv);
+    toast.success(`Exported ${filtered.length} orders`);
+  }
+
   return (
     <DashboardShell
       title="Orders"
       description={`${filtered.length} order${filtered.length === 1 ? "" : "s"} shown · ${formatMoney(revenue, all[0]?.currency)} in value`}
+      actions={
+        <Button variant="outline" onClick={exportCsv}>
+          <Download className="mr-1.5 h-4 w-4" /> Export CSV
+        </Button>
+      }
     >
-      <div className="mb-4 flex flex-wrap gap-3">
+      <div className="mb-4 flex flex-wrap items-end gap-3">
+
         <Input
           placeholder="Search order number, name, email or phone"
           value={search}
@@ -178,7 +243,23 @@ function OrdersPage() {
             <SelectItem value="whatsapp">WhatsApp</SelectItem>
           </SelectContent>
         </Select>
+        <div className="flex items-end gap-2">
+          <div className="space-y-1">
+            <label htmlFor="from" className="block text-xs text-muted-foreground">From</label>
+            <Input id="from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="to" className="block text-xs text-muted-foreground">To</label>
+            <Input id="to" type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" />
+          </div>
+          {(from || to) && (
+            <Button variant="ghost" size="sm" onClick={() => { setFrom(""); setTo(""); }}>
+              Clear dates
+            </Button>
+          )}
+        </div>
       </div>
+
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading orders…</p>
