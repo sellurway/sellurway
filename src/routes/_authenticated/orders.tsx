@@ -145,16 +145,74 @@ function OrdersPage() {
   );
   const open = all.find((o) => o.id === openId) ?? null;
   const revenue = filtered
-
     .filter((o) => o.status !== "cancelled" && o.status !== "refunded")
     .reduce((s, o) => s + Number(o.total), 0);
+
+  function exportCsv() {
+    if (filtered.length === 0) {
+      toast.error("No orders match those filters.");
+      return;
+    }
+    const csv = toCsv(
+      [
+        "Order number",
+        "Date",
+        "Customer",
+        "Email",
+        "Phone",
+        "Channel",
+        "Order status",
+        "Delivery status",
+        "Payment status",
+        "Payment method",
+        "Fulfillment",
+        "Subtotal",
+        "Shipping",
+        "Total",
+        "Currency",
+        "Address",
+        "City",
+        "Postal code",
+        "Notes",
+      ],
+      filtered.map((o) => [
+        o.order_number,
+        o.created_at,
+        o.customer_name,
+        o.customer_email,
+        o.customer_phone,
+        labelize(o.source),
+        labelize(o.status),
+        o.delivery_status ? labelize(o.delivery_status) : "",
+        labelize(o.payment_status),
+        o.payment_method ? labelize(o.payment_method) : "",
+        labelize(o.fulfillment_type),
+        o.subtotal,
+        o.shipping,
+        o.total,
+        o.currency,
+        [o.delivery_address, o.delivery_apartment].filter(Boolean).join(", "),
+        o.delivery_city,
+        o.delivery_postal_code,
+        o.notes,
+      ]),
+    );
+    downloadCsv(`orders-${new Date().toISOString().slice(0, 10)}`, csv);
+    toast.success(`Exported ${filtered.length} orders`);
+  }
 
   return (
     <DashboardShell
       title="Orders"
       description={`${filtered.length} order${filtered.length === 1 ? "" : "s"} shown · ${formatMoney(revenue, all[0]?.currency)} in value`}
+      actions={
+        <Button variant="outline" onClick={exportCsv}>
+          <Download className="mr-1.5 h-4 w-4" /> Export CSV
+        </Button>
+      }
     >
-      <div className="mb-4 flex flex-wrap gap-3">
+      <div className="mb-4 flex flex-wrap items-end gap-3">
+
         <Input
           placeholder="Search order number, name, email or phone"
           value={search}
