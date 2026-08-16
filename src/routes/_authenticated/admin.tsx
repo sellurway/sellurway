@@ -115,6 +115,32 @@ function AdminPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const { data: claims } = useQuery({
+    queryKey: ["admin-upgrade-claims"],
+    enabled: isStaff,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("upgrade_claims")
+        .select("id,user_id,status,paypal_note,country,local_currency,local_amount,created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const reviewClaim = useMutation({
+    mutationFn: async ({ id, approve }: { id: string; approve: boolean }) => {
+      const { error } = await supabase.rpc("review_upgrade_claim", { _claim_id: id, _approve: approve });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-upgrade-claims"] });
+      toast.success("Payment claim updated");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+
   if (!isStaff) {
     return (
       <DashboardShell title="Staff admin">
@@ -135,6 +161,10 @@ function AdminPage() {
           <TabsTrigger value="stores">Stores ({stores?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="reports">Reports ({reports?.filter((r) => r.status === "open").length ?? 0})</TabsTrigger>
           <TabsTrigger value="tickets">Tickets ({tickets?.filter((t) => t.status !== "closed").length ?? 0})</TabsTrigger>
+          <TabsTrigger value="payments">
+            Payments ({claims?.filter((c) => c.status === "pending").length ?? 0})
+          </TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="stores" className="mt-4 space-y-3">
@@ -234,7 +264,42 @@ function AdminPage() {
             ))
           )}
         </TabsContent>
+
+
+        <TabsContent value="payments" className="mt-4 space-y-3">
+          {(claims ?? []).length === 0 ? (
+            <Empty icon={Shield} title="No payment claims" description="Lifetime payment confirmations show up here." />
+          ) : (
+            (claims ?? []).map((c) => (
+              <div key={c.id} className="flex flex-wrap items-center gap-3 rounded-[var(--radius-xl)] border bg-card p-4">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium">User {c.user_id.slice(0, 8)}…</p>
+                  <p className="text-sm text-muted-foreground">
+                    {formatDateTime(c.created_at)}
+                    {c.country ? ` · ${c.country}` : ""}
+                    {c.local_currency ? ` · ~${c.local_amount} ${c.local_currency}` : ""}
+                    {c.paypal_note ? ` · ref ${c.paypal_note}` : ""}
+                  </p>
+                </div>
+                <Badge variant={c.status === "approved" ? "default" : c.status === "pending" ? "secondary" : "outline"}>
+                  {labelize(c.status)}
+                </Badge>
+                {c.status === "pending" && (
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => reviewClaim.mutate({ id: c.id, approve: true })}>
+                      Approve
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => reviewClaim.mutate({ id: c.id, approve: false })}>
+                      Reject
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </TabsContent>
       </Tabs>
     </DashboardShell>
+
   );
 }
