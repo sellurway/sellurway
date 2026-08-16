@@ -243,7 +243,23 @@ function OrdersPage() {
             <SelectItem value="whatsapp">WhatsApp</SelectItem>
           </SelectContent>
         </Select>
+        <div className="flex items-end gap-2">
+          <div className="space-y-1">
+            <label htmlFor="from" className="block text-xs text-muted-foreground">From</label>
+            <Input id="from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="to" className="block text-xs text-muted-foreground">To</label>
+            <Input id="to" type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" />
+          </div>
+          {(from || to) && (
+            <Button variant="ghost" size="sm" onClick={() => { setFrom(""); setTo(""); }}>
+              Clear dates
+            </Button>
+          )}
+        </div>
       </div>
+
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading orders…</p>
