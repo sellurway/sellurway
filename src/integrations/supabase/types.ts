@@ -845,6 +845,45 @@ export type Database = {
         }
         Relationships: []
       }
+      upgrade_claims: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          local_amount: number | null
+          local_currency: string | null
+          paypal_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          local_amount?: number | null
+          local_currency?: string | null
+          paypal_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          local_amount?: number | null
+          local_currency?: string | null
+          paypal_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -893,6 +932,10 @@ export type Database = {
           _source: Database["public"]["Enums"]["order_source"]
         }
         Returns: Json
+      }
+      review_upgrade_claim: {
+        Args: { _approve: boolean; _claim_id: string }
+        Returns: undefined
       }
       slug_available: { Args: { _slug: string }; Returns: boolean }
     }
