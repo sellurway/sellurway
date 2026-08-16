@@ -264,7 +264,42 @@ function AdminPage() {
             ))
           )}
         </TabsContent>
+        </TabsContent>
+
+        <TabsContent value="payments" className="mt-4 space-y-3">
+          {(claims ?? []).length === 0 ? (
+            <Empty icon={Shield} title="No payment claims" description="Lifetime payment confirmations show up here." />
+          ) : (
+            (claims ?? []).map((c) => (
+              <div key={c.id} className="flex flex-wrap items-center gap-3 rounded-[var(--radius-xl)] border bg-card p-4">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium">User {c.user_id.slice(0, 8)}…</p>
+                  <p className="text-sm text-muted-foreground">
+                    {formatDateTime(c.created_at)}
+                    {c.country ? ` · ${c.country}` : ""}
+                    {c.local_currency ? ` · ~${c.local_amount} ${c.local_currency}` : ""}
+                    {c.paypal_note ? ` · ref ${c.paypal_note}` : ""}
+                  </p>
+                </div>
+                <Badge variant={c.status === "approved" ? "default" : c.status === "pending" ? "secondary" : "outline"}>
+                  {labelize(c.status)}
+                </Badge>
+                {c.status === "pending" && (
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => reviewClaim.mutate({ id: c.id, approve: true })}>
+                      Approve
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => reviewClaim.mutate({ id: c.id, approve: false })}>
+                      Reject
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </TabsContent>
       </Tabs>
     </DashboardShell>
+
   );
 }
