@@ -161,6 +161,10 @@ function AdminPage() {
           <TabsTrigger value="stores">Stores ({stores?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="reports">Reports ({reports?.filter((r) => r.status === "open").length ?? 0})</TabsTrigger>
           <TabsTrigger value="tickets">Tickets ({tickets?.filter((t) => t.status !== "closed").length ?? 0})</TabsTrigger>
+          <TabsTrigger value="payments">
+            Payments ({claims?.filter((c) => c.status === "pending").length ?? 0})
+          </TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="stores" className="mt-4 space-y-3">
