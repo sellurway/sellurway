@@ -87,7 +87,7 @@ function CustomersPage() {
       return;
     }
     const csv = toCsv(
-      ["Name", "Email", "Phone", "Orders", "Total spent", "Currency", "Last order", "First seen"],
+      ["Name", "Email", "Phone", "Orders", "Total spent", "Last order", "First seen"],
       rows.map((c) => [
         c.name,
         c.email,
