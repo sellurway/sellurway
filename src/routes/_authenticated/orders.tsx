@@ -75,7 +75,10 @@ function OrdersPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [source, setSource] = useState("all");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+
   const queryClient = useQueryClient();
 
   const { data: orders, isLoading } = useQuery({
