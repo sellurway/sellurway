@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Users } from "lucide-react";
+import { Download, Users } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
 import { Empty } from "@/components/Empty";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -15,6 +17,8 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDate, formatMoney } from "@/lib/format";
+import { downloadCsv, toCsv, withinRange } from "@/lib/csv";
+
 
 export const Route = createFileRoute("/_authenticated/customers")({
   head: () => ({
