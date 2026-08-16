@@ -94,7 +94,6 @@ function CustomersPage() {
         c.phone,
         c.orders_count,
         c.total_spent,
-        activeStore!.currency,
         c.last_order_at,
         c.created_at,
       ]),
