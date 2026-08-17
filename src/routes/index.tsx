@@ -235,7 +235,7 @@ function Landing() {
               <div>
                 <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Themes that fit your trade.</h2>
                 <p className="mt-3 max-w-xl text-muted-foreground">
-                  Three free themes to start. Five premium themes unlock forever with the lifetime upgrade.
+                  Three free themes to start. Nine premium themes unlock forever with the lifetime upgrade.
                 </p>
               </div>
               <Button asChild variant="outline">

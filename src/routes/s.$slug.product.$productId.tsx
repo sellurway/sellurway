@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Loader2, MessageCircle, Minus, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, MessageCircle, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore, whatsappLink, type PublicProduct } from "@/lib/storefront";
@@ -41,6 +41,18 @@ function ProductPage() {
     () => [...(product?.product_images ?? [])].sort((a, b) => a.position - b.position),
     [product],
   );
+
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  function goToImage(index: number) {
+    const el = scrollerRef.current;
+    const count = images.length;
+    if (!el || !count) return;
+    const next = (index + count) % count;
+    el.scrollTo({ left: next * el.clientWidth, behavior: "smooth" });
+    setActiveImage(next);
+  }
+
+
 
   if (isLoading) {
     return (
@@ -104,11 +116,29 @@ function ProductPage() {
       <div className="mt-6 grid gap-8 lg:grid-cols-2">
         <div>
           <div
-            className="overflow-hidden border"
+            className="relative overflow-hidden border"
             style={{ borderColor: "var(--sf-border)", borderRadius: "var(--sf-card-radius)" }}
           >
-            {images[activeImage] ? (
-              <img src={images[activeImage]!.url} alt={product.name} className="aspect-square w-full object-cover" />
+            {images.length ? (
+              <div
+                ref={scrollerRef}
+                onScroll={(e) => {
+                  const el = e.currentTarget;
+                  const i = Math.round(el.scrollLeft / el.clientWidth);
+                  if (i !== activeImage) setActiveImage(i);
+                }}
+                className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+                {images.map((img, i) => (
+                  <img
+                    key={img.url}
+                    src={img.url}
+                    alt={`${product.name} — photo ${i + 1}`}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    className="aspect-square w-full shrink-0 snap-center object-cover"
+                  />
+                ))}
+              </div>
             ) : (
               <div
                 className="flex aspect-square w-full items-center justify-center text-sm"
@@ -117,26 +147,65 @@ function ProductPage() {
                 No image
               </div>
             )}
+
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={() => goToImage(activeImage - 1)}
+                  aria-label="Previous photo"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 shadow-sm"
+                  style={{ background: "var(--sf-bg)", color: "var(--sf-ink)" }}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => goToImage(activeImage + 1)}
+                  aria-label="Next photo"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 shadow-sm"
+                  style={{ background: "var(--sf-bg)", color: "var(--sf-ink)" }}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+                <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
+                  {images.map((img, i) => (
+                    <span
+                      key={img.url}
+                      className="h-1.5 rounded-full transition-all"
+                      style={{
+                        width: i === activeImage ? 16 : 6,
+                        background: i === activeImage ? "var(--sf-accent)" : "var(--sf-border)",
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
           {images.length > 1 && (
-            <div className="mt-3 grid grid-cols-5 gap-2">
-              {images.map((img, i) => (
-                <button
-                  key={img.url}
-                  onClick={() => setActiveImage(i)}
-                  className="overflow-hidden border"
-                  style={{
-                    borderColor: i === activeImage ? "var(--sf-accent)" : "var(--sf-border)",
-                    borderRadius: "calc(var(--sf-card-radius) / 2)",
-                  }}
-                  aria-label={`View image ${i + 1}`}
-                >
-                  <img src={img.url} alt="" className="aspect-square w-full object-cover" loading="lazy" />
-                </button>
-              ))}
-            </div>
+            <>
+              <p className="mt-2 text-center text-xs sm:hidden" style={{ color: "var(--sf-muted)" }}>
+                Swipe to see more photos ({activeImage + 1}/{images.length})
+              </p>
+              <div className="mt-3 grid grid-cols-5 gap-2">
+                {images.map((img, i) => (
+                  <button
+                    key={img.url}
+                    onClick={() => goToImage(i)}
+                    className="overflow-hidden border"
+                    style={{
+                      borderColor: i === activeImage ? "var(--sf-accent)" : "var(--sf-border)",
+                      borderRadius: "calc(var(--sf-card-radius) / 2)",
+                    }}
+                    aria-label={`View image ${i + 1}`}
+                  >
+                    <img src={img.url} alt="" className="aspect-square w-full object-cover" loading="lazy" />
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
+
 
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ fontFamily: "var(--sf-heading)" }}>
