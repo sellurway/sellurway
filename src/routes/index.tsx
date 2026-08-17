@@ -17,6 +17,8 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { THEMES } from "@/lib/themes";
+import { ThemePreview } from "@/components/ThemePreview";
+
 import candle from "@/assets/demo-candle.jpg";
 import mug from "@/assets/demo-mug.jpg";
 import tote from "@/assets/demo-tote.jpg";
