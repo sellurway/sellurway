@@ -17,6 +17,8 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { THEMES } from "@/lib/themes";
+import { ThemePreview } from "@/components/ThemePreview";
+
 import candle from "@/assets/demo-candle.jpg";
 import mug from "@/assets/demo-mug.jpg";
 import tote from "@/assets/demo-tote.jpg";
@@ -243,11 +245,8 @@ function Landing() {
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {THEMES.map((t) => (
                 <div key={t.id} className="surface-card overflow-hidden">
-                  <div className="flex h-28 items-end gap-1.5 p-4" style={{ background: t.palette.bg }}>
-                    <span className="h-10 w-10 rounded-md" style={{ background: t.palette.accent }} />
-                    <span className="h-7 flex-1 rounded-md" style={{ background: t.palette.surface }} />
-                    <span className="h-4 w-8 rounded-md" style={{ background: t.palette.border }} />
-                  </div>
+                  <ThemePreview theme={t} />
+
                   <div className="flex items-start justify-between gap-2 border-t p-4">
                     <div>
                       <p className="font-display text-sm font-semibold">{t.name}</p>

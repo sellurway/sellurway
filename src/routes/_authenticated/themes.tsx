@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { THEMES, type ThemeSettings } from "@/lib/themes";
+import { ThemePreview } from "@/components/ThemePreview";
+
 
 export const Route = createFileRoute("/_authenticated/themes")({
   head: () => ({
@@ -94,37 +96,15 @@ function ThemesPage() {
               key={t.id}
               className={`surface-card overflow-hidden p-0 ${active ? "ring-2 ring-primary" : ""}`}
             >
-              <div className="p-4" style={{ background: t.palette.bg, color: t.palette.ink }}>
-                <div className="flex items-center justify-between">
-                  <span style={{ fontFamily: t.heading }} className="text-sm font-bold">
-                    {t.name}
+              <div className="relative">
+                <ThemePreview theme={t} />
+                {t.premium && (
+                  <span className="absolute right-2 top-2 rounded-full bg-black/60 p-1">
+                    <Crown className="h-3.5 w-3.5 text-gold" />
                   </span>
-                  {t.premium && <Crown className="h-4 w-4" style={{ color: t.palette.accent }} />}
-                </div>
-                <div className="mt-3 grid grid-cols-3 gap-2">
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="aspect-square"
-                      style={{
-                        background: t.palette.surface,
-                        borderRadius: t.cardRadius,
-                        border: `1px solid ${t.palette.border}`,
-                      }}
-                    />
-                  ))}
-                </div>
-                <div
-                  className="mt-3 inline-block px-3 py-1.5 text-xs font-medium"
-                  style={{
-                    background: t.palette.accent,
-                    color: t.palette.accentInk,
-                    borderRadius: t.buttonRadius,
-                  }}
-                >
-                  Buy now
-                </div>
+                )}
               </div>
+
               <div className="border-t p-4">
                 <p className="text-sm text-muted-foreground">{t.tagline}</p>
                 <p className="mt-1 text-xs text-muted-foreground">Best for {t.bestFor.toLowerCase()}</p>
