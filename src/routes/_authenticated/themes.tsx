@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { THEMES, type ThemeSettings } from "@/lib/themes";
+import { ThemePreview } from "@/components/ThemePreview";
+
 
 export const Route = createFileRoute("/_authenticated/themes")({
   head: () => ({
