@@ -6,14 +6,20 @@ export type ThemeId =
   | "noir"
   | "bloom"
   | "kiosk"
-  | "vertex";
+  | "vertex"
+  | "prisma"
+  | "linea"
+  | "verde"
+  | "neon";
 
 export interface StoreTheme {
   id: ThemeId;
   name: string;
   tagline: string;
   premium: boolean;
-  layout: "grid" | "editorial" | "list" | "showcase";
+  layout: "grid" | "editorial" | "list" | "showcase" | "lookbook";
+  /** Which demo photo set the preview mock-up uses. */
+  photoSet: "home" | "fashion" | "food" | "jewel" | "beauty" | "tech" | "flowers";
   /** Preview swatches, also used as the default palette. */
   palette: {
     bg: string;
@@ -34,6 +40,7 @@ export interface StoreTheme {
 export const THEMES: StoreTheme[] = [
   {
     id: "lumen",
+    photoSet: "home",
     name: "Lumen",
     tagline: "Bright, airy and product-first.",
     premium: false,
@@ -55,6 +62,7 @@ export const THEMES: StoreTheme[] = [
   },
   {
     id: "slate",
+    photoSet: "tech",
     name: "Slate",
     tagline: "Dark, quiet and modern.",
     premium: false,
@@ -76,6 +84,7 @@ export const THEMES: StoreTheme[] = [
   },
   {
     id: "market",
+    photoSet: "home",
     name: "Market",
     tagline: "Dense grid built for browsing lots of items.",
     premium: false,
@@ -97,6 +106,7 @@ export const THEMES: StoreTheme[] = [
   },
   {
     id: "atelier",
+    photoSet: "fashion",
     name: "Atelier",
     tagline: "Editorial layout with generous white space.",
     premium: true,
@@ -118,6 +128,7 @@ export const THEMES: StoreTheme[] = [
   },
   {
     id: "noir",
+    photoSet: "jewel",
     name: "Noir",
     tagline: "Luxury dark with gold detailing.",
     premium: true,
@@ -139,6 +150,7 @@ export const THEMES: StoreTheme[] = [
   },
   {
     id: "bloom",
+    photoSet: "flowers",
     name: "Bloom",
     tagline: "Soft, warm and friendly.",
     premium: true,
@@ -160,6 +172,7 @@ export const THEMES: StoreTheme[] = [
   },
   {
     id: "kiosk",
+    photoSet: "food",
     name: "Kiosk",
     tagline: "Menu-style list made for food ordering.",
     premium: true,
@@ -181,6 +194,7 @@ export const THEMES: StoreTheme[] = [
   },
   {
     id: "vertex",
+    photoSet: "tech",
     name: "Vertex",
     tagline: "Bold type, big imagery, high contrast.",
     premium: true,
@@ -199,6 +213,94 @@ export const THEMES: StoreTheme[] = [
     buttonRadius: "8px",
     cardRadius: "18px",
     bestFor: "Digital products, services",
+  },
+  {
+    id: "prisma",
+    photoSet: "beauty",
+    name: "Prisma",
+    tagline: "Colour-washed gradients with oversized product cards.",
+    premium: true,
+    layout: "lookbook",
+    palette: {
+      bg: "#faf7ff",
+      surface: "#ffffff",
+      ink: "#1b1436",
+      muted: "#6f668f",
+      accent: "#7c3aed",
+      accentInk: "#ffffff",
+      border: "#e7deff",
+    },
+    heading: "'Sora', sans-serif",
+    body: "'Plus Jakarta Sans', sans-serif",
+    buttonRadius: "14px",
+    cardRadius: "24px",
+    bestFor: "Beauty, wellness, cosmetics",
+  },
+  {
+    id: "linea",
+    photoSet: "fashion",
+    name: "Linea",
+    tagline: "Gallery-quiet lookbook with hairline rules.",
+    premium: true,
+    layout: "lookbook",
+    palette: {
+      bg: "#f8f8f6",
+      surface: "#ffffff",
+      ink: "#141414",
+      muted: "#7c7c78",
+      accent: "#141414",
+      accentInk: "#ffffff",
+      border: "#dedbd4",
+    },
+    heading: "'Sora', sans-serif",
+    body: "'Plus Jakarta Sans', sans-serif",
+    buttonRadius: "0px",
+    cardRadius: "0px",
+    bestFor: "Fashion, lookbooks, studios",
+  },
+  {
+    id: "verde",
+    photoSet: "flowers",
+    name: "Verde",
+    tagline: "Organic greens and soft cards for natural goods.",
+    premium: true,
+    layout: "editorial",
+    palette: {
+      bg: "#f6f8f3",
+      surface: "#ffffff",
+      ink: "#17241a",
+      muted: "#63735f",
+      accent: "#2f7d4f",
+      accentInk: "#ffffff",
+      border: "#dce6d6",
+    },
+    heading: "'Sora', sans-serif",
+    body: "'Plus Jakarta Sans', sans-serif",
+    buttonRadius: "999px",
+    cardRadius: "20px",
+    bestFor: "Plants, florists, organic food",
+  },
+  {
+    id: "neon",
+    photoSet: "tech",
+    name: "Neon",
+    tagline: "Night-mode showcase with electric highlights.",
+    premium: true,
+    layout: "showcase",
+    palette: {
+      bg: "#08080f",
+      surface: "#12121f",
+      ink: "#eef0ff",
+      muted: "#8f93b8",
+      accent: "#22e5a1",
+      accentInk: "#06110c",
+      border: "#22233a",
+    },
+    heading: "'Sora', sans-serif",
+    body: "'Plus Jakarta Sans', sans-serif",
+    buttonRadius: "10px",
+    cardRadius: "14px",
+    bestFor: "Sneakers, gadgets, streetwear",
   },
 ];
 
