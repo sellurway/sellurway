@@ -42,6 +42,18 @@ function ProductPage() {
     [product],
   );
 
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  function goToImage(index: number) {
+    const el = scrollerRef.current;
+    const count = images.length;
+    if (!el || !count) return;
+    const next = (index + count) % count;
+    el.scrollTo({ left: next * el.clientWidth, behavior: "smooth" });
+    setActiveImage(next);
+  }
+
+
+
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
