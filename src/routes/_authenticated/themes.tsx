@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/themes")({
       { title: "Themes — Sellurway" },
       { name: "description", content: "Pick a storefront template and fine-tune colours, fonts and sections." },
       { property: "og:title", content: "Themes — Sellurway" },
-      { property: "og:description", content: "Eight storefront templates, five of them exclusive to Lifetime." },
+      { property: "og:description", content: "Twelve storefront templates, nine of them exclusive to Lifetime." },
       { name: "robots", content: "noindex" },
     ],
   }),
