@@ -1,9 +1,18 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink, LogOut, Package, Receipt, Store as StoreIcon, Users } from "lucide-react";
+import {
+  BarChart3,
+  LifeBuoy,
+  Package,
+  Palette,
+  Plus,
+  Receipt,
+  Settings,
+  Store as StoreIcon,
+  Users,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Logo } from "@/components/Logo";
-import { CrownBadge } from "@/components/CrownBadge";
+import { DashboardShell } from "@/components/DashboardShell";
 import { Empty } from "@/components/Empty";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,9 +31,19 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
+const QUICK_ACTIONS = [
+  { to: "/products/new", label: "Add a product", hint: "Photos, price, stock and options", icon: Plus },
+  { to: "/products", label: "Edit products", hint: "Update, hide or delete items", icon: Package },
+  { to: "/themes", label: "Choose a template", hint: "12 storefront designs", icon: Palette },
+  { to: "/settings", label: "Edit your store", hint: "Branding, delivery, payments", icon: Settings },
+  { to: "/orders", label: "Manage orders", hint: "Statuses, filters and CSV export", icon: Receipt },
+  { to: "/customers", label: "Customers", hint: "Spend and order history", icon: Users },
+  { to: "/analytics", label: "Analytics", hint: "Revenue and best sellers", icon: BarChart3 },
+  { to: "/support", label: "Support", hint: "Ask our team anything", icon: LifeBuoy },
+] as const;
+
 function Dashboard() {
-  const { profile, isLifetime, activeStore, stores } = useAuth();
-  const navigate = useNavigate();
+  const { isLifetime, activeStore, stores } = useAuth();
 
   const { data: stats } = useQuery({
     queryKey: ["dashboard-stats", activeStore?.id],
@@ -51,83 +70,84 @@ function Dashboard() {
     },
   });
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    navigate({ to: "/", replace: true });
+  if (stores.length === 0) {
+    return (
+      <DashboardShell title="Dashboard">
+        <Empty
+          icon={StoreIcon}
+          title="You don't have a store yet"
+          description="Set up your storefront — name, currency, how you take orders — and start adding products."
+          action={
+            <Button asChild>
+              <Link to="/onboarding">Create your store</Link>
+            </Button>
+          }
+        />
+      </DashboardShell>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container-page flex h-16 items-center justify-between">
-          <Logo to="/dashboard" />
-          <div className="flex items-center gap-3">
-            {isLifetime && <CrownBadge />}
-            <span className="hidden text-sm text-muted-foreground sm:inline">{profile?.email}</span>
-            <Button variant="ghost" size="sm" onClick={signOut}>
-              <LogOut className="mr-1.5 h-4 w-4" /> Sign out
-            </Button>
+    <DashboardShell
+      title={activeStore!.name}
+      description="Overview of your store today."
+      actions={
+        <Button asChild>
+          <Link to="/products/new">
+            <Plus className="mr-1.5 h-4 w-4" /> Add product
+          </Link>
+        </Button>
+      }
+    >
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          { label: "Revenue", value: formatMoney(stats?.revenue ?? 0, stats?.currency), icon: Receipt },
+          { label: "Orders", value: String(stats?.orders ?? 0), icon: Receipt },
+          { label: "Products", value: String(stats?.products ?? 0), icon: Package },
+          { label: "Customers", value: String(stats?.customers ?? 0), icon: Users },
+        ].map((s) => (
+          <div key={s.label} className="surface-card p-5">
+            <s.icon className="h-4 w-4 text-muted-foreground" />
+            <p className="mt-3 font-display text-2xl font-bold">{s.value}</p>
+            <p className="text-xs text-muted-foreground">{s.label}</p>
           </div>
+        ))}
+      </div>
+
+      <section className="mt-10">
+        <h2 className="font-display text-lg font-semibold">Manage your store</h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {QUICK_ACTIONS.map((a) => (
+            <Link
+              key={a.to}
+              to={a.to}
+              className="surface-card group flex items-start gap-3 p-4 transition hover:border-primary/40 hover:shadow-[var(--shadow-lift)]"
+            >
+              <span className="rounded-lg bg-primary/10 p-2 text-primary">
+                <a.icon className="h-4 w-4" />
+              </span>
+              <span>
+                <span className="block text-sm font-medium">{a.label}</span>
+                <span className="block text-xs text-muted-foreground">{a.hint}</span>
+              </span>
+            </Link>
+          ))}
         </div>
-      </header>
+      </section>
 
-      <main className="container-page py-10">
-        {stores.length === 0 ? (
-          <Empty
-            icon={StoreIcon}
-            title="You don't have a store yet"
-            description="Set up your storefront — name, currency, how you take orders — and start adding products."
-            action={
-              <Button asChild>
-                <Link to="/onboarding">Create your store</Link>
-              </Button>
-            }
-          />
-        ) : (
-          <>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h1 className="font-display text-2xl font-bold tracking-tight">{activeStore!.name}</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Overview of your store today.</p>
-              </div>
-              <Button asChild variant="outline" size="sm">
-                <Link to="/s/$slug" params={{ slug: activeStore!.slug }} target="_blank">
-                  View storefront <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                </Link>
-              </Button>
-            </div>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                { label: "Revenue", value: formatMoney(stats?.revenue ?? 0, stats?.currency), icon: Receipt },
-                { label: "Orders", value: String(stats?.orders ?? 0), icon: Receipt },
-                { label: "Products", value: String(stats?.products ?? 0), icon: Package },
-                { label: "Customers", value: String(stats?.customers ?? 0), icon: Users },
-              ].map((s) => (
-                <div key={s.label} className="surface-card p-5">
-                  <s.icon className="h-4 w-4 text-muted-foreground" />
-                  <p className="mt-3 font-display text-2xl font-bold">{s.value}</p>
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
-                </div>
-              ))}
-            </div>
-
-            {!isLifetime && (
-              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-[var(--radius-xl)] border border-gold/40 bg-gold-soft/40 p-6">
-                <div>
-                  <p className="font-display font-semibold">You're on the free plan</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Up to 5 products. Unlock unlimited products and premium themes for a single $10 payment.
-                  </p>
-                </div>
-                <Button asChild>
-                  <Link to="/upgrade">Upgrade for $10</Link>
-                </Button>
-              </div>
-            )}
-          </>
-        )}
-      </main>
-    </div>
+      {!isLifetime && (
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-[var(--radius-xl)] border border-gold/40 bg-gold-soft/40 p-6">
+          <div>
+            <p className="font-display font-semibold">You're on the free plan</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Up to 5 products. Unlock unlimited products and premium themes for a single $10 payment.
+            </p>
+          </div>
+          <Button asChild>
+            <Link to="/upgrade">Upgrade for $10</Link>
+          </Button>
+        </div>
+      )}
+    </DashboardShell>
   );
 }
