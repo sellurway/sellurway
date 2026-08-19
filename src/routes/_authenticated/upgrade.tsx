@@ -64,10 +64,11 @@ function Upgrade() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["upgrade-claim", user?.id] });
-      toast.success("Thanks — we're confirming your payment now.");
+      queryClient.invalidateQueries();
+      toast.success("Thanks — every premium feature is unlocked on your account.");
     },
     onError: (e: Error) => toast.error(e.message),
+
   });
 
   const pending = claim?.status === "pending";
