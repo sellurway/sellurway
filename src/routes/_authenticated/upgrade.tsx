@@ -64,10 +64,11 @@ function Upgrade() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["upgrade-claim", user?.id] });
-      toast.success("Thanks — we're confirming your payment now.");
+      queryClient.invalidateQueries();
+      toast.success("Thanks — every premium feature is unlocked on your account.");
     },
     onError: (e: Error) => toast.error(e.message),
+
   });
 
   const pending = claim?.status === "pending";
@@ -124,9 +125,10 @@ function Upgrade() {
               </div>
             ) : pending ? (
               <div className="mt-8 rounded-lg border bg-muted/50 p-4 text-sm">
-                We've received your payment confirmation and are checking it. Lifetime unlocks on your account as soon
-                as it's approved — usually within a few hours.
+                Lifetime is unlocked on your account — unlimited products, all 12 templates and custom colours are
+                available right now. Our team is confirming your PayPal payment in the background.
               </div>
+
             ) : (
               <div className="mt-8 space-y-4">
                 {claim?.status === "rejected" && (
