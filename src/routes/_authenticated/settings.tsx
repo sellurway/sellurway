@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
 import { ImageUploader } from "@/components/ImageUploader";
+import { StripeConnectCard } from "@/components/StripeConnectCard";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,11 +39,13 @@ export const Route = createFileRoute("/_authenticated/settings")({
 });
 
 const PAYMENT_OPTIONS = [
+  { id: "card", label: "Card (Stripe)" },
   { id: "cash_on_delivery", label: "Cash on delivery" },
   { id: "bank_transfer", label: "Bank transfer" },
   { id: "pay_on_pickup", label: "Pay on pickup" },
   { id: "mobile_money", label: "Mobile money" },
 ];
+
 
 interface Form {
   name: string;
@@ -369,9 +373,18 @@ function SettingsPage() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            Card payments arrive when online payments are switched on for your account.
+            Tick “Card (Stripe)” only after you connect your Stripe account below — shoppers are sent to Stripe
+            Checkout to pay.
           </p>
         </div>
+
+        <StripeConnectCard
+          storeId={activeStore!.id}
+          enabled={Boolean((store as { stripe_enabled?: boolean } | undefined)?.stripe_enabled)}
+          last4={(store as { stripe_key_last4?: string | null } | undefined)?.stripe_key_last4 ?? null}
+          livemode={Boolean((store as { stripe_livemode?: boolean } | undefined)?.stripe_livemode)}
+        />
+
 
         <div className="surface-card space-y-4 p-5 lg:col-span-2">
           <p className="font-display font-semibold">Delivery</p>
