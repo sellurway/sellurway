@@ -251,6 +251,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          courier_name: string | null
           created_at: string
           currency: string
           customer_email: string | null
@@ -272,15 +273,21 @@ export type Database = {
           payment_status: Database["public"]["Enums"]["payment_status"]
           preferred_delivery_at: string | null
           selling_mode: Database["public"]["Enums"]["selling_mode"]
+          shipped_at: string | null
           shipping: number
           source: Database["public"]["Enums"]["order_source"]
           status: Database["public"]["Enums"]["order_status"]
           store_id: string
+          stripe_payment_intent: string | null
+          stripe_session_id: string | null
           subtotal: number
           total: number
+          tracking_number: string | null
+          tracking_url: string | null
           updated_at: string
         }
         Insert: {
+          courier_name?: string | null
           created_at?: string
           currency?: string
           customer_email?: string | null
@@ -304,15 +311,21 @@ export type Database = {
           payment_status?: Database["public"]["Enums"]["payment_status"]
           preferred_delivery_at?: string | null
           selling_mode?: Database["public"]["Enums"]["selling_mode"]
+          shipped_at?: string | null
           shipping?: number
           source?: Database["public"]["Enums"]["order_source"]
           status?: Database["public"]["Enums"]["order_status"]
           store_id: string
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
           subtotal?: number
           total?: number
+          tracking_number?: string | null
+          tracking_url?: string | null
           updated_at?: string
         }
         Update: {
+          courier_name?: string | null
           created_at?: string
           currency?: string
           customer_email?: string | null
@@ -336,12 +349,17 @@ export type Database = {
           payment_status?: Database["public"]["Enums"]["payment_status"]
           preferred_delivery_at?: string | null
           selling_mode?: Database["public"]["Enums"]["selling_mode"]
+          shipped_at?: string | null
           shipping?: number
           source?: Database["public"]["Enums"]["order_source"]
           status?: Database["public"]["Enums"]["order_status"]
           store_id?: string
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
           subtotal?: number
           total?: number
+          tracking_number?: string | null
+          tracking_url?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -690,6 +708,47 @@ export type Database = {
           },
         ]
       }
+      store_stripe_credentials: {
+        Row: {
+          account_label: string | null
+          created_at: string
+          key_last4: string | null
+          livemode: boolean
+          publishable_key: string | null
+          secret_key: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_label?: string | null
+          created_at?: string
+          key_last4?: string | null
+          livemode?: boolean
+          publishable_key?: string | null
+          secret_key: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_label?: string | null
+          created_at?: string
+          key_last4?: string | null
+          livemode?: boolean
+          publishable_key?: string | null
+          secret_key?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_stripe_credentials_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           banner_url: string | null
@@ -713,6 +772,9 @@ export type Database = {
           selling_mode: Database["public"]["Enums"]["selling_mode"]
           slug: string
           social_links: Json
+          stripe_enabled: boolean
+          stripe_key_last4: string | null
+          stripe_livemode: boolean
           suspended: boolean
           theme: string
           theme_settings: Json
@@ -741,6 +803,9 @@ export type Database = {
           selling_mode?: Database["public"]["Enums"]["selling_mode"]
           slug: string
           social_links?: Json
+          stripe_enabled?: boolean
+          stripe_key_last4?: string | null
+          stripe_livemode?: boolean
           suspended?: boolean
           theme?: string
           theme_settings?: Json
@@ -769,6 +834,9 @@ export type Database = {
           selling_mode?: Database["public"]["Enums"]["selling_mode"]
           slug?: string
           social_links?: Json
+          stripe_enabled?: boolean
+          stripe_key_last4?: string | null
+          stripe_livemode?: boolean
           suspended?: boolean
           theme?: string
           theme_settings?: Json
