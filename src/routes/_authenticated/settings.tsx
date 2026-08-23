@@ -37,11 +37,13 @@ export const Route = createFileRoute("/_authenticated/settings")({
 });
 
 const PAYMENT_OPTIONS = [
+  { id: "card", label: "Card (Stripe)" },
   { id: "cash_on_delivery", label: "Cash on delivery" },
   { id: "bank_transfer", label: "Bank transfer" },
   { id: "pay_on_pickup", label: "Pay on pickup" },
   { id: "mobile_money", label: "Mobile money" },
 ];
+
 
 interface Form {
   name: string;
