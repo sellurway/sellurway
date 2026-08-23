@@ -371,9 +371,18 @@ function SettingsPage() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            Card payments arrive when online payments are switched on for your account.
+            Tick “Card (Stripe)” only after you connect your Stripe account below — shoppers are sent to Stripe
+            Checkout to pay.
           </p>
         </div>
+
+        <StripeConnectCard
+          storeId={activeStore!.id}
+          enabled={Boolean((store as { stripe_enabled?: boolean } | undefined)?.stripe_enabled)}
+          last4={(store as { stripe_key_last4?: string | null } | undefined)?.stripe_key_last4 ?? null}
+          livemode={Boolean((store as { stripe_livemode?: boolean } | undefined)?.stripe_livemode)}
+        />
+
 
         <div className="surface-card space-y-4 p-5 lg:col-span-2">
           <p className="font-display font-semibold">Delivery</p>
