@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { createStripeCheckout } from "@/lib/stripe.functions";
 import { useDeliveryAreas, type PublicStore } from "@/lib/storefront";
 import { formatMoney } from "@/lib/format";
 import type { CartLine } from "@/lib/cart";
