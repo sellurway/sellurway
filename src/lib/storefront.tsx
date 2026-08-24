@@ -24,6 +24,7 @@ export interface PublicStore {
   payment_methods: string[];
   policies: Record<string, string>;
   social_links: Record<string, string>;
+  stripe_enabled?: boolean;
 }
 
 export interface PublicProduct {
@@ -41,7 +42,7 @@ export interface PublicProduct {
 }
 
 const STORE_SELECT =
-  "id,name,slug,description,logo_url,banner_url,currency,country,category,selling_mode,product_action,whatsapp_number,contact_email,contact_phone,theme,theme_settings,delivery_settings,payment_methods,policies,social_links";
+  "id,name,slug,description,logo_url,banner_url,currency,country,category,selling_mode,product_action,whatsapp_number,contact_email,contact_phone,theme,theme_settings,delivery_settings,payment_methods,policies,social_links,stripe_enabled";
 
 export function useStoreQuery(slug: string) {
   return useQuery({
