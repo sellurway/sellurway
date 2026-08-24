@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { createStripeCheckout } from "@/lib/stripe.functions";
 import { useDeliveryAreas, type PublicStore } from "@/lib/storefront";
 import { formatMoney } from "@/lib/format";
 import type { CartLine } from "@/lib/cart";
@@ -28,6 +30,7 @@ const field =
 
 export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
   const navigate = useNavigate();
+  const startStripeCheckout = useServerFn(createStripeCheckout);
   const { data: areas } = useDeliveryAreas(store.id);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
@@ -47,9 +50,10 @@ export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
 
   const settings = (store.delivery_settings ?? {}) as Record<string, string>;
   const paymentMethods = useMemo(() => {
-    const list = Array.isArray(store.payment_methods) ? (store.payment_methods as string[]) : [];
+    const list = Array.isArray(store.payment_methods) ? [...(store.payment_methods as string[])] : [];
+    if (store.stripe_enabled && !list.includes("card")) list.unshift("card");
     return list.length ? list : ["cash_on_delivery"];
-  }, [store.payment_methods]);
+  }, [store.payment_methods, store.stripe_enabled]);
   const [payment, setPayment] = useState(paymentMethods[0]!);
 
   const subtotal = lines.reduce((s, l) => s + l.price * l.quantity, 0);
@@ -120,6 +124,21 @@ export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
       if (error) throw error;
       const result = data as unknown as { order_number: string; total: number; currency: string };
       onPlaced(result);
+
+      if (payment === "card") {
+        try {
+          const { url } = await startStripeCheckout({
+            data: { slug: store.slug, orderNumber: result.order_number, origin: window.location.origin },
+          });
+          if (url) {
+            window.location.href = url;
+            return;
+          }
+        } catch {
+          toast.error("We couldn't open the card payment page. Your order is saved — you can pay from the next screen.");
+        }
+      }
+
       navigate({
         to: "/s/$slug/confirmation",
         params: { slug: store.slug },
