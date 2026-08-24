@@ -124,6 +124,21 @@ export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
       if (error) throw error;
       const result = data as unknown as { order_number: string; total: number; currency: string };
       onPlaced(result);
+
+      if (payment === "card") {
+        try {
+          const { url } = await startStripeCheckout({
+            data: { slug: store.slug, orderNumber: result.order_number, origin: window.location.origin },
+          });
+          if (url) {
+            window.location.href = url;
+            return;
+          }
+        } catch {
+          toast.error("We couldn't open the card payment page. Your order is saved — you can pay from the next screen.");
+        }
+      }
+
       navigate({
         to: "/s/$slug/confirmation",
         params: { slug: store.slug },
