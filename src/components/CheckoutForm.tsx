@@ -30,6 +30,7 @@ const field =
 
 export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
   const navigate = useNavigate();
+  const startStripeCheckout = useServerFn(createStripeCheckout);
   const { data: areas } = useDeliveryAreas(store.id);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
@@ -49,9 +50,10 @@ export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
 
   const settings = (store.delivery_settings ?? {}) as Record<string, string>;
   const paymentMethods = useMemo(() => {
-    const list = Array.isArray(store.payment_methods) ? (store.payment_methods as string[]) : [];
+    const list = Array.isArray(store.payment_methods) ? [...(store.payment_methods as string[])] : [];
+    if (store.stripe_enabled && !list.includes("card")) list.unshift("card");
     return list.length ? list : ["cash_on_delivery"];
-  }, [store.payment_methods]);
+  }, [store.payment_methods, store.stripe_enabled]);
   const [payment, setPayment] = useState(paymentMethods[0]!);
 
   const subtotal = lines.reduce((s, l) => s + l.price * l.quantity, 0);
