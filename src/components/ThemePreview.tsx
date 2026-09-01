@@ -71,6 +71,10 @@ export function ThemePreview({ theme, className = "" }: { theme: StoreTheme; cla
         </div>
       ) : theme.layout === "list" ? (
         <div className="space-y-1.5 p-3">
+          <div className="mb-2 flex items-end justify-between">
+            <div className="h-3 w-1/2 rounded-full" style={{ background: p.ink, opacity: 0.8 }} />
+            <div className="h-1.5 w-1/5 rounded-full" style={{ background: p.accent, opacity: 0.9 }} />
+          </div>
           {shots.slice(0, 3).map((src, i) => (
             <div
               key={i}
