@@ -10,7 +10,13 @@ export type ThemeId =
   | "prisma"
   | "linea"
   | "verde"
-  | "neon";
+  | "neon"
+  | "mono"
+  | "oasis"
+  | "royal"
+  | "sunset"
+  | "studio"
+  | "pulse";
 
 export interface StoreTheme {
   id: ThemeId;
@@ -301,7 +307,37 @@ export const THEMES: StoreTheme[] = [
     buttonRadius: "10px",
     cardRadius: "14px",
     bestFor: "Sneakers, gadgets, streetwear",
+  },,
+  {
+    id: "mono", photoSet: "fashion", name: "Mono", tagline: "Minimal monochrome storefront with gallery energy.", premium: true, layout: "lookbook",
+    palette: { bg: "#f5f5f3", surface: "#ffffff", ink: "#111111", muted: "#747474", accent: "#111111", accentInk: "#ffffff", border: "#dededb" },
+    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "0px", cardRadius: "0px", bestFor: "Fashion, furniture, photography"
   },
+  {
+    id: "oasis", photoSet: "beauty", name: "Oasis", tagline: "Soft luxury with calm colours and spacious cards.", premium: true, layout: "editorial",
+    palette: { bg: "#fff8ed", surface: "#ffffff", ink: "#24332a", muted: "#718077", accent: "#b86b45", accentInk: "#ffffff", border: "#eadfce" },
+    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "18px", cardRadius: "28px", bestFor: "Beauty, wellness, lifestyle"
+  },
+  {
+    id: "royal", photoSet: "jewel", name: "Royal", tagline: "Premium boutique styling with rich jewel tones.", premium: true, layout: "showcase",
+    palette: { bg: "#171126", surface: "#211a33", ink: "#f8f3ff", muted: "#b8adca", accent: "#d7ae55", accentInk: "#21150b", border: "#382e4e" },
+    heading: "'Sora', serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "6px", cardRadius: "10px", bestFor: "Jewellery, luxury, gifts"
+  },
+  {
+    id: "sunset", photoSet: "food", name: "Sunset", tagline: "Warm, energetic storefront made to drive quick orders.", premium: true, layout: "grid",
+    palette: { bg: "#fff3eb", surface: "#ffffff", ink: "#2b1820", muted: "#88656b", accent: "#ef5b3f", accentInk: "#ffffff", border: "#f2d8cf" },
+    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "999px", cardRadius: "20px", bestFor: "Food, drinks, handmade goods"
+  },
+  {
+    id: "studio", photoSet: "home", name: "Studio", tagline: "Clean creative catalogue with bold editorial hierarchy.", premium: true, layout: "editorial",
+    palette: { bg: "#eef2f4", surface: "#ffffff", ink: "#152027", muted: "#60707a", accent: "#3867d6", accentInk: "#ffffff", border: "#d5dde1" },
+    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "10px", cardRadius: "4px", bestFor: "Creative shops, home, design"
+  },
+  {
+    id: "pulse", photoSet: "tech", name: "Pulse", tagline: "Bold digital commerce with a futuristic edge.", premium: true, layout: "showcase",
+    palette: { bg: "#101018", surface: "#191925", ink: "#ffffff", muted: "#a4a5b8", accent: "#ff3d8d", accentInk: "#ffffff", border: "#2c2d3d" },
+    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "16px", cardRadius: "22px", bestFor: "Tech, gaming, gadgets"
+  }
 ];
 
 export function getTheme(id: string | null | undefined): StoreTheme {
@@ -319,6 +355,12 @@ export interface ThemeSettings {
   showCategories?: boolean;
   heroHeadline?: string;
   heroSubline?: string;
+  /** Controls the order of the main storefront sections. */
+  sectionOrder?: ("hero" | "featured" | "categories" | "products")[];
+  /** Number of product cards shown across on larger screens. */
+  productColumns?: 2 | 3 | 4;
+  /** Product card image crop. */
+  productImageRatio?: "square" | "portrait" | "landscape";
 }
 
 export function resolveThemeVars(theme: StoreTheme, settings: ThemeSettings = {}) {
