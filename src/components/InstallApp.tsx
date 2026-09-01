@@ -6,26 +6,34 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+const SEEN_KEY = "sellurway-install-banner-seen";
+
 export function InstallApp() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
 
+  const closeBanner = () => {
+    localStorage.setItem(SEEN_KEY, "true");
+    setVisible(false);
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    // Always show the banner shortly after entering Sellurway.
-    // The install action becomes available when the browser provides its PWA prompt.
-    const showTimer = window.setTimeout(() => setVisible(true), 1000);
+    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if (localStorage.getItem(SEEN_KEY)) return;
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);
+      setVisible(true);
     };
 
-    const onInstalled = () => setVisible(false);
+    const onInstalled = () => closeBanner();
 
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
+
+    const showTimer = window.setTimeout(() => setVisible(true), 1000);
 
     return () => {
       window.clearTimeout(showTimer);
@@ -36,7 +44,7 @@ export function InstallApp() {
 
   useEffect(() => {
     if (!visible) return;
-    const timer = window.setTimeout(() => setVisible(false), 30000);
+    const timer = window.setTimeout(closeBanner, 30000);
     return () => window.clearTimeout(timer);
   }, [visible]);
 
@@ -46,18 +54,14 @@ export function InstallApp() {
     if (deferred) {
       await deferred.prompt();
       await deferred.userChoice;
-      setVisible(false);
+      closeBanner();
       return;
     }
 
-    // Some browsers (especially iPhone/iPad) do not expose beforeinstallprompt.
-    // Give the user the correct manual installation hint instead.
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isIOS) {
-      alert("To install Sellurway: tap Share, then choose Add to Home Screen.");
-    } else {
-      alert("To install Sellurway, open your browser menu and choose Install app or Add to Home screen.");
-    }
+    alert(isIOS
+      ? "To install Sellurway: tap Share, then Add to Home Screen."
+      : "Use your browser menu and choose Install app or Add to Home screen.");
   };
 
   return (
@@ -65,17 +69,14 @@ export function InstallApp() {
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
         <Download className="h-5 w-5" />
       </div>
-
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">Download Sellurway</p>
-        <p className="text-xs text-muted-foreground">Install the app for quick access.</p>
+        <p className="text-sm font-semibold">Install Sellurway</p>
+        <p className="text-xs text-muted-foreground">Get quick access from your device.</p>
       </div>
-
       <button onClick={install} className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
         Download
       </button>
-
-      <button onClick={() => setVisible(false)} aria-label="Close download prompt" className="shrink-0 text-muted-foreground transition hover:text-foreground">
+      <button onClick={closeBanner} aria-label="Close download prompt" className="shrink-0 text-muted-foreground transition hover:text-foreground">
         <X className="h-5 w-5" />
       </button>
     </div>
