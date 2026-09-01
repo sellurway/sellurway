@@ -39,6 +39,19 @@ export interface ProductDraft {
   variants: { id?: string; name: string; value: string; price_delta: string }[];
 }
 
+function encodeProductDescription(draft: ProductDraft) {
+  const extra = {
+    brand: draft.brand.trim(),
+    key_features: draft.key_features.trim(),
+    specifications: draft.specifications.trim(),
+    in_the_box: draft.in_the_box.trim(),
+  };
+  const hasExtra = Object.values(extra).some(Boolean);
+  return hasExtra
+    ? `${draft.description.trim()}\n\n<!--SELLURWAY_PRODUCT_INFO:${encodeURIComponent(JSON.stringify(extra))}-->`
+    : draft.description.trim() || null;
+}
+
 export const emptyDraft: ProductDraft = {
   name: "",
   description: "",
@@ -109,7 +122,7 @@ export function ProductForm({ initial, storeId }: { initial: ProductDraft; store
       const payload = {
         store_id: storeId,
         name: draft.name.trim(),
-        description: draft.description.trim() || null,
+        description: encodeProductDescription(draft),
         price,
         compare_at_price: draft.compare_at_price ? Number(draft.compare_at_price) : null,
         sku: draft.sku.trim() || null,
@@ -239,7 +252,7 @@ export function ProductForm({ initial, storeId }: { initial: ProductDraft; store
             <Textarea id="box" rows={3} value={draft.in_the_box} onChange={(e) => set("in_the_box", e.target.value)} placeholder={"Headphones\nCharging cable\nUser manual"} />
           </div>
           <p className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
-            Product information is being prepared for the storefront layout. Your existing product fields continue to save normally.
+            This information is saved safely with your existing product description, so no Supabase database changes are needed.
           </p>
         </div>
 
