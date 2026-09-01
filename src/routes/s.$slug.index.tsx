@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Loader2, PackageOpen } from "lucide-react";
 import { productImage, useStore, useStoreCategories, useStoreProducts } from "@/lib/storefront";
@@ -51,7 +51,7 @@ function StorefrontHome() {
     ? settings.sectionOrder
     : ["hero", "featured", "categories", "products"] as const;
 
-  const sections: Record<string, React.ReactNode> = {
+  const sections: Record<string, ReactNode> = {
     hero: settings.showHero !== false ? (
       <section className="py-10 md:py-14">
         {store.banner_url && (
