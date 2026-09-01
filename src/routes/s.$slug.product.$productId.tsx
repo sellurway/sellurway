@@ -12,6 +12,23 @@ export const Route = createFileRoute("/s/$slug/product/$productId")({
   component: ProductPage,
 });
 
+function parseProductInfo(description: string | null) {
+  const marker = "<!--SELLURWAY_PRODUCT_INFO:";
+  if (!description?.includes(marker)) return { description: description ?? "", info: null as null | { brand?: string; key_features?: string; specifications?: string; in_the_box?: string } };
+  const start = description.indexOf(marker);
+  const end = description.indexOf("-->", start);
+  if (end === -1) return { description, info: null };
+  try {
+    const raw = description.slice(start + marker.length, end);
+    return {
+      description: description.slice(0, start).trim(),
+      info: JSON.parse(decodeURIComponent(raw)),
+    };
+  } catch {
+    return { description: description.slice(0, start).trim(), info: null };
+  }
+}
+
 function ProductPage() {
   const { slug, productId } = useParams({ from: "/s/$slug/product/$productId" });
   const store = useStore();
@@ -75,7 +92,7 @@ function ProductPage() {
     );
   }
 
-  const soldOut = product.track_stock && product.stock_quantity <= 0;
+  const parsedProduct = parseProductInfo(product.description);\n  const soldOut = product.track_stock && product.stock_quantity <= 0;
   const variantDelta = product.product_variants?.find((v) => v.id === variant)?.price_delta ?? 0;
   const unitPrice = Number(product.price) + Number(variantDelta);
   const variantLabel = (() => {
@@ -220,10 +237,50 @@ function ProductPage() {
             )}
           </p>
 
-          {product.description && (
+          {parsedProduct.description && (
             <p className="mt-5 whitespace-pre-line text-sm leading-relaxed" style={{ color: "var(--sf-muted)" }}>
-              {product.description}
+              {parsedProduct.description}
             </p>
+          )}
+
+          {parsedProduct.info && (
+            <div className="mt-6 space-y-4">
+              {parsedProduct.info.brand && (
+                <div className="border-t pt-4" style={{ borderColor: "var(--sf-border)" }}>
+                  <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--sf-muted)" }}>Brand</p>
+                  <p className="mt-1 text-sm font-medium">{parsedProduct.info.brand}</p>
+                </div>
+              )}
+              {parsedProduct.info.key_features && (
+                <div className="border-t pt-4" style={{ borderColor: "var(--sf-border)" }}>
+                  <h2 className="font-semibold">Key features</h2>
+                  <ul className="mt-3 space-y-2 text-sm" style={{ color: "var(--sf-muted)" }}>
+                    {parsedProduct.info.key_features.split("\n").filter(Boolean).map((feature) => (
+                      <li key={feature} className="flex gap-2"><span style={{ color: "var(--sf-accent)" }}>✓</span>{feature}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {parsedProduct.info.specifications && (
+                <div className="border-t pt-4" style={{ borderColor: "var(--sf-border)" }}>
+                  <h2 className="font-semibold">Specifications</h2>
+                  <div className="mt-3 overflow-hidden rounded-lg border text-sm" style={{ borderColor: "var(--sf-border)" }}>
+                    {parsedProduct.info.specifications.split("\n").filter(Boolean).map((spec) => {
+                      const [label, ...rest] = spec.split(":");
+                      return <div key={spec} className="grid grid-cols-2 border-b p-3 last:border-b-0" style={{ borderColor: "var(--sf-border)" }}><span className="font-medium">{label}</span><span style={{ color: "var(--sf-muted)" }}>{rest.join(":").trim() || spec}</span></div>;
+                    })}
+                  </div>
+                </div>
+              )}
+              {parsedProduct.info.in_the_box && (
+                <div className="border-t pt-4" style={{ borderColor: "var(--sf-border)" }}>
+                  <h2 className="font-semibold">What's in the box</h2>
+                  <ul className="mt-3 space-y-2 text-sm" style={{ color: "var(--sf-muted)" }}>
+                    {parsedProduct.info.in_the_box.split("\n").filter(Boolean).map((item) => <li key={item}>• {item}</li>)}
+                  </ul>
+                </div>
+              )}
+            </div>
           )}
 
           {(product.product_variants?.length ?? 0) > 0 && (
