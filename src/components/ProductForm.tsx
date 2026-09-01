@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Info } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUploader } from "@/components/ImageUploader";
@@ -23,6 +23,10 @@ export interface ProductDraft {
   id?: string;
   name: string;
   description: string;
+  brand: string;
+  key_features: string;
+  specifications: string;
+  in_the_box: string;
   price: string;
   compare_at_price: string;
   sku: string;
@@ -38,6 +42,10 @@ export interface ProductDraft {
 export const emptyDraft: ProductDraft = {
   name: "",
   description: "",
+  brand: "",
+  key_features: "",
+  specifications: "",
+  in_the_box: "",
   price: "",
   compare_at_price: "",
   sku: "",
@@ -204,6 +212,35 @@ export function ProductForm({ initial, storeId }: { initial: ProductDraft; store
               />
             </div>
           </div>
+        </div>
+
+        <div className="surface-card space-y-5 p-5">
+          <div className="flex items-center gap-2">
+            <Info className="h-5 w-5 text-primary" />
+            <div>
+              <p className="font-medium">Product information</p>
+              <p className="text-xs text-muted-foreground">Give customers the important details before they buy.</p>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="brand">Brand</Label>
+            <Input id="brand" value={draft.brand} onChange={(e) => set("brand", e.target.value)} placeholder="e.g. Sony, Apple, Nike" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="features">Key features</Label>
+            <Textarea id="features" rows={4} value={draft.key_features} onChange={(e) => set("key_features", e.target.value)} placeholder={"One feature per line\nWireless Bluetooth\n30-hour battery\nNoise cancellation"} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="specs">Specifications</Label>
+            <Textarea id="specs" rows={5} value={draft.specifications} onChange={(e) => set("specifications", e.target.value)} placeholder={"Battery: 30 hours\nColour: Black\nConnectivity: Bluetooth 5.3"} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="box">What's in the box?</Label>
+            <Textarea id="box" rows={3} value={draft.in_the_box} onChange={(e) => set("in_the_box", e.target.value)} placeholder={"Headphones\nCharging cable\nUser manual"} />
+          </div>
+          <p className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
+            Product information is being prepared for the storefront layout. Your existing product fields continue to save normally.
+          </p>
         </div>
 
         <div className="surface-card space-y-4 p-5">
