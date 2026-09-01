@@ -54,13 +54,37 @@ function ProductsPage() {
     queryKey: ["products", activeStore?.id],
     enabled: !!activeStore,
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch products and their photos separately so one product with many photos
+      // can never appear as many product rows.
+      const { data: productRows, error: productError } = await supabase
         .from("products")
-        .select("id,name,price,status,featured,stock_quantity,track_stock,created_at,product_images(url,position)")
+        .select("id,name,price,status,featured,stock_quantity,track_stock,created_at")
         .eq("store_id", activeStore!.id)
         .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as unknown as Row[];
+      if (productError) throw productError;
+
+      const products = (productRows ?? []) as Omit<Row, "product_images">[];
+      if (!products.length) return [];
+
+      const ids = products.map((product) => product.id);
+      const { data: imageRows, error: imageError } = await supabase
+        .from("product_images")
+        .select("product_id,url,position")
+        .in("product_id", ids)
+        .order("position");
+      if (imageError) throw imageError;
+
+      const imagesByProduct = new Map<string, { url: string; position: number }[]>();
+      for (const image of imageRows ?? []) {
+        const list = imagesByProduct.get(image.product_id) ?? [];
+        list.push({ url: image.url, position: image.position });
+        imagesByProduct.set(image.product_id, list);
+      }
+
+      return products.map((product) => ({
+        ...product,
+        product_images: imagesByProduct.get(product.id) ?? [],
+      })) as Row[];
     },
   });
 
