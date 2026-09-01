@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Check, Crown, Lock } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Crown, Lock, Monitor, Smartphone, Settings2, LayoutTemplate, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
@@ -31,6 +31,9 @@ function ThemesPage() {
   const { activeStore, isLifetime } = useAuth();
   const queryClient = useQueryClient();
   const [settings, setSettings] = useState<ThemeSettings | null>(null);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const [selectedSection, setSelectedSection] = useState<"hero" | "featured" | "categories" | "products">("hero");
 
   const { data: store } = useQuery({
     queryKey: ["store-theme", activeStore?.id],
@@ -87,6 +90,86 @@ function ThemesPage() {
         ) : undefined
       }
     >
+      <div className="surface-card mb-6 overflow-hidden p-0">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
+          <div className="flex items-center gap-2">
+            <LayoutTemplate className="h-5 w-5" />
+            <div>
+              <p className="font-display font-semibold">Theme editor</p>
+              <p className="text-xs text-muted-foreground">Customize your store visually, section by section.</p>
+            </div>
+          </div>
+          <Button onClick={() => setEditorOpen(!editorOpen)} variant={editorOpen ? "secondary" : "default"}>
+            <Settings2 className="mr-2 h-4 w-4" /> {editorOpen ? "Close editor" : "Open editor"}
+          </Button>
+        </div>
+
+        {editorOpen && (
+          <div className="grid min-h-[620px] lg:grid-cols-[260px_1fr]">
+            <aside className="border-b bg-muted/20 p-4 lg:border-b-0 lg:border-r">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sections</p>
+              <div className="space-y-2">
+                {(["hero", "featured", "categories", "products"] as const).map((section) => (
+                  <button
+                    key={section}
+                    onClick={() => setSelectedSection(section)}
+                    className={"flex w-full items-center justify-between rounded-lg border px-3 py-3 text-left text-sm transition " + (selectedSection === section ? "border-primary bg-primary/10" : "hover:bg-muted")}
+                  >
+                    <span className="capitalize">{section === "hero" ? "Hero banner" : section}</span>
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                ))}
+              </div>
+              <div className="mt-6 rounded-lg border bg-background p-3">
+                <p className="text-sm font-medium">Editing: <span className="capitalize">{selectedSection === "hero" ? "Hero banner" : selectedSection}</span></p>
+                <p className="mt-1 text-xs text-muted-foreground">Use the controls below to change this section and save when you're happy.</p>
+              </div>
+            </aside>
+
+            <div className="bg-muted/30 p-4 sm:p-6">
+              <div className="mb-4 flex items-center justify-center gap-2">
+                <Button size="sm" variant={device === "desktop" ? "secondary" : "ghost"} onClick={() => setDevice("desktop")}><Monitor className="mr-1.5 h-4 w-4" />Desktop</Button>
+                <Button size="sm" variant={device === "mobile" ? "secondary" : "ghost"} onClick={() => setDevice("mobile")}><Smartphone className="mr-1.5 h-4 w-4" />Mobile</Button>
+              </div>
+
+              <div className={"mx-auto overflow-hidden border bg-background shadow-xl transition-all " + (device === "mobile" ? "max-w-[390px] rounded-[28px]" : "max-w-5xl rounded-xl")}>
+                <div className="flex items-center justify-between border-b px-5 py-4">
+                  <span className="font-semibold">{activeStore.name}</span>
+                  <span className="text-xs text-muted-foreground">Shop</span>
+                </div>
+                {current.showHero !== false && (
+                  <section className={"border-b p-6 " + (selectedSection === "hero" ? "ring-2 ring-inset ring-primary" : "")}>
+                    <div className="mb-3 h-28 rounded-lg bg-muted" />
+                    <h2 className="text-2xl font-bold">{current.heroHeadline || activeStore.name}</h2>
+                    <p className="mt-2 text-sm text-muted-foreground">{current.heroSubline || "Your store, your style. Discover the latest collection."}</p>
+                    <button className="mt-4 rounded-md px-4 py-2 text-sm font-medium text-white" style={{ background: current.accent || "#111318" }}>Shop now</button>
+                  </section>
+                )}
+                {current.showFeatured !== false && (
+                  <section className={"p-5 " + (selectedSection === "featured" ? "ring-2 ring-inset ring-primary" : "")}>
+                    <h3 className="mb-3 font-semibold">Featured products</h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[1,2,3].map((n) => <div key={n} className="space-y-2"><div className="aspect-square rounded-md bg-muted" /><div className="h-3 w-3/4 rounded bg-muted" /><div className="h-3 w-1/2 rounded bg-muted" /></div>)}
+                    </div>
+                  </section>
+                )}
+                {current.showCategories !== false && (
+                  <section className={"border-t p-5 " + (selectedSection === "categories" ? "ring-2 ring-inset ring-primary" : "")}>
+                    <div className="flex gap-2 overflow-hidden">{["New", "Popular", "Sale"].map(x => <span key={x} className="rounded-full border px-3 py-1 text-xs">{x}</span>)}</div>
+                  </section>
+                )}
+                <section className={"border-t p-5 " + (selectedSection === "products" ? "ring-2 ring-inset ring-primary" : "")}>
+                  <h3 className="mb-3 font-semibold">Products</h3>
+                  <div className={"grid gap-3 " + (current.productColumns === 2 ? "grid-cols-2" : current.productColumns === 3 ? "grid-cols-3" : "grid-cols-2 sm:grid-cols-4")}>
+                    {[1,2,3,4].map(n => <div key={n}><div className={(current.productImageRatio === "portrait" ? "aspect-[4/5]" : current.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square") + " rounded-md bg-muted"} /><div className="mt-2 h-3 w-4/5 rounded bg-muted" /></div>)}
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {THEMES.map((t) => {
           const locked = t.premium && !isLifetime;
