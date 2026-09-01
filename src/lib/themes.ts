@@ -40,73 +40,73 @@ const body = "'Plus Jakarta Sans', sans-serif";
 
 export const THEMES: StoreTheme[] = [
   {
-    id: "aura", name: "Aura", photoSet: "beauty", premium: true, layout: "editorial",
+    id: "aura", name: "Classic", photoSet: "beauty", premium: true, layout: "editorial",
     tagline: "Soft luxury, luminous spacing and a premium boutique feel.",
     palette: { bg: "#fff9f5", surface: "#ffffff", ink: "#241b25", muted: "#7d6f7c", accent: "#b76e79", accentInk: "#ffffff", border: "#eedfe4" },
     heading: sans, body, buttonRadius: "18px", cardRadius: "28px", bestFor: "Beauty, skincare, lifestyle"
   },
   {
-    id: "vault", name: "Vault", photoSet: "jewel", premium: true, layout: "showcase",
+    id: "vault", name: "Dark", photoSet: "jewel", premium: true, layout: "showcase",
     tagline: "A cinematic dark storefront built to make products feel expensive.",
     palette: { bg: "#0b0c10", surface: "#15171d", ink: "#f5f1e8", muted: "#a7a096", accent: "#d6b25e", accentInk: "#17120a", border: "#292c34" },
     heading: sans, body, buttonRadius: "6px", cardRadius: "12px", bestFor: "Luxury, jewellery, watches"
   },
   {
-    id: "drift", name: "Drift", photoSet: "home", premium: true, layout: "lookbook",
+    id: "drift", name: "Minimal", photoSet: "home", premium: true, layout: "lookbook",
     tagline: "Calm, architectural and image-led with plenty of breathing room.",
     palette: { bg: "#f2f5f5", surface: "#ffffff", ink: "#1c292b", muted: "#6d7b7c", accent: "#466b6d", accentInk: "#ffffff", border: "#d8e0df" },
     heading: sans, body, buttonRadius: "999px", cardRadius: "4px", bestFor: "Home, furniture, design"
   },
   {
-    id: "muse", name: "Muse", photoSet: "fashion", premium: true, layout: "lookbook",
+    id: "muse", name: "Editorial", photoSet: "fashion", premium: true, layout: "lookbook",
     tagline: "Magazine-style fashion with bold typography and clean product focus.",
     palette: { bg: "#f8f3ed", surface: "#fffdf9", ink: "#201a19", muted: "#82736d", accent: "#8e3d36", accentInk: "#ffffff", border: "#e5d8cf" },
     heading: sans, body, buttonRadius: "0px", cardRadius: "0px", bestFor: "Fashion, art, photography"
   },
   {
-    id: "ember", name: "Ember", photoSet: "food", premium: true, layout: "grid",
+    id: "ember", name: "Bold", photoSet: "food", premium: true, layout: "grid",
     tagline: "Warm, hungry and energetic — designed to turn browsing into orders.",
     palette: { bg: "#fff2e7", surface: "#ffffff", ink: "#32170f", muted: "#956d5b", accent: "#e9512e", accentInk: "#ffffff", border: "#f3d4c5" },
     heading: sans, body, buttonRadius: "999px", cardRadius: "22px", bestFor: "Food, drinks, takeaways"
   },
   {
-    id: "horizon", name: "Horizon", photoSet: "tech", premium: true, layout: "showcase",
+    id: "horizon", name: "Modern", photoSet: "tech", premium: true, layout: "showcase",
     tagline: "Sharp, futuristic and confident with a high-end technology feel.",
     palette: { bg: "#eef4ff", surface: "#ffffff", ink: "#111b35", muted: "#64718c", accent: "#315efb", accentInk: "#ffffff", border: "#d7e1f5" },
     heading: sans, body, buttonRadius: "12px", cardRadius: "20px", bestFor: "Tech, gadgets, digital products"
   },
   {
-    id: "velvet", name: "Velvet", photoSet: "beauty", premium: true, layout: "editorial",
+    id: "velvet", name: "Luxury", photoSet: "beauty", premium: true, layout: "editorial",
     tagline: "Rich colour, elegant curves and a sophisticated boutique personality.",
     palette: { bg: "#241323", surface: "#321a30", ink: "#fff7fb", muted: "#c5a8be", accent: "#f0a6c6", accentInk: "#381226", border: "#4b2947" },
     heading: sans, body, buttonRadius: "20px", cardRadius: "30px", bestFor: "Beauty, fashion, premium gifts"
   },
   {
-    id: "circuit", name: "Circuit", photoSet: "tech", premium: true, layout: "showcase",
+    id: "circuit", name: "Tech", photoSet: "tech", premium: true, layout: "showcase",
     tagline: "Electric contrast and modern UI energy for products with an edge.",
     palette: { bg: "#0b1020", surface: "#121a30", ink: "#f4f7ff", muted: "#95a3c5", accent: "#5cf0c2", accentInk: "#062219", border: "#253252" },
     heading: sans, body, buttonRadius: "10px", cardRadius: "18px", bestFor: "Gaming, tech, sneakers"
   },
   {
-    id: "terra", name: "Terra", photoSet: "flowers", premium: true, layout: "editorial",
+    id: "terra", name: "Natural", photoSet: "flowers", premium: true, layout: "editorial",
     tagline: "Organic textures, natural tones and an effortless handcrafted feel.",
     palette: { bg: "#f7f4ea", surface: "#fffdf8", ink: "#283022", muted: "#727866", accent: "#637b45", accentInk: "#ffffff", border: "#dfe3d1" },
     heading: sans, body, buttonRadius: "14px", cardRadius: "24px", bestFor: "Plants, handmade, organic goods"
   },
   {
-    id: "halo", name: "Halo", photoSet: "fashion", premium: true, layout: "grid",
+    id: "halo", name: "Clean", photoSet: "fashion", premium: true, layout: "grid",
     tagline: "Bright and polished with soft gradients and a modern social-commerce feel.",
     palette: { bg: "#f6f4ff", surface: "#ffffff", ink: "#201b3d", muted: "#77718f", accent: "#7657e8", accentInk: "#ffffff", border: "#e2ddf8" },
     heading: sans, body, buttonRadius: "999px", cardRadius: "26px", bestFor: "Fashion, accessories, creators"
   },
   {
-    id: "maison", name: "Maison", photoSet: "home", premium: true, layout: "lookbook",
+    id: "maison", name: "Gallery", photoSet: "home", premium: true, layout: "lookbook",
     tagline: "Quiet European elegance with an editorial catalogue experience.",
     palette: { bg: "#eee9e1", surface: "#faf8f4", ink: "#25211c", muted: "#756d62", accent: "#3d3429", accentInk: "#ffffff", border: "#d9d1c5" },
     heading: sans, body, buttonRadius: "2px", cardRadius: "8px", bestFor: "Furniture, home, premium craft"
   },
   {
-    id: "nova", name: "Nova", photoSet: "tech", premium: true, layout: "grid",
+    id: "nova", name: "Showcase", photoSet: "tech", premium: true, layout: "grid",
     tagline: "Bold colour and playful confidence for a fresh next-generation store.",
     palette: { bg: "#11111a", surface: "#1a1a27", ink: "#ffffff", muted: "#a8a8bd", accent: "#ff4f9a", accentInk: "#ffffff", border: "#303044" },
     heading: sans, body, buttonRadius: "16px", cardRadius: "24px", bestFor: "Gadgets, music, youth brands"
