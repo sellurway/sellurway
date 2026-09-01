@@ -188,7 +188,7 @@ function ThemesPage() {
                 id="columns"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                 value={current.productColumns ?? 0}
-                onChange={(e) => patchSettings({ productColumns: Number(e.target.value) as 2 | 3 | 4 })}
+                onChange={(e) => patchSettings({ productColumns: e.target.value === "0" ? undefined : Number(e.target.value) as 2 | 3 | 4 })}
               >
                 <option value={0}>Theme default</option>
                 <option value={2}>2 products</option>
