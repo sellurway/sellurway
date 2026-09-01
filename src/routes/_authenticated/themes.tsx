@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Crown, Lock } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Crown, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
@@ -141,6 +141,77 @@ function ThemesPage() {
             Fine-tune your hero and layout. Custom colours and fonts are a Lifetime feature.
           </p>
         </div>
+        <div className="rounded-xl border p-4">
+          <p className="font-medium">Layout editor</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Choose where each storefront section appears. Use the arrows to move products, featured items and categories.
+          </p>
+
+          <div className="mt-4 space-y-2">
+            {(current.sectionOrder ?? ["hero", "featured", "categories", "products"]).map((section, index, order) => (
+              <div key={section} className="flex items-center gap-3 rounded-lg border px-3 py-2">
+                <span className="flex-1 text-sm font-medium capitalize">{section === "hero" ? "Hero banner" : section}</span>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  disabled={index === 0}
+                  onClick={() => {
+                    const next = [...order];
+                    [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                    patchSettings({ sectionOrder: next as ThemeSettings["sectionOrder"] });
+                  }}
+                >
+                  <ArrowUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  disabled={index === order.length - 1}
+                  onClick={() => {
+                    const next = [...order];
+                    [next[index], next[index + 1]] = [next[index + 1], next[index]];
+                    patchSettings({ sectionOrder: next as ThemeSettings["sectionOrder"] });
+                  }}
+                >
+                  <ArrowDown className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="columns">Products per row</Label>
+              <select
+                id="columns"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                value={current.productColumns ?? 0}
+                onChange={(e) => patchSettings({ productColumns: Number(e.target.value) as 2 | 3 | 4 })}
+              >
+                <option value={0}>Theme default</option>
+                <option value={2}>2 products</option>
+                <option value={3}>3 products</option>
+                <option value={4}>4 products</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ratio">Product image shape</Label>
+              <select
+                id="ratio"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                value={current.productImageRatio ?? "square"}
+                onChange={(e) => patchSettings({ productImageRatio: e.target.value as "square" | "portrait" | "landscape" })}
+              >
+                <option value="square">Square</option>
+                <option value="portrait">Portrait / tall</option>
+                <option value="landscape">Landscape / wide</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="headline">Hero headline</Label>
