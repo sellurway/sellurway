@@ -111,7 +111,7 @@ function AuthPage() {
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {isSignup
-              ? "Five products free, forever. No card needed."
+              ? "Three products free, forever. No card needed."
               : "Log in to manage your store, orders and customers."}
           </p>
 

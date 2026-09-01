@@ -37,7 +37,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Storefronts, orders, customers and analytics in one place. Free forever for 5 products, $10 once for unlimited.",
+          "Storefronts, orders, customers and analytics in one place. Free forever for 3 products, $10 once for unlimited.",
       },
     ],
   }),
@@ -115,7 +115,7 @@ function Landing() {
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                Free forever for your first 5 products
+                Free forever for your first 3 products
               </span>
               <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
                 Set up your online shop in
@@ -235,7 +235,7 @@ function Landing() {
               <div>
                 <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Themes that fit your trade.</h2>
                 <p className="mt-3 max-w-xl text-muted-foreground">
-                  Three free themes to start. Nine premium themes unlock forever with the lifetime upgrade.
+                  Two free themes to start. Ten premium themes unlock forever with the lifetime upgrade.
                 </p>
               </div>
               <Button asChild variant="outline">
@@ -268,7 +268,7 @@ function Landing() {
               <p className="mt-2 font-display text-4xl font-extrabold">$0</p>
               <p className="mt-1 text-sm text-muted-foreground">Everything you need to open.</p>
               <ul className="mt-6 space-y-2.5 text-sm">
-                {["Up to 5 products", "1 storefront", "All 3 selling modes", "3 free themes", "Orders & customers", "Basic analytics"].map((i) => (
+                {["Up to 3 products", "1 storefront", "All 3 selling modes", "2 free themes", "Orders & customers", "Basic analytics"].map((i) => (
                   <li key={i} className="flex gap-2">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" /> {i}
                   </li>
@@ -291,7 +291,7 @@ function Landing() {
                 <ul className="mt-6 space-y-2.5 text-sm">
                   {[
                     "Unlimited products",
-                    "All 8 themes including premium",
+                    "All 12 themes including premium",
                     "Custom theme colours & fonts",
                     "Advanced analytics",
                     "Priority support",

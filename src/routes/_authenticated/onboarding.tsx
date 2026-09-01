@@ -353,14 +353,14 @@ function Onboarding() {
           <div className="space-y-5">
             <h1 className="font-display text-2xl font-bold tracking-tight">Add your products</h1>
             <p className="text-sm text-muted-foreground">
-              Your store is live at <span className="font-medium">/s/{form.slug}</span>. Add up to 5 products on the free
+              Your store is live at <span className="font-medium">/s/{form.slug}</span>. Add up to 3 products on the free
               plan, each with up to 5 photos. Lifetime unlocks unlimited products and every premium template.
             </p>
             <div className="rounded-xl border p-5">
               <p className="text-sm font-semibold">Free plan</p>
               <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                <li>5 products, 5 photos each</li>
-                <li>3 free templates (5 more with Lifetime)</li>
+                <li>3 products, 5 photos each</li>
+                <li>2 free templates (10 more with Lifetime)</li>
                 <li>Full checkout, direct order and WhatsApp selling</li>
               </ul>
             </div>

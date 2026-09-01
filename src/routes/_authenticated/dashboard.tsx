@@ -140,7 +140,7 @@ function Dashboard() {
           <div>
             <p className="font-display font-semibold">You're on the free plan</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Up to 5 products. Unlock unlimited products and premium themes for a single $10 payment.
+              Up to 3 products. Unlock unlimited products and premium themes for a single $10 payment.
             </p>
           </div>
           <Button asChild>

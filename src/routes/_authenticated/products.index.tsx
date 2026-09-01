@@ -102,12 +102,12 @@ function ProductsPage() {
       (status === "all" || p.status === status) &&
       p.name.toLowerCase().includes(search.trim().toLowerCase()),
   );
-  const atLimit = !isLifetime && all.length >= 5;
+  const atLimit = !isLifetime && all.length >= 3;
 
   return (
     <DashboardShell
       title="Products"
-      description={`${all.length} product${all.length === 1 ? "" : "s"}${isLifetime ? "" : " of 5 on the free plan"}`}
+      description={`${all.length} product${all.length === 1 ? "" : "s"}${isLifetime ? "" : " of 3 on the free plan"}`}
       actions={
         atLimit ? (
           <Button asChild>
@@ -143,7 +143,7 @@ function ProductsPage() {
 
       {atLimit && (
         <div className="mb-4 rounded-[var(--radius-xl)] border border-gold/40 bg-gold-soft/40 p-4 text-sm">
-          You've hit the free plan's 5 product limit. One $10 payment unlocks unlimited products and premium themes.
+          You've hit the free plan's 3 product limit. One $10 payment unlocks unlimited products and premium themes.
         </div>
       )}
 

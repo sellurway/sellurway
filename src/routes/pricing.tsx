@@ -11,10 +11,10 @@ export const Route = createFileRoute("/pricing")({
       {
         name: "description",
         content:
-          "Start free with 5 products. Upgrade once for $10 to unlock unlimited products, premium themes and advanced analytics. No subscriptions.",
+          "Start free with 3 products. Upgrade once for $10 to unlock unlimited products, premium themes and advanced analytics. No subscriptions.",
       },
       { property: "og:title", content: "Sellurway pricing — free, or $10 once" },
-      { property: "og:description", content: "Five products free forever. Unlimited products for a single $10 payment." },
+      { property: "og:description", content: "Three products free forever. Unlimited products for a single $10 payment." },
     ],
   }),
   component: Pricing,
@@ -27,7 +27,7 @@ const rows: { label: string; free: string | boolean; lifetime: string | boolean 
   { label: "Full checkout", free: true, lifetime: true },
   { label: "Direct delivery orders", free: true, lifetime: true },
   { label: "WhatsApp orders", free: true, lifetime: true },
-  { label: "Themes", free: "3 free", lifetime: "All 8" },
+  { label: "Themes", free: "2 free", lifetime: "All 12" },
   { label: "Custom theme colours & fonts", free: false, lifetime: true },
   { label: "Categories & variants", free: true, lifetime: true },
   { label: "Delivery areas & fees", free: true, lifetime: true },
