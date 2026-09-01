@@ -108,7 +108,7 @@ function Upgrade() {
             <ul className="mt-6 space-y-2.5 text-sm">
               {[
                 "Unlimited products",
-                "All 8 themes, including the 5 premium ones",
+                "All 12 themes, including the 10 premium ones",
                 "Custom theme colours and fonts",
                 "Advanced analytics",
                 "Priority support",

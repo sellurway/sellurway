@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, Receipt } from "lucide-react";
+import { Download, Receipt, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
@@ -60,6 +60,10 @@ interface OrderRow {
   preferred_delivery_at: string | null;
   notes: string | null;
   created_at: string;
+  courier_name: string | null;
+  tracking_number: string | null;
+  tracking_url: string | null;
+  shipped_at: string | null;
 }
 
 const statusTone: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
@@ -111,7 +115,20 @@ function OrdersPage() {
   });
 
   const update = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: { status?: OrderRow["status"]; delivery_status?: string } }) => {
+    mutationFn: async ({
+      id,
+      patch,
+    }: {
+      id: string;
+      patch: {
+        status?: OrderRow["status"];
+        delivery_status?: string;
+        courier_name?: string | null;
+        tracking_number?: string | null;
+        tracking_url?: string | null;
+        shipped_at?: string | null;
+      };
+    }) => {
       const { error } = await supabase.from("orders").update(patch as never).eq("id", id);
       if (error) throw error;
     },
@@ -410,6 +427,12 @@ function OrdersPage() {
                     Payment: {labelize(open.payment_method)} · {labelize(open.payment_status)}
                   </p>
                 </div>
+                <TrackingEditor
+                  key={open.id}
+                  order={open}
+                  saving={update.isPending}
+                  onSave={(patch) => update.mutate({ id: open.id, patch })}
+                />
                 {open.notes && (
                   <p className="rounded-lg bg-muted p-3 text-muted-foreground">“{open.notes}”</p>
                 )}
@@ -419,5 +442,78 @@ function OrdersPage() {
         </DialogContent>
       </Dialog>
     </DashboardShell>
+  );
+}
+
+type TrackingPatch = {
+  courier_name: string | null;
+  tracking_number: string | null;
+  tracking_url: string | null;
+  shipped_at: string | null;
+};
+
+function TrackingEditor({
+  order,
+  saving,
+  onSave,
+}: {
+  order: OrderRow;
+  saving: boolean;
+  onSave: (patch: TrackingPatch) => void;
+}) {
+  const [courier, setCourier] = useState(order.courier_name ?? "");
+  const [number, setNumber] = useState(order.tracking_number ?? "");
+  const [url, setUrl] = useState(order.tracking_url ?? "");
+
+  const clean = (v: string) => (v.trim() === "" ? null : v.trim());
+  const dirty =
+    clean(courier) !== (order.courier_name ?? null) ||
+    clean(number) !== (order.tracking_number ?? null) ||
+    clean(url) !== (order.tracking_url ?? null);
+
+  function save() {
+    const trackingUrl = clean(url);
+    if (trackingUrl && !/^https?:\/\//i.test(trackingUrl)) {
+      toast.error("Tracking link must start with http:// or https://");
+      return;
+    }
+    onSave({
+      courier_name: clean(courier),
+      tracking_number: clean(number),
+      tracking_url: trackingUrl,
+      shipped_at: clean(number) ? (order.shipped_at ?? new Date().toISOString()) : null,
+    });
+  }
+
+  return (
+    <div className="space-y-3 rounded-lg border p-3">
+      <div className="flex items-center gap-2">
+        <Truck className="h-4 w-4 text-muted-foreground" />
+        <p className="text-xs uppercase tracking-wide text-muted-foreground">Courier &amp; tracking</p>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        What you enter here shows on the customer's order confirmation page.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1">
+          <label htmlFor="courier" className="block text-xs text-muted-foreground">Courier</label>
+          <Input id="courier" value={courier} maxLength={60} onChange={(e) => setCourier(e.target.value)} placeholder="DHL, Aramex, local rider…" />
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="tracking" className="block text-xs text-muted-foreground">Tracking number</label>
+          <Input id="tracking" value={number} maxLength={80} onChange={(e) => setNumber(e.target.value)} placeholder="ABC123456789" />
+        </div>
+      </div>
+      <div className="space-y-1">
+        <label htmlFor="trackurl" className="block text-xs text-muted-foreground">Tracking link (optional)</label>
+        <Input id="trackurl" value={url} maxLength={300} onChange={(e) => setUrl(e.target.value)} placeholder="https://courier.com/track/ABC123456789" />
+      </div>
+      {order.shipped_at && (
+        <p className="text-xs text-muted-foreground">Marked shipped {formatDateTime(order.shipped_at)}</p>
+      )}
+      <Button size="sm" onClick={save} disabled={!dirty || saving}>
+        {saving ? "Saving…" : "Save tracking"}
+      </Button>
+    </div>
   );
 }

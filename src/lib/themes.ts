@@ -87,7 +87,7 @@ export const THEMES: StoreTheme[] = [
     photoSet: "home",
     name: "Market",
     tagline: "Dense grid built for browsing lots of items.",
-    premium: false,
+    premium: true,
     layout: "list",
     palette: {
       bg: "#fbfaf7",

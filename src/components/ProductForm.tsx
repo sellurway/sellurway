@@ -120,7 +120,7 @@ export function ProductForm({ initial, storeId }: { initial: ProductDraft; store
         const { data, error } = await supabase.from("products").insert(payload).select("id").single();
         if (error) {
           if (error.message.includes("PRODUCT_LIMIT_REACHED")) {
-            throw new Error("You've reached the 5 product limit on the free plan. Upgrade for unlimited products.");
+            throw new Error("You've reached the 3 product limit on the free plan. Upgrade for unlimited products.");
           }
           throw error;
         }
