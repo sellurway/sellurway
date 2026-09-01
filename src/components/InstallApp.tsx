@@ -6,15 +6,12 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-const DISMISS_KEY = "sellurway.install.dismissed";
-
 export function InstallApp() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.localStorage.getItem(DISMISS_KEY) === "1") return;
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
     const onPrompt = (e: Event) => {
@@ -22,22 +19,25 @@ export function InstallApp() {
       setDeferred(e as BeforeInstallPromptEvent);
       setVisible(true);
     };
-    const onInstalled = () => setVisible(false);
 
+    // If the browser supports installation, show the banner when ready.
     window.addEventListener("beforeinstallprompt", onPrompt);
-    window.addEventListener("appinstalled", onInstalled);
+    window.addEventListener("appinstalled", () => setVisible(false));
+
     return () => {
       window.removeEventListener("beforeinstallprompt", onPrompt);
-      window.removeEventListener("appinstalled", onInstalled);
+      window.removeEventListener("appinstalled", () => setVisible(false));
     };
   }, []);
 
-  if (!visible) return null;
+  // Automatically hide the download/install banner after 30 seconds.
+  useEffect(() => {
+    if (!visible) return;
+    const timer = window.setTimeout(() => setVisible(false), 30000);
+    return () => window.clearTimeout(timer);
+  }, [visible]);
 
-  const dismiss = () => {
-    window.localStorage.setItem(DISMISS_KEY, "1");
-    setVisible(false);
-  };
+  if (!visible) return null;
 
   const install = async () => {
     if (!deferred) return;
@@ -51,18 +51,25 @@ export function InstallApp() {
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
         <Download className="h-5 w-5" />
       </div>
+
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">Install Sellurway</p>
-        <p className="text-xs text-muted-foreground">Add the app to your home screen for one-tap access.</p>
+        <p className="text-sm font-semibold">Download Sellurway</p>
+        <p className="text-xs text-muted-foreground">Install the app for quick access.</p>
       </div>
+
       <button
         onClick={install}
         className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
       >
-        Install
+        Download
       </button>
-      <button onClick={dismiss} aria-label="Dismiss install prompt" className="text-muted-foreground">
-        <X className="h-4 w-4" />
+
+      <button
+        onClick={() => setVisible(false)}
+        aria-label="Close download prompt"
+        className="shrink-0 text-muted-foreground transition hover:text-foreground"
+      >
+        <X className="h-5 w-5" />
       </button>
     </div>
   );
