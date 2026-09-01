@@ -148,31 +148,44 @@ function Landing() {
               </ul>
             </div>
 
-            <div className="relative">
-              <div className="surface-card overflow-hidden p-3 shadow-[var(--shadow-lift)]">
-                <div className="flex items-center gap-1.5 px-2 pb-3">
-                  <span className="h-2.5 w-2.5 rounded-full bg-destructive/40" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-gold/60" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-accent/60" />
-                  <span className="ml-3 truncate rounded-md bg-muted px-2 py-1 text-[11px] text-muted-foreground">
-                    sellurway.app/s/kora-home
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { img: candle, name: "Ember soy candle", price: "$28.00" },
-                    { img: mug, name: "Stoneware mug", price: "$22.00" },
-                    { img: tote, name: "Everyday canvas tote", price: "$34.00" },
-                    { img: throwBlanket, name: "Wool throw", price: "$96.00" },
-                  ].map((p) => (
-                    <div key={p.name} className="overflow-hidden rounded-xl border bg-card">
-                      <img src={p.img} alt={p.name} className="aspect-square w-full object-cover" loading="lazy" />
-                      <div className="p-2.5">
-                        <p className="truncate text-xs font-medium">{p.name}</p>
-                        <p className="text-xs text-muted-foreground">{p.price}</p>
-                      </div>
+            <div className="relative mx-auto w-fit lg:mx-0 lg:justify-self-center">
+              {/* iPhone mockup */}
+              <div className="relative w-[270px] rotate-[4deg] rounded-[2.9rem] border-[6px] border-neutral-800 bg-neutral-800 shadow-[var(--shadow-lift)] sm:w-[300px]">
+                <div className="overflow-hidden rounded-[2.45rem] bg-white">
+                  {/* Dynamic Island + status bar */}
+                  <div className="relative flex h-9 items-center justify-between px-5 pt-1 text-[10px] font-semibold text-neutral-900">
+                    <span>9:41</span>
+                    <span className="absolute left-1/2 top-1.5 h-5 w-20 -translate-x-1/2 rounded-full bg-neutral-900" />
+                    <span className="flex items-center gap-1">
+                      <span className="inline-block h-2 w-3 rounded-[2px] bg-neutral-900/80" />
+                      <span className="inline-block h-2 w-1 rounded-[1px] bg-neutral-900/80" />
+                    </span>
+                  </div>
+                  {/* Storefront screen */}
+                  <div className="px-4 pb-5 pt-2">
+                    <p className="font-display text-xl font-extrabold tracking-tight text-neutral-900">Kora Home</p>
+                    <p className="mt-0.5 text-[10px] text-neutral-500">Handmade homeware · Ships nationwide</p>
+                    <div className="mt-3 grid grid-cols-2 gap-2.5">
+                      {[
+                        { img: candle, name: "Ember soy candle", price: "$28.00" },
+                        { img: tote, name: "Canvas tote", price: "$34.00" },
+                        { img: mug, name: "Stoneware mug", price: "$22.00" },
+                        { img: throwBlanket, name: "Wool throw", price: "$96.00" },
+                      ].map((p) => (
+                        <div key={p.name} className="overflow-hidden rounded-xl bg-neutral-50 ring-1 ring-neutral-100">
+                          <img src={p.img} alt={p.name} className="aspect-square w-full object-cover" loading="lazy" />
+                          <div className="p-2">
+                            <p className="truncate text-[10px] font-medium text-neutral-900">{p.name}</p>
+                            <p className="text-[10px] text-neutral-500">{p.price}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                    <div className="mt-3 rounded-full bg-brand-gradient py-2.5 text-center text-xs font-semibold text-white shadow-md">
+                      Shop now
+                    </div>
+                    <div className="mx-auto mt-3 h-1 w-24 rounded-full bg-neutral-300" />
+                  </div>
                 </div>
               </div>
               <div className="surface-card absolute -bottom-6 -left-4 hidden w-56 p-3 sm:block">
