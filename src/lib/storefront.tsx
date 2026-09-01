@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveStoreImage } from "@/lib/storage";
 import type { ThemeSettings } from "@/lib/themes";
 
 export interface PublicStore {
@@ -123,7 +124,11 @@ export function useStore(): PublicStore {
 
 export function productImage(p: PublicProduct) {
   const sorted = [...(p.product_images ?? [])].sort((a, b) => a.position - b.position);
-  return sorted[0]?.url ?? null;
+  return resolveStoreImage(sorted[0]?.url);
+}
+
+export function storeImage(value: string | null | undefined) {
+  return resolveStoreImage(value);
 }
 
 export function whatsappLink(store: PublicStore, message: string) {
