@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Loader2, MessageCircle, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useStore, whatsappLink, type PublicProduct } from "@/lib/storefront";
+import { useStore, whatsappLink, productImages, type PublicProduct } from "@/lib/storefront";
 import { formatMoney } from "@/lib/format";
 import { addToCart } from "@/lib/cart";
 
@@ -38,7 +38,7 @@ function ProductPage() {
   });
 
   const images = useMemo(
-    () => [...(product?.product_images ?? [])].sort((a, b) => a.position - b.position),
+    () => product ? productImages(product).map((url, position) => ({ url, position })) : [],
     [product],
   );
 
