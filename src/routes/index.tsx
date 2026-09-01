@@ -122,9 +122,10 @@ function Landing() {
                 <span className="text-gradient"> ten minutes.</span>
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Sellurway gives you a real storefront with one link you can share anywhere. Pick a template,
-                upload your products, and take orders by full checkout, direct delivery or WhatsApp — whichever
-                way your customers already buy.
+                Your customers are already buying on WhatsApp, Instagram and TikTok — Sellurway turns that attention
+                into real orders. Pick a beautiful template, upload your products with photos, and share one link
+                anywhere. Orders, payments, delivery and customers all land in one simple dashboard, so you spend
+                your time selling, not managing tools.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg" className="h-12 px-6 text-base">
@@ -139,7 +140,7 @@ function Landing() {
                 </Button>
               </div>
               <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                {["No card to start", "No monthly fees", "Your own store link"].map((t) => (
+                {["Your own store link", "Live in ten minutes", "Works on any phone"].map((t) => (
                   <li key={t} className="flex items-center gap-2">
                     <Check className="h-4 w-4 text-accent" /> {t}
                   </li>
