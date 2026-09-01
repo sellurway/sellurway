@@ -1,22 +1,16 @@
 export type ThemeId =
-  | "lumen"
-  | "slate"
-  | "market"
-  | "atelier"
-  | "noir"
-  | "bloom"
-  | "kiosk"
-  | "vertex"
-  | "prisma"
-  | "linea"
-  | "verde"
-  | "neon"
-  | "mono"
-  | "oasis"
-  | "royal"
-  | "sunset"
-  | "studio"
-  | "pulse";
+  | "aura"
+  | "vault"
+  | "drift"
+  | "muse"
+  | "ember"
+  | "horizon"
+  | "velvet"
+  | "circuit"
+  | "terra"
+  | "halo"
+  | "maison"
+  | "nova";
 
 export interface StoreTheme {
   id: ThemeId;
@@ -24,9 +18,7 @@ export interface StoreTheme {
   tagline: string;
   premium: boolean;
   layout: "grid" | "editorial" | "list" | "showcase" | "lookbook";
-  /** Which demo photo set the preview mock-up uses. */
   photoSet: "home" | "fashion" | "food" | "jewel" | "beauty" | "tech" | "flowers";
-  /** Preview swatches, also used as the default palette. */
   palette: {
     bg: string;
     surface: string;
@@ -43,305 +35,86 @@ export interface StoreTheme {
   bestFor: string;
 }
 
+const sans = "'Sora', sans-serif";
+const body = "'Plus Jakarta Sans', sans-serif";
+
 export const THEMES: StoreTheme[] = [
   {
-    id: "lumen",
-    photoSet: "home",
-    name: "Lumen",
-    tagline: "Bright, airy and product-first.",
-    premium: false,
-    layout: "grid",
-    palette: {
-      bg: "#ffffff",
-      surface: "#f7f7f8",
-      ink: "#111318",
-      muted: "#6b7280",
-      accent: "#111318",
-      accentInk: "#ffffff",
-      border: "#e7e7ea",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "10px",
-    cardRadius: "16px",
-    bestFor: "Any catalogue",
+    id: "aura", name: "Aura", photoSet: "beauty", premium: true, layout: "editorial",
+    tagline: "Soft luxury, luminous spacing and a premium boutique feel.",
+    palette: { bg: "#fff9f5", surface: "#ffffff", ink: "#241b25", muted: "#7d6f7c", accent: "#b76e79", accentInk: "#ffffff", border: "#eedfe4" },
+    heading: sans, body, buttonRadius: "18px", cardRadius: "28px", bestFor: "Beauty, skincare, lifestyle"
   },
   {
-    id: "slate",
-    photoSet: "tech",
-    name: "Slate",
-    tagline: "Dark, quiet and modern.",
-    premium: false,
-    layout: "grid",
-    palette: {
-      bg: "#0e1014",
-      surface: "#171a20",
-      ink: "#f4f5f7",
-      muted: "#9aa1ac",
-      accent: "#f4f5f7",
-      accentInk: "#0e1014",
-      border: "#252932",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "8px",
-    cardRadius: "12px",
-    bestFor: "Tech, streetwear",
+    id: "vault", name: "Vault", photoSet: "jewel", premium: true, layout: "showcase",
+    tagline: "A cinematic dark storefront built to make products feel expensive.",
+    palette: { bg: "#0b0c10", surface: "#15171d", ink: "#f5f1e8", muted: "#a7a096", accent: "#d6b25e", accentInk: "#17120a", border: "#292c34" },
+    heading: sans, body, buttonRadius: "6px", cardRadius: "12px", bestFor: "Luxury, jewellery, watches"
   },
   {
-    id: "market",
-    photoSet: "home",
-    name: "Market",
-    tagline: "Dense grid built for browsing lots of items.",
-    premium: true,
-    layout: "list",
-    palette: {
-      bg: "#fbfaf7",
-      surface: "#ffffff",
-      ink: "#1b1a17",
-      muted: "#6f6a60",
-      accent: "#1f7a4d",
-      accentInk: "#ffffff",
-      border: "#e8e4dc",
-    },
-    heading: "'Plus Jakarta Sans', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "999px",
-    cardRadius: "14px",
-    bestFor: "Groceries, general stores",
+    id: "drift", name: "Drift", photoSet: "home", premium: true, layout: "lookbook",
+    tagline: "Calm, architectural and image-led with plenty of breathing room.",
+    palette: { bg: "#f2f5f5", surface: "#ffffff", ink: "#1c292b", muted: "#6d7b7c", accent: "#466b6d", accentInk: "#ffffff", border: "#d8e0df" },
+    heading: sans, body, buttonRadius: "999px", cardRadius: "4px", bestFor: "Home, furniture, design"
   },
   {
-    id: "atelier",
-    photoSet: "fashion",
-    name: "Atelier",
-    tagline: "Editorial layout with generous white space.",
-    premium: true,
-    layout: "editorial",
-    palette: {
-      bg: "#fdfcfa",
-      surface: "#f4f1eb",
-      ink: "#1a1814",
-      muted: "#7a7266",
-      accent: "#8a6b3f",
-      accentInk: "#ffffff",
-      border: "#e6e0d5",
-    },
-    heading: "'Sora', serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "2px",
-    cardRadius: "2px",
-    bestFor: "Fashion, ceramics, craft",
+    id: "muse", name: "Muse", photoSet: "fashion", premium: true, layout: "lookbook",
+    tagline: "Magazine-style fashion with bold typography and clean product focus.",
+    palette: { bg: "#f8f3ed", surface: "#fffdf9", ink: "#201a19", muted: "#82736d", accent: "#8e3d36", accentInk: "#ffffff", border: "#e5d8cf" },
+    heading: sans, body, buttonRadius: "0px", cardRadius: "0px", bestFor: "Fashion, art, photography"
   },
   {
-    id: "noir",
-    photoSet: "jewel",
-    name: "Noir",
-    tagline: "Luxury dark with gold detailing.",
-    premium: true,
-    layout: "showcase",
-    palette: {
-      bg: "#0b0b0d",
-      surface: "#141417",
-      ink: "#f6f3ec",
-      muted: "#a09a8d",
-      accent: "#c9a227",
-      accentInk: "#0b0b0d",
-      border: "#26262b",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "4px",
-    cardRadius: "6px",
-    bestFor: "Jewellery, premium goods",
+    id: "ember", name: "Ember", photoSet: "food", premium: true, layout: "grid",
+    tagline: "Warm, hungry and energetic — designed to turn browsing into orders.",
+    palette: { bg: "#fff2e7", surface: "#ffffff", ink: "#32170f", muted: "#956d5b", accent: "#e9512e", accentInk: "#ffffff", border: "#f3d4c5" },
+    heading: sans, body, buttonRadius: "999px", cardRadius: "22px", bestFor: "Food, drinks, takeaways"
   },
   {
-    id: "bloom",
-    photoSet: "flowers",
-    name: "Bloom",
-    tagline: "Soft, warm and friendly.",
-    premium: true,
-    layout: "grid",
-    palette: {
-      bg: "#fffaf7",
-      surface: "#fdeee6",
-      ink: "#2a1c19",
-      muted: "#8a6f66",
-      accent: "#e2664f",
-      accentInk: "#ffffff",
-      border: "#f6ddd1",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "999px",
-    cardRadius: "22px",
-    bestFor: "Florists, bakeries, beauty",
+    id: "horizon", name: "Horizon", photoSet: "tech", premium: true, layout: "showcase",
+    tagline: "Sharp, futuristic and confident with a high-end technology feel.",
+    palette: { bg: "#eef4ff", surface: "#ffffff", ink: "#111b35", muted: "#64718c", accent: "#315efb", accentInk: "#ffffff", border: "#d7e1f5" },
+    heading: sans, body, buttonRadius: "12px", cardRadius: "20px", bestFor: "Tech, gadgets, digital products"
   },
   {
-    id: "kiosk",
-    photoSet: "food",
-    name: "Kiosk",
-    tagline: "Menu-style list made for food ordering.",
-    premium: true,
-    layout: "list",
-    palette: {
-      bg: "#12100e",
-      surface: "#1d1a16",
-      ink: "#f7f2e9",
-      muted: "#a89c8a",
-      accent: "#ff7a29",
-      accentInk: "#12100e",
-      border: "#2c2721",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "12px",
-    cardRadius: "16px",
-    bestFor: "Restaurants, takeaways",
+    id: "velvet", name: "Velvet", photoSet: "beauty", premium: true, layout: "editorial",
+    tagline: "Rich colour, elegant curves and a sophisticated boutique personality.",
+    palette: { bg: "#241323", surface: "#321a30", ink: "#fff7fb", muted: "#c5a8be", accent: "#f0a6c6", accentInk: "#381226", border: "#4b2947" },
+    heading: sans, body, buttonRadius: "20px", cardRadius: "30px", bestFor: "Beauty, fashion, premium gifts"
   },
   {
-    id: "vertex",
-    photoSet: "tech",
-    name: "Vertex",
-    tagline: "Bold type, big imagery, high contrast.",
-    premium: true,
-    layout: "showcase",
-    palette: {
-      bg: "#ffffff",
-      surface: "#f0f2ff",
-      ink: "#0d1030",
-      muted: "#5b608c",
-      accent: "#3d3dff",
-      accentInk: "#ffffff",
-      border: "#dfe2f5",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "8px",
-    cardRadius: "18px",
-    bestFor: "Digital products, services",
+    id: "circuit", name: "Circuit", photoSet: "tech", premium: true, layout: "showcase",
+    tagline: "Electric contrast and modern UI energy for products with an edge.",
+    palette: { bg: "#0b1020", surface: "#121a30", ink: "#f4f7ff", muted: "#95a3c5", accent: "#5cf0c2", accentInk: "#062219", border: "#253252" },
+    heading: sans, body, buttonRadius: "10px", cardRadius: "18px", bestFor: "Gaming, tech, sneakers"
   },
   {
-    id: "prisma",
-    photoSet: "beauty",
-    name: "Prisma",
-    tagline: "Colour-washed gradients with oversized product cards.",
-    premium: true,
-    layout: "lookbook",
-    palette: {
-      bg: "#faf7ff",
-      surface: "#ffffff",
-      ink: "#1b1436",
-      muted: "#6f668f",
-      accent: "#7c3aed",
-      accentInk: "#ffffff",
-      border: "#e7deff",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "14px",
-    cardRadius: "24px",
-    bestFor: "Beauty, wellness, cosmetics",
+    id: "terra", name: "Terra", photoSet: "flowers", premium: true, layout: "editorial",
+    tagline: "Organic textures, natural tones and an effortless handcrafted feel.",
+    palette: { bg: "#f7f4ea", surface: "#fffdf8", ink: "#283022", muted: "#727866", accent: "#637b45", accentInk: "#ffffff", border: "#dfe3d1" },
+    heading: sans, body, buttonRadius: "14px", cardRadius: "24px", bestFor: "Plants, handmade, organic goods"
   },
   {
-    id: "linea",
-    photoSet: "fashion",
-    name: "Linea",
-    tagline: "Gallery-quiet lookbook with hairline rules.",
-    premium: true,
-    layout: "lookbook",
-    palette: {
-      bg: "#f8f8f6",
-      surface: "#ffffff",
-      ink: "#141414",
-      muted: "#7c7c78",
-      accent: "#141414",
-      accentInk: "#ffffff",
-      border: "#dedbd4",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "0px",
-    cardRadius: "0px",
-    bestFor: "Fashion, lookbooks, studios",
+    id: "halo", name: "Halo", photoSet: "fashion", premium: true, layout: "grid",
+    tagline: "Bright and polished with soft gradients and a modern social-commerce feel.",
+    palette: { bg: "#f6f4ff", surface: "#ffffff", ink: "#201b3d", muted: "#77718f", accent: "#7657e8", accentInk: "#ffffff", border: "#e2ddf8" },
+    heading: sans, body, buttonRadius: "999px", cardRadius: "26px", bestFor: "Fashion, accessories, creators"
   },
   {
-    id: "verde",
-    photoSet: "flowers",
-    name: "Verde",
-    tagline: "Organic greens and soft cards for natural goods.",
-    premium: true,
-    layout: "editorial",
-    palette: {
-      bg: "#f6f8f3",
-      surface: "#ffffff",
-      ink: "#17241a",
-      muted: "#63735f",
-      accent: "#2f7d4f",
-      accentInk: "#ffffff",
-      border: "#dce6d6",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "999px",
-    cardRadius: "20px",
-    bestFor: "Plants, florists, organic food",
+    id: "maison", name: "Maison", photoSet: "home", premium: true, layout: "lookbook",
+    tagline: "Quiet European elegance with an editorial catalogue experience.",
+    palette: { bg: "#eee9e1", surface: "#faf8f4", ink: "#25211c", muted: "#756d62", accent: "#3d3429", accentInk: "#ffffff", border: "#d9d1c5" },
+    heading: sans, body, buttonRadius: "2px", cardRadius: "8px", bestFor: "Furniture, home, premium craft"
   },
   {
-    id: "neon",
-    photoSet: "tech",
-    name: "Neon",
-    tagline: "Night-mode showcase with electric highlights.",
-    premium: true,
-    layout: "showcase",
-    palette: {
-      bg: "#08080f",
-      surface: "#12121f",
-      ink: "#eef0ff",
-      muted: "#8f93b8",
-      accent: "#22e5a1",
-      accentInk: "#06110c",
-      border: "#22233a",
-    },
-    heading: "'Sora', sans-serif",
-    body: "'Plus Jakarta Sans', sans-serif",
-    buttonRadius: "10px",
-    cardRadius: "14px",
-    bestFor: "Sneakers, gadgets, streetwear",
-  },,
-  {
-    id: "mono", photoSet: "fashion", name: "Mono", tagline: "Minimal monochrome storefront with gallery energy.", premium: true, layout: "lookbook",
-    palette: { bg: "#f5f5f3", surface: "#ffffff", ink: "#111111", muted: "#747474", accent: "#111111", accentInk: "#ffffff", border: "#dededb" },
-    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "0px", cardRadius: "0px", bestFor: "Fashion, furniture, photography"
-  },
-  {
-    id: "oasis", photoSet: "beauty", name: "Oasis", tagline: "Soft luxury with calm colours and spacious cards.", premium: true, layout: "editorial",
-    palette: { bg: "#fff8ed", surface: "#ffffff", ink: "#24332a", muted: "#718077", accent: "#b86b45", accentInk: "#ffffff", border: "#eadfce" },
-    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "18px", cardRadius: "28px", bestFor: "Beauty, wellness, lifestyle"
-  },
-  {
-    id: "royal", photoSet: "jewel", name: "Royal", tagline: "Premium boutique styling with rich jewel tones.", premium: true, layout: "showcase",
-    palette: { bg: "#171126", surface: "#211a33", ink: "#f8f3ff", muted: "#b8adca", accent: "#d7ae55", accentInk: "#21150b", border: "#382e4e" },
-    heading: "'Sora', serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "6px", cardRadius: "10px", bestFor: "Jewellery, luxury, gifts"
-  },
-  {
-    id: "sunset", photoSet: "food", name: "Sunset", tagline: "Warm, energetic storefront made to drive quick orders.", premium: true, layout: "grid",
-    palette: { bg: "#fff3eb", surface: "#ffffff", ink: "#2b1820", muted: "#88656b", accent: "#ef5b3f", accentInk: "#ffffff", border: "#f2d8cf" },
-    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "999px", cardRadius: "20px", bestFor: "Food, drinks, handmade goods"
-  },
-  {
-    id: "studio", photoSet: "home", name: "Studio", tagline: "Clean creative catalogue with bold editorial hierarchy.", premium: true, layout: "editorial",
-    palette: { bg: "#eef2f4", surface: "#ffffff", ink: "#152027", muted: "#60707a", accent: "#3867d6", accentInk: "#ffffff", border: "#d5dde1" },
-    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "10px", cardRadius: "4px", bestFor: "Creative shops, home, design"
-  },
-  {
-    id: "pulse", photoSet: "tech", name: "Pulse", tagline: "Bold digital commerce with a futuristic edge.", premium: true, layout: "showcase",
-    palette: { bg: "#101018", surface: "#191925", ink: "#ffffff", muted: "#a4a5b8", accent: "#ff3d8d", accentInk: "#ffffff", border: "#2c2d3d" },
-    heading: "'Sora', sans-serif", body: "'Plus Jakarta Sans', sans-serif", buttonRadius: "16px", cardRadius: "22px", bestFor: "Tech, gaming, gadgets"
+    id: "nova", name: "Nova", photoSet: "tech", premium: true, layout: "grid",
+    tagline: "Bold colour and playful confidence for a fresh next-generation store.",
+    palette: { bg: "#11111a", surface: "#1a1a27", ink: "#ffffff", muted: "#a8a8bd", accent: "#ff4f9a", accentInk: "#ffffff", border: "#303044" },
+    heading: sans, body, buttonRadius: "16px", cardRadius: "24px", bestFor: "Gadgets, music, youth brands"
   }
 ];
 
 export function getTheme(id: string | null | undefined): StoreTheme {
-  return THEMES.find((t) => t.id === id) ?? THEMES[0]!;
+  return THEMES.find((theme) => theme.id === id) ?? THEMES[0]!;
 }
 
 export interface ThemeSettings {
@@ -355,11 +128,8 @@ export interface ThemeSettings {
   showCategories?: boolean;
   heroHeadline?: string;
   heroSubline?: string;
-  /** Controls the order of the main storefront sections. */
   sectionOrder?: ("hero" | "featured" | "categories" | "products")[];
-  /** Number of product cards shown across on larger screens. */
   productColumns?: 2 | 3 | 4;
-  /** Product card image crop. */
   productImageRatio?: "square" | "portrait" | "landscape";
 }
 
@@ -372,6 +142,7 @@ export function resolveThemeVars(theme: StoreTheme, settings: ThemeSettings = {}
         : settings.buttonStyle === "rounded"
           ? "12px"
           : theme.buttonRadius;
+
   return {
     "--sf-bg": settings.bg || theme.palette.bg,
     "--sf-surface": theme.palette.surface,
