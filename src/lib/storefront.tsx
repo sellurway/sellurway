@@ -42,11 +42,35 @@ export function useStoreProducts(storeId: string | undefined) {
     queryKey: ["storefront-products", storeId],
     enabled: !!storeId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("products")
-        .select("id,name,description,price,compare_at_price,featured,stock_quantity,track_stock,category_id,product_images(url,position)")
+      // Fetch products and photos separately. This guarantees one storefront card per
+      // product, no matter how many photos that product has.
+      const { data: productRows, error: productError } = await supabase.from("products")
+        .select("id,name,description,price,compare_at_price,featured,stock_quantity,track_stock,category_id")
         .eq("store_id", storeId!).eq("status", "active").order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as unknown as PublicProduct[];
+      if (productError) throw productError;
+
+      const products = (productRows ?? []) as unknown as Omit<PublicProduct, "product_images">[];
+      if (!products.length) return [];
+
+      const ids = products.map((product) => product.id);
+      const { data: imageRows, error: imageError } = await supabase
+        .from("product_images")
+        .select("product_id,url,position")
+        .in("product_id", ids)
+        .order("position");
+      if (imageError) throw imageError;
+
+      const imagesByProduct = new Map<string, { url: string; position: number }[]>();
+      for (const image of imageRows ?? []) {
+        const list = imagesByProduct.get(image.product_id) ?? [];
+        list.push({ url: image.url, position: image.position });
+        imagesByProduct.set(image.product_id, list);
+      }
+
+      return products.map((product) => ({
+        ...product,
+        product_images: imagesByProduct.get(product.id) ?? [],
+      })) as PublicProduct[];
     },
   });
 }
