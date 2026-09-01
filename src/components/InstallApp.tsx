@@ -12,25 +12,28 @@ export function InstallApp() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
+
+    // Always show the banner shortly after entering Sellurway.
+    // The install action becomes available when the browser provides its PWA prompt.
+    const showTimer = window.setTimeout(() => setVisible(true), 1000);
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
       setDeferred(e as BeforeInstallPromptEvent);
-      setVisible(true);
     };
 
-    // If the browser supports installation, show the banner when ready.
+    const onInstalled = () => setVisible(false);
+
     window.addEventListener("beforeinstallprompt", onPrompt);
-    window.addEventListener("appinstalled", () => setVisible(false));
+    window.addEventListener("appinstalled", onInstalled);
 
     return () => {
+      window.clearTimeout(showTimer);
       window.removeEventListener("beforeinstallprompt", onPrompt);
-      window.removeEventListener("appinstalled", () => setVisible(false));
+      window.removeEventListener("appinstalled", onInstalled);
     };
   }, []);
 
-  // Automatically hide the download/install banner after 30 seconds.
   useEffect(() => {
     if (!visible) return;
     const timer = window.setTimeout(() => setVisible(false), 30000);
@@ -40,10 +43,21 @@ export function InstallApp() {
   if (!visible) return null;
 
   const install = async () => {
-    if (!deferred) return;
-    await deferred.prompt();
-    await deferred.userChoice;
-    setVisible(false);
+    if (deferred) {
+      await deferred.prompt();
+      await deferred.userChoice;
+      setVisible(false);
+      return;
+    }
+
+    // Some browsers (especially iPhone/iPad) do not expose beforeinstallprompt.
+    // Give the user the correct manual installation hint instead.
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      alert("To install Sellurway: tap Share, then choose Add to Home Screen.");
+    } else {
+      alert("To install Sellurway, open your browser menu and choose Install app or Add to Home screen.");
+    }
   };
 
   return (
@@ -57,18 +71,11 @@ export function InstallApp() {
         <p className="text-xs text-muted-foreground">Install the app for quick access.</p>
       </div>
 
-      <button
-        onClick={install}
-        className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
-      >
+      <button onClick={install} className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
         Download
       </button>
 
-      <button
-        onClick={() => setVisible(false)}
-        aria-label="Close download prompt"
-        className="shrink-0 text-muted-foreground transition hover:text-foreground"
-      >
+      <button onClick={() => setVisible(false)} aria-label="Close download prompt" className="shrink-0 text-muted-foreground transition hover:text-foreground">
         <X className="h-5 w-5" />
       </button>
     </div>
