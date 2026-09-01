@@ -39,6 +39,22 @@ function CartButton({ slug }: { slug: string }) {
   );
 }
 
+function StoreLogo({ name, src }: { name: string; src: string | null }) {
+  const [failed, setFailed] = useState(false);
+  const showImage = !!src && !failed;
+
+  return showImage ? (
+    <img src={src} alt="" onError={() => setFailed(true)} className="h-9 w-9 rounded-lg object-cover" />
+  ) : (
+    <span
+      className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold"
+      style={{ background: "var(--sf-accent)", color: "var(--sf-accent-ink)" }}
+    >
+      {name.charAt(0).toUpperCase()}
+    </span>
+  );
+}
+
 function StorefrontLayout() {
   const { slug } = useParams({ from: "/s/$slug" });
   const { data: store, isLoading, isError } = useStoreQuery(slug);
@@ -84,16 +100,7 @@ function StorefrontLayout() {
         >
           <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-4">
             <Link to="/s/$slug" params={{ slug }} className="flex min-w-0 items-center gap-2.5">
-              {store.logo_url ? (
-                <img src={store.logo_url} alt="" className="h-9 w-9 rounded-lg object-cover" />
-              ) : (
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold"
-                  style={{ background: "var(--sf-accent)", color: "var(--sf-accent-ink)" }}
-                >
-                  {store.name.charAt(0).toUpperCase()}
-                </span>
-              )}
+              <StoreLogo name={store.name} src={store.logo_url} />
               <span
                 className="truncate text-base font-semibold tracking-tight"
                 style={{ fontFamily: "var(--sf-heading)" }}
