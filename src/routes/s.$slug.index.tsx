@@ -54,9 +54,9 @@ function StorefrontHome() {
   const sections: Record<string, ReactNode> = {
     hero: settings.showHero !== false ? (
       <section className={"py-10 md:py-14 " + (theme.layout === "showcase" ? "md:py-20" : theme.layout === "editorial" ? "md:py-24" : "")}>
-        {store.banner_url && (
+        {(settings.heroImageUrl || store.banner_url) && (
           <div className={"mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" ? "shadow-2xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
-            <img src={store.banner_url} alt="" className={"w-full object-cover " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
+            <img src={settings.heroImageUrl || store.banner_url || ""} alt="" className={"w-full object-cover " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
           </div>
         )}
         <h1 className={"max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl " + (theme.layout === "editorial" ? "sm:text-6xl" : theme.layout === "showcase" ? "sm:text-5xl" : "")} style={{ fontFamily: "var(--sf-heading)" }}>
@@ -121,12 +121,14 @@ function ProductCard({
   currency,
   large,
   imageRatio = "aspect-square",
+  layout = "grid",
 }: {
   slug: string;
   product: import("@/lib/storefront").PublicProduct;
   currency: string;
   large?: boolean;
   imageRatio?: string;
+  layout?: "grid" | "editorial" | "list" | "showcase" | "lookbook";
 }) {
   const img = productImage(product);
   const soldOut = product.track_stock && product.stock_quantity <= 0;
