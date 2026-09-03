@@ -1,7 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Loader2, MessageCircle, Minus, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, MessageCircle, Minus, Plus, Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore, whatsappLink, productImages, type PublicProduct } from "@/lib/storefront";
@@ -27,6 +27,72 @@ function parseProductInfo(description: string | null) {
   } catch {
     return { description: description.slice(0, start).trim(), info: null };
   }
+}
+
+const REVIEWS_API = "https://sellurway-reviews-api.sellurway.workers.dev";
+
+type Review = { id: number; customer_name: string; rating: number; comment: string; created_at: string };
+
+function ProductReviews({ productId }: { productId: string }) {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [average, setAverage] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [name, setName] = useState("");
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const loadReviews = async () => {
+    const response = await fetch(REVIEWS_API + "?product_id=" + encodeURIComponent(productId));
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Couldn't load reviews");
+    setReviews(data.reviews || []);
+    setAverage(Number(data.average || 0));
+    setTotal(Number(data.total || 0));
+  };
+
+  useEffect(() => { loadReviews().catch(() => toast.error("Couldn't load reviews")); }, [productId]);
+
+  async function submitReview(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim() || !comment.trim()) { toast.error("Please enter your name and review"); return; }
+    setSending(true);
+    try {
+      const response = await fetch(REVIEWS_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product_id: productId, customer_name: name.trim(), rating, comment: comment.trim() }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Couldn't post review");
+      setName(""); setComment(""); setRating(5);
+      await loadReviews();
+      toast.success("Your review was posted!");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't post review");
+    } finally { setSending(false); }
+  }
+
+  return <section className="mt-8 border-t pt-6" style={{ borderColor: "var(--sf-border)" }}>
+    <h2 className="text-xl font-bold">Customer reviews</h2>
+    <div className="mt-2 flex items-center gap-2">
+      <div className="flex">{[1,2,3,4,5].map((n) => <Star key={n} className="h-4 w-4" fill={n <= Math.round(average) ? "currentColor" : "none"} style={{ color: "var(--sf-accent)" }} />)}</div>
+      <span className="text-sm font-semibold">{average ? average + " / 5" : "No reviews yet"}</span>
+      <span className="text-xs" style={{ color: "var(--sf-muted)" }}>({total})</span>
+    </div>
+    <form onSubmit={submitReview} className="mt-5 space-y-3 rounded-xl border p-4" style={{ borderColor: "var(--sf-border)" }}>
+      <h3 className="font-semibold">Write a review</h3>
+      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" maxLength={80} required className="w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--sf-border)" }} />
+      <div className="flex gap-1">{[1,2,3,4,5].map((n) => <button type="button" key={n} onClick={() => setRating(n)} aria-label={n + " stars"}><Star className="h-6 w-6" fill={n <= rating ? "currentColor" : "none"} style={{ color: "var(--sf-accent)" }} /></button>)}</div>
+      <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Tell other customers what you think..." maxLength={1000} required rows={4} className="w-full rounded-md border bg-transparent px-3 py-2 text-sm" style={{ borderColor: "var(--sf-border)" }} />
+      <button disabled={sending} className="w-full px-4 py-2.5 text-sm font-semibold disabled:opacity-60" style={{ background: "var(--sf-accent)", color: "var(--sf-accent-ink)", borderRadius: "var(--sf-btn-radius)" }}>{sending ? "Posting..." : "Post review"}</button>
+    </form>
+    <div className="mt-6 space-y-4">{reviews.length === 0 ? <p className="text-sm" style={{ color: "var(--sf-muted)" }}>Be the first customer to review this product.</p> : reviews.map((review) => <article key={review.id} className="border-b pb-4" style={{ borderColor: "var(--sf-border)" }}>
+      <div className="flex items-center justify-between"><strong className="text-sm">{review.customer_name}</strong><span className="text-xs" style={{ color: "var(--sf-muted)" }}>{new Date(review.created_at + "Z").toLocaleDateString()}</span></div>
+      <div className="mt-1 flex">{[1,2,3,4,5].map((n) => <Star key={n} className="h-4 w-4" fill={n <= review.rating ? "currentColor" : "none"} style={{ color: "var(--sf-accent)" }} />)}</div>
+      <p className="mt-2 whitespace-pre-wrap text-sm" style={{ color: "var(--sf-muted)" }}>{review.comment}</p>
+    </article>)}</div>
+  </section>;
 }
 
 function ProductPage() {
@@ -282,6 +348,8 @@ function ProductPage() {
               )}
             </div>
           )}
+
+          <ProductReviews productId={product.id} />
 
           {(product.product_variants?.length ?? 0) > 0 && (
             <div className="mt-6">
