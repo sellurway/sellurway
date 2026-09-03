@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Loader2, PackageOpen } from "lucide-react";
 import { productImage, useStore, useStoreCategories, useStoreProducts } from "@/lib/storefront";
@@ -47,6 +47,22 @@ function StorefrontHome() {
     [products, activeCategory],
   );
   const featured = useMemo(() => (products ?? []).filter((p) => p.featured).slice(0, 3), [products]);
+
+  useEffect(() => {
+    const id = "sellurway-store-jsonld";
+    let script = document.getElementById(id) as HTMLScriptElement | null;
+    if (!script) { script = document.createElement("script"); script.id = id; script.type = "application/ld+json"; document.head.appendChild(script); }
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "OnlineStore",
+      name: store.name,
+      description: store.description || undefined,
+      url: window.location.href,
+      image: store.banner_url || store.logo_url || undefined,
+    });
+    return () => script?.remove();
+  }, [store.name, store.description, store.banner_url, store.logo_url]);
+
 
   const defaultGridClass =
     theme.layout === "list"
