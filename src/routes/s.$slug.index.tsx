@@ -89,7 +89,7 @@ function StorefrontHome() {
 
   const sectionOrder = settings.sectionOrder?.length
     ? settings.sectionOrder
-    : ["hero", "featured", "categories", "products"] as const;
+    : ["hero", "promo", "imageText", "featured", "categories", "products", "testimonials", "newsletter", "social"] as const;
   const enabledSections = settings.enabledSections ?? ["hero", "featured", "categories", "products"];
 
   const heroImages = settings.heroImages?.length
