@@ -29,6 +29,7 @@ function StorefrontHome() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("featured");
   const [search, setSearch] = useState("");
+  const [searchDraft, setSearchDraft] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [ratings, setRatings] = useState<Record<string, RatingInfo>>({});
@@ -143,7 +144,7 @@ function StorefrontHome() {
   const productControls = (
         <div className="mb-8 rounded-2xl border p-3 sm:p-4" style={{ borderColor: "var(--sf-border)", background: "var(--sf-surface)" }}>
           <div className="grid gap-3 md:grid-cols-4">
-            <div className="relative md:col-span-2"><Search className="absolute left-3 top-3 h-4 w-4 pointer-events-none" style={{ color: "var(--sf-muted)" }} /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products..." aria-label="Search products" className="h-10 w-full rounded-lg border bg-transparent pl-10 pr-3 text-sm" /></div>
+            <form className="relative md:col-span-2 flex gap-2" onSubmit={(e) => { e.preventDefault(); setSearch(searchDraft.trim()); document.getElementById("store-products")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><div className="relative flex-1"><Search className="absolute left-3 top-3 h-4 w-4 pointer-events-none" style={{ color: "var(--sf-muted)" }} /><input value={searchDraft} onChange={(e) => setSearchDraft(e.target.value)} placeholder="Search products..." aria-label="Search products" className="h-10 w-full rounded-lg border bg-transparent pl-10 pr-3 text-sm" /></div><button type="submit" className="h-10 rounded-lg px-4 text-sm font-semibold" style={{ background: "var(--sf-accent)", color: "white" }}>Search</button></form>
             <input value={minPrice} onChange={(e) => setMinPrice(e.target.value)} type="number" placeholder="Min price" className="h-10 rounded-lg border bg-transparent px-3 text-sm" />
             <input value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} type="number" placeholder="Max price" className="h-10 rounded-lg border bg-transparent px-3 text-sm" />
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="h-10 rounded-lg border bg-transparent px-3 text-sm">
@@ -176,7 +177,7 @@ function StorefrontHome() {
     ) : null,
 
     featured: settings.showFeatured !== false && featured.length > 0 ? (
-      <section className="pb-10">
+      <section id="store-products" className="pb-10">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--sf-muted)" }}>Featured</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} large imageRatio={imageRatio} layout={theme.layout} />)}
