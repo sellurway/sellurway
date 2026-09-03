@@ -332,6 +332,19 @@ function ThemesPage() {
           </div>
 
           <div className="mt-5 space-y-4 rounded-xl border p-4">
+            <div>
+              <Label>Image + text photo</Label>
+              <div className="mt-2 flex gap-2"><Input value={current.imageTextImageUrl ?? ""} placeholder="Paste image URL" onChange={(e) => patchSettings({ imageTextImageUrl: e.target.value })} /><Button type="button" variant="outline" onClick={() => { const url = window.prompt("Paste your image URL"); if (url) patchSettings({ imageTextImageUrl: url }); }}>Add photo</Button></div>
+            </div>
+            <div>
+              <Label>Testimonials</Label>
+              <div className="mt-2 space-y-2">{(current.testimonials ?? []).map((testimonial, index, list) => <div key={index} className="grid gap-2 rounded-lg border p-3 sm:grid-cols-[1fr_2fr_auto]"><Input value={testimonial.name} placeholder="Customer name" onChange={(e) => { const next=[...list]; next[index]={...next[index],name:e.target.value}; patchSettings({ testimonials:next }); }} /><Input value={testimonial.quote} placeholder="Customer review" onChange={(e) => { const next=[...list]; next[index]={...next[index],quote:e.target.value}; patchSettings({ testimonials:next }); }} /><Button type="button" variant="ghost" onClick={() => patchSettings({ testimonials:list.filter((_,i)=>i!==index) })}>Remove</Button></div>)}</div>
+              <Button type="button" variant="outline" className="mt-2" onClick={() => patchSettings({ testimonials:[...(current.testimonials ?? []),{name:"Customer",quote:"Amazing experience!"}] })}>+ Add testimonial</Button>
+            </div>
+            <div>
+              <Label>Social links</Label>
+              <div className="mt-2 grid gap-2 sm:grid-cols-3">{(["instagram","facebook","tiktok"] as const).map((name)=><Input key={name} value={current.socialLinks?.[name] ?? ""} placeholder={name[0].toUpperCase()+name.slice(1)+" URL"} onChange={(e)=>patchSettings({socialLinks:{...(current.socialLinks??{}),[name]:e.target.value}})} />)}</div>
+            </div>
             <div><Label>Promo banner</Label><Input className="mt-2" value={current.promoText ?? ""} placeholder="Big weekend sale — save up to 30%" onChange={(e) => patchSettings({ promoText: e.target.value })} /></div>
             <div className="grid gap-3 sm:grid-cols-2"><Input value={current.promoButtonText ?? ""} placeholder="Button text" onChange={(e) => patchSettings({ promoButtonText: e.target.value })} /><Input value={current.promoButtonUrl ?? ""} placeholder="/collections/sale" onChange={(e) => patchSettings({ promoButtonUrl: e.target.value })} /></div>
             <div><Label>Image + text section</Label><Input className="mt-2" value={current.imageTextHeading ?? ""} placeholder="Tell your brand story" onChange={(e) => patchSettings({ imageTextHeading: e.target.value })} /><Textarea className="mt-2" value={current.imageTextBody ?? ""} placeholder="Write something about your store..." onChange={(e) => patchSettings({ imageTextBody: e.target.value })} /></div>
