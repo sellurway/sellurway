@@ -169,6 +169,9 @@ export interface ThemeSettings {
   testimonials?: { name: string; quote: string }[];
   newsletterHeading?: string;
   socialLinks?: { instagram?: string; facebook?: string; tiktok?: string };
+  featuredImageUrl?: string;
+  productsImageUrl?: string;
+  categoryLabels?: string[];
   sectionOrder?: ("hero" | "featured" | "categories" | "products")[];
   productColumns?: 2 | 3 | 4;
   productImageRatio?: "square" | "portrait" | "landscape";
