@@ -91,12 +91,28 @@ function StorefrontHome() {
     ? settings.sectionOrder
     : ["hero", "featured", "categories", "products"] as const;
 
+  const heroImages = settings.heroImages?.length
+    ? settings.heroImages
+    : [settings.heroImageUrl || store.banner_url].filter(Boolean) as string[];
+  const [activeHero, setActiveHero] = useState(0);
+  useEffect(() => {
+    if (heroImages.length < 2) return;
+    const timer = window.setInterval(() => setActiveHero((i) => (i + 1) % heroImages.length), 5000);
+    return () => window.clearInterval(timer);
+  }, [heroImages.length]);
+
+
   const sections: Record<string, ReactNode> = {
     hero: settings.showHero !== false ? (
       <section className={"py-10 md:py-14 " + (theme.layout === "showcase" ? "md:py-20" : theme.layout === "editorial" ? "md:py-24" : "")}>
-        {(settings.heroImageUrl || store.banner_url) && (
-          <div className={"mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" ? "shadow-2xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
-            <img src={settings.heroImageUrl || store.banner_url || ""} alt="" className={"w-full object-cover " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
+        {heroImages.length > 0 && (
+          <div className={"relative mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" ? "shadow-2xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
+            <img src={heroImages[activeHero]} alt="" className={"w-full object-cover transition-opacity duration-500 " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
+            {heroImages.length > 1 && <>
+              <button aria-label="Previous banner" onClick={() => setActiveHero((i) => (i - 1 + heroImages.length) % heroImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-3 py-2 text-white">‹</button>
+              <button aria-label="Next banner" onClick={() => setActiveHero((i) => (i + 1) % heroImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-3 py-2 text-white">›</button>
+              <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">{heroImages.map((_, i) => <button key={i} aria-label={`Go to banner ${i + 1}`} onClick={() => setActiveHero(i)} className={"h-2.5 w-2.5 rounded-full " + (i === activeHero ? "bg-white" : "bg-white/50")} />)}</div>
+            </>}
           </div>
         )}
         <h1 className={"max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl " + (theme.layout === "editorial" ? "sm:text-6xl" : theme.layout === "showcase" ? "sm:text-5xl" : "")} style={{ fontFamily: "var(--sf-heading)" }}>
