@@ -129,6 +129,23 @@ function ProductPage() {
     },
   });
 
+  useEffect(() => {
+    if (!product) return;
+    const title = `${product.name} | ${store.name}`;
+    const cleanDescription = (product.description || `Shop ${product.name} from ${store.name}.`).replace(/<!--SELLURWAY_PRODUCT_INFO:[\\s\\S]*?-->/, "").slice(0, 160);
+    document.title = title;
+    const setMeta = (selector: string, attr: "name" | "property", key: string, content: string) => {
+      let el = document.head.querySelector(selector) as HTMLMetaElement | null;
+      if (!el) { el = document.createElement("meta"); el.setAttribute(attr, key); document.head.appendChild(el); }
+      el.content = content;
+    };
+    setMeta('meta[name="description"]', "name", "description", cleanDescription);
+    setMeta('meta[property="og:title"]', "property", "og:title", title);
+    setMeta('meta[property="og:description"]', "property", "og:description", cleanDescription);
+    const image = product.product_images?.[0]?.url;
+    if (image) setMeta('meta[property="og:image"]', "property", "og:image", image);
+  }, [product, store.name]);
+
   const images = useMemo(
     () => product ? productImages(product).map((url, position) => ({ url, position })) : [],
     [product],
