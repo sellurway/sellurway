@@ -104,7 +104,7 @@ function ThemesPage() {
   return (
     <DashboardShell
       title="Themes"
-      description="Choose the template your storefront uses. Premium templates are included with Lifetime."
+      description="Choose from all available premium storefront templates and customize them."
       actions={
         !isLifetime ? (
           <Button asChild variant="outline">
@@ -204,7 +204,7 @@ function ThemesPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {THEMES.map((t) => {
-          const locked = t.premium && !isLifetime;
+          const locked = false; // All templates are visible and selectable
           const active = store?.theme === t.id;
           return (
             <div
