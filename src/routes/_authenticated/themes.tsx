@@ -97,8 +97,8 @@ function ThemesPage() {
   function editTemplate(themeId: string) {
     setSettings((store?.theme_settings ?? {}) as ThemeSettings);
     setEditorOpen(true);
-    save.mutate({ theme: themeId });
     window.setTimeout(() => document.getElementById("theme-editor")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    save.mutate({ theme: themeId });
   }
 
   return (
@@ -115,7 +115,7 @@ function ThemesPage() {
         ) : undefined
       }
     >
-      <div id="theme-editor" className="surface-card mb-6 overflow-hidden p-0">
+      <div id="theme-editor" className="surface-card mb-6 overflow-hidden p-0 scroll-mt-6">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
           <div className="flex items-center gap-2">
             <LayoutTemplate className="h-5 w-5" />
@@ -327,6 +327,15 @@ function ThemesPage() {
               </select>
             </div>
           </div>
+        </div>
+
+        <div className="rounded-xl border bg-background p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div><p className="font-medium">Hero banner photo</p><p className="text-sm text-muted-foreground">Upload a picture for the top of your store.</p></div>
+            <input ref={heroFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) uploadHeroImage(file); e.currentTarget.value = ""; }} />
+            <Button type="button" variant="outline" onClick={() => heroFileRef.current?.click()} disabled={uploading}><ImagePlus className="mr-2 h-4 w-4" />{uploading ? "Uploading..." : current.heroImageUrl ? "Replace photo" : "Upload photo"}</Button>
+          </div>
+          {current.heroImageUrl && <div className="mt-4"><img src={current.heroImageUrl} alt="Hero preview" className="h-40 w-full rounded-lg border object-cover" /><Button type="button" variant="ghost" size="sm" className="mt-2" onClick={() => patchSettings({ heroImageUrl: undefined })}>Remove photo</Button></div>}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
