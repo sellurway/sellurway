@@ -27,6 +27,21 @@ function StorefrontHome() {
   const theme = getTheme(store.theme);
   const settings = store.theme_settings ?? {};
 
+  useEffect(() => {
+    const title = store.name ? ` | Sellurway` : "Sellurway Store";
+    const description = store.description || `Shop  online on Sellurway.`;
+    document.title = title;
+    const setMeta = (selector: string, attr: "name" | "property", key: string, content: string) => {
+      let el = document.head.querySelector(selector) as HTMLMetaElement | null;
+      if (!el) { el = document.createElement("meta"); el.setAttribute(attr, key); document.head.appendChild(el); }
+      el.content = content;
+    };
+    setMeta('meta[name="description"]', "name", "description", description);
+    setMeta('meta[property="og:title"]', "property", "og:title", title);
+    setMeta('meta[property="og:description"]', "property", "og:description", description);
+    if (store.banner_url) setMeta('meta[property="og:image"]', "property", "og:image", store.banner_url);
+  }, [store.name, store.description, store.banner_url]);
+
   const list = useMemo(
     () => (products ?? []).filter((p) => !activeCategory || p.category_id === activeCategory),
     [products, activeCategory],
