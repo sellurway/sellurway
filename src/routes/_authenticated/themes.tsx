@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,7 +34,7 @@ function ThemesPage() {
   const [settings, setSettings] = useState<ThemeSettings | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
-  const [selectedSection, setSelectedSection] = useState<"hero" | "featured" | "categories" | "products">("hero");
+  const [selectedSection, setSelectedSection] = useState<"hero" | "promo" | "imageText" | "featured" | "categories" | "products" | "testimonials" | "newsletter" | "social">("hero");
   const [uploading, setUploading] = useState(false);
   const heroFileRef = useRef<HTMLInputElement>(null);
   const [bannerDrag, setBannerDrag] = useState<number | null>(null);
