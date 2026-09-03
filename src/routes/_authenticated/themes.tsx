@@ -37,6 +37,7 @@ function ThemesPage() {
   const [uploading, setUploading] = useState(false);
   const heroFileRef = useRef<HTMLInputElement>(null);
   const [bannerDrag, setBannerDrag] = useState<number | null>(null);
+  const [sectionDrag, setSectionDrag] = useState<string | null>(null);
 
   const { data: store } = useQuery({
     queryKey: ["store-theme", activeStore?.id],
