@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2, PackageOpen, Search, Star } from "lucide-react";
 import { productImage, useStore, useStoreCategories, useStoreProducts } from "@/lib/storefront";
 import { getTheme } from "@/lib/themes";
 import { formatMoney } from "@/lib/format";
+
+const REVIEWS_API = "https://sellurway-reviews-api.sellurway.workers.dev";
+type RatingInfo = { average: number; count: number };
 
 export const Route = createFileRoute("/s/$slug/")({
   head: ({ params }) => ({
@@ -28,6 +32,7 @@ function StorefrontHome() {
   const [search, setSearch] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [ratings, setRatings] = useState<Record<string, RatingInfo>>({});
   const theme = getTheme(store.theme);
   const settings = store.theme_settings ?? {};
 
@@ -46,6 +51,23 @@ function StorefrontHome() {
     if (store.banner_url) setMeta('meta[property="og:image"]', "property", "og:image", store.banner_url);
   }, [store.name, store.description, store.banner_url]);
 
+  useEffect(() => {
+    if (!products?.length) return;
+    let cancelled = false;
+    Promise.all(products.map(async (product) => {
+      try {
+        const response = await fetch(REVIEWS_API + "?product_id=" + encodeURIComponent(product.id));
+        if (!response.ok) return [product.id, { average: 0, count: 0 }] as const;
+        const data = await response.json();
+        const reviews = data.reviews ?? [];
+        const count = reviews.length;
+        const average = count ? reviews.reduce((sum: number, review: { rating: number }) => sum + Number(review.rating || 0), 0) / count : 0;
+        return [product.id, { average, count }] as const;
+      } catch { return [product.id, { average: 0, count: 0 }] as const; }
+    })).then((entries) => { if (!cancelled) setRatings(Object.fromEntries(entries)); });
+    return () => { cancelled = true; };
+  }, [products]);
+
   const list = useMemo(() => {
     const filtered = (products ?? []).filter((p) => {
       const matchesCategory = !activeCategory || p.category_id === activeCategory;
@@ -58,9 +80,10 @@ function StorefrontHome() {
       if (sortBy === "price-low") return a.price - b.price;
       if (sortBy === "price-high") return b.price - a.price;
       if (sortBy === "name") return a.name.localeCompare(b.name);
+      if (sortBy === "rating") return (ratings[b.id]?.average ?? 0) - (ratings[a.id]?.average ?? 0);
       return Number(b.featured) - Number(a.featured);
     });
-  }, [products, activeCategory, search, minPrice, maxPrice, sortBy]);
+  }, [products, activeCategory, search, minPrice, maxPrice, sortBy, ratings]);
   const featured = useMemo(() => (products ?? []).filter((p) => p.featured).slice(0, 3), [products]);
 
   useEffect(() => {
@@ -144,7 +167,7 @@ function StorefrontHome() {
       <section className="pb-10">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--sf-muted)" }}>Featured</h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} large imageRatio={imageRatio} layout={theme.layout} />)}
+          {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} large imageRatio={imageRatio} layout={theme.layout} />)}
         </div>
       </section>
     ) : null,
@@ -171,7 +194,7 @@ function StorefrontHome() {
           </div>
         ) : (
           <div className={`grid gap-4 ${gridClass}`}>
-            {list.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} imageRatio={imageRatio} layout={theme.layout} />)}
+            {list.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} imageRatio={imageRatio} layout={theme.layout} />)}
           </div>
         )}
       </section>
@@ -191,6 +214,7 @@ function ProductCard({
   slug,
   product,
   currency,
+  rating,
   large,
   imageRatio = "aspect-square",
   layout = "grid",
@@ -198,6 +222,7 @@ function ProductCard({
   slug: string;
   product: import("@/lib/storefront").PublicProduct;
   currency: string;
+  rating?: RatingInfo;
   large?: boolean;
   imageRatio?: string;
   layout?: "grid" | "editorial" | "list" | "showcase" | "lookbook";
@@ -243,7 +268,10 @@ function ProductCard({
             </span>
           )}
         </p>
-        <div className="mt-2 flex items-center gap-1 text-xs" style={{ color: "var(--sf-accent)" }}><Star className="h-3.5 w-3.5" fill="currentColor" /><span>Reviews available</span></div>
+        <div className="mt-2 flex items-center gap-1 text-xs" style={{ color: "var(--sf-accent)" }}>
+          <Star className="h-3.5 w-3.5" fill={rating?.count ? "currentColor" : "none"} />
+          <span>{rating?.count ? `${rating.average.toFixed(1)} (${rating.count} ${rating.count === 1 ? "review" : "reviews"})` : "No reviews yet"}</span>
+        </div>
       </div>
     </Link>
   );
