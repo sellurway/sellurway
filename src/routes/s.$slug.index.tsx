@@ -6,7 +6,15 @@ import { getTheme } from "@/lib/themes";
 import { formatMoney } from "@/lib/format";
 
 export const Route = createFileRoute("/s/$slug/")({
-  head: () => ({ meta: [{ title: "Store | Sellurway" }, { name: "description", content: "Shop online with Sellurway." }] }),
+  head: ({ params }) => ({
+    meta: [
+      { title: `${params.slug} | Sellurway Store` },
+      { name: "description", content: `Shop ${params.slug} on Sellurway. Browse products and discover great deals online.` },
+      { property: "og:title", content: `${params.slug} | Sellurway Store` },
+      { property: "og:description", content: `Shop ${params.slug} on Sellurway.` },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: StorefrontHome,
 });
 
