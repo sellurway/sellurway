@@ -131,6 +131,24 @@ function ProductPage() {
 
   useEffect(() => {
     if (!product) return;
+    const id = "sellurway-product-jsonld";
+    let script = document.getElementById(id) as HTMLScriptElement | null;
+    if (!script) { script = document.createElement("script"); script.id = id; script.type = "application/ld+json"; document.head.appendChild(script); }
+    const clean = (product.description || "").replace(/<!--SELLURWAY_PRODUCT_INFO:[\\s\\S]*?-->/, "").trim();
+    const image = product.product_images?.[0]?.url;
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      description: clean || undefined,
+      image: image ? [image] : undefined,
+      offers: { "@type": "Offer", price: product.price, priceCurrency: store.currency || "ZAR", availability: product.track_stock && product.stock_quantity <= 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock", url: window.location.href }
+    });
+    return () => script?.remove();
+  }, [product, store.currency]);
+
+  useEffect(() => {
+    if (!product) return;
     const title = `${product.name} | ${store.name}`;
     const cleanDescription = (product.description || `Shop ${product.name} from ${store.name}.`).replace(/<!--SELLURWAY_PRODUCT_INFO:[\\s\\S]*?-->/, "").slice(0, 160);
     document.title = title;
