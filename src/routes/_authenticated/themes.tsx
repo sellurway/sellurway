@@ -90,7 +90,7 @@ function ThemesPage() {
         ) : undefined
       }
     >
-      <div className="surface-card mb-6 overflow-hidden p-0">
+      <div id="theme-editor" className="surface-card mb-6 overflow-hidden p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4">
           <div className="flex items-center gap-2">
             <LayoutTemplate className="h-5 w-5" />
@@ -127,6 +127,13 @@ function ThemesPage() {
             </aside>
 
             <div className="bg-muted/30 p-4 sm:p-6">
+              <div className="mb-4 rounded-xl border bg-background p-4">
+                {selectedSection === "hero" && <div className="grid gap-3 sm:grid-cols-2"><div><Label>Headline</Label><Input className="mt-1" value={current.heroHeadline ?? ""} placeholder={activeStore.name} onChange={(e) => patchSettings({ heroHeadline: e.target.value })} /></div><div><Label>Subheadline</Label><Input className="mt-1" value={current.heroSubline ?? ""} placeholder="Tell customers what makes your store special" onChange={(e) => patchSettings({ heroSubline: e.target.value })} /></div></div>}
+                {selectedSection === "products" && <div className="grid gap-3 sm:grid-cols-2"><div><Label>Products per row</Label><select className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={current.productColumns ?? 0} onChange={(e) => patchSettings({ productColumns: e.target.value === "0" ? undefined : Number(e.target.value) as 2 | 3 | 4 })}><option value={0}>Theme default</option><option value={2}>2 products</option><option value={3}>3 products</option><option value={4}>4 products</option></select></div><div><Label>Image shape</Label><select className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={current.productImageRatio ?? "square"} onChange={(e) => patchSettings({ productImageRatio: e.target.value as "square" | "portrait" | "landscape" })}><option value="square">Square</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div></div>}
+                {selectedSection === "featured" && <div className="flex items-center justify-between"><div><p className="font-medium">Featured products</p><p className="text-xs text-muted-foreground">Show highlighted products near the top.</p></div><Switch checked={current.showFeatured !== false} onCheckedChange={(v) => patchSettings({ showFeatured: v })} /></div>}
+                {selectedSection === "categories" && <div className="flex items-center justify-between"><div><p className="font-medium">Categories</p><p className="text-xs text-muted-foreground">Show category navigation to shoppers.</p></div><Switch checked={current.showCategories !== false} onCheckedChange={(v) => patchSettings({ showCategories: v })} /></div>}
+                <div className="mt-3 flex gap-2"><Button size="sm" onClick={() => save.mutate({ theme_settings: current })} disabled={save.isPending}>{save.isPending ? "Saving..." : "Save changes"}</Button><Button size="sm" variant="outline" onClick={() => setEditorOpen(false)}>Done</Button></div>
+              </div>
               <div className="mb-4 flex items-center justify-center gap-2">
                 <Button size="sm" variant={device === "desktop" ? "secondary" : "ghost"} onClick={() => setDevice("desktop")}><Monitor className="mr-1.5 h-4 w-4" />Desktop</Button>
                 <Button size="sm" variant={device === "mobile" ? "secondary" : "ghost"} onClick={() => setDevice("mobile")}><Smartphone className="mr-1.5 h-4 w-4" />Mobile</Button>
@@ -191,8 +198,8 @@ function ThemesPage() {
               <div className="border-t p-4">
                 <p className="text-sm text-muted-foreground">{t.tagline}</p>
                 <p className="mt-1 text-xs text-muted-foreground">Best for {t.bestFor.toLowerCase()}</p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
                 <Button
-                  className="mt-3 w-full"
                   size="sm"
                   variant={active ? "secondary" : locked ? "outline" : "default"}
                   disabled={active || save.isPending}
@@ -211,6 +218,8 @@ function ThemesPage() {
                     <span>Use this template</span>
                   )}
                 </Button>
+                {!locked && <Button size="sm" variant="outline" onClick={() => editTemplate(t.id)} disabled={save.isPending}>Edit</Button>}
+                </div>
               </div>
             </div>
           );
