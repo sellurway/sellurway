@@ -53,13 +53,13 @@ function StorefrontHome() {
 
   const sections: Record<string, ReactNode> = {
     hero: settings.showHero !== false ? (
-      <section className="py-10 md:py-14">
+      <section className={"py-10 md:py-14 " + (theme.layout === "showcase" ? "md:py-20" : theme.layout === "editorial" ? "md:py-24" : "")}>
         {store.banner_url && (
-          <div className="mb-8 overflow-hidden" style={{ borderRadius: "var(--sf-card-radius)" }}>
-            <img src={store.banner_url} alt="" className="h-44 w-full object-cover sm:h-64" />
+          <div className={"mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" ? "shadow-2xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
+            <img src={store.banner_url} alt="" className={"w-full object-cover " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
           </div>
         )}
-        <h1 className="max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl" style={{ fontFamily: "var(--sf-heading)" }}>
+        <h1 className={"max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl " + (theme.layout === "editorial" ? "sm:text-6xl" : theme.layout === "showcase" ? "sm:text-5xl" : "")} style={{ fontFamily: "var(--sf-heading)" }}>
           {settings.heroHeadline || store.name}
         </h1>
         <p className="mt-3 max-w-xl text-base" style={{ color: "var(--sf-muted)" }}>
@@ -72,7 +72,7 @@ function StorefrontHome() {
       <section className="pb-10">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--sf-muted)" }}>Featured</h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} large imageRatio={imageRatio} />)}
+          {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} large imageRatio={imageRatio} layout={theme.layout} />)}
         </div>
       </section>
     ) : null,
@@ -99,7 +99,7 @@ function StorefrontHome() {
           </div>
         ) : (
           <div className={`grid gap-4 ${gridClass}`}>
-            {list.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} imageRatio={imageRatio} />)}
+            {list.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} imageRatio={imageRatio} layout={theme.layout} />)}
           </div>
         )}
       </section>
@@ -107,7 +107,7 @@ function StorefrontHome() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4">
+    <main className={"mx-auto w-full max-w-6xl px-4 " + (theme.layout === "editorial" ? "max-w-7xl" : theme.layout === "lookbook" ? "max-w-5xl" : "")}>
       {sectionOrder.map((section, index) => (
         <div key={`${section}-${index}`}>{sections[section]}</div>
       ))}
@@ -134,10 +134,10 @@ function ProductCard({
     <Link
       to="/s/$slug/product/$productId"
       params={{ slug, productId: product.id }}
-      className="group block overflow-hidden border transition hover:opacity-95"
+      className={"group block overflow-hidden border transition hover:opacity-95 " + (layout === "editorial" ? "even:translate-y-8" : layout === "lookbook" ? "first:md:col-span-2" : layout === "showcase" ? "shadow-lg hover:-translate-y-1" : "")}
       style={{ borderColor: "var(--sf-border)", borderRadius: "var(--sf-card-radius)", background: "var(--sf-surface)" }}
     >
-      <div className={`relative w-full overflow-hidden ${large ? "aspect-[4/3]" : imageRatio}`}>
+      <div className={`relative w-full overflow-hidden ${large ? (layout === "showcase" ? "aspect-[16/8]" : "aspect-[4/3]") : layout === "list" ? "aspect-[16/7]" : imageRatio}`}>
         {img ? (
           <img
             src={img}
@@ -159,7 +159,7 @@ function ProductCard({
           </span>
         )}
       </div>
-      <div className="p-3.5">
+      <div className={"p-3.5 " + (layout === "editorial" ? "py-5" : layout === "showcase" ? "p-5" : "")}>
         <p className="truncate text-sm font-medium">{product.name}</p>
         <p className="mt-1 flex items-baseline gap-2 text-sm">
           <span className="font-semibold">{formatMoney(product.price, currency)}</span>
