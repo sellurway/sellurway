@@ -38,6 +38,7 @@ function ThemesPage() {
   const heroFileRef = useRef<HTMLInputElement>(null);
   const [bannerDrag, setBannerDrag] = useState<number | null>(null);
   const [sectionDrag, setSectionDrag] = useState<string | null>(null);
+  const allSections = ["hero", "promo", "imageText", "featured", "categories", "products", "testimonials", "newsletter", "social"] as const;
 
   const { data: store } = useQuery({
     queryKey: ["store-theme", activeStore?.id],
@@ -281,7 +282,7 @@ function ThemesPage() {
           </p>
 
           <div className="mt-4 space-y-2">
-            {(current.sectionOrder ?? ["hero", "featured", "categories", "products"]).map((section, index, order) => (
+            {(current.sectionOrder?.length ? current.sectionOrder : allSections).map((section, index, order) => (
               <div key={section} className="flex items-center gap-3 rounded-lg border px-3 py-2">
                 <span className="flex-1 text-sm font-medium capitalize">{section === "hero" ? "Hero banner" : section}</span>
                 <Button
@@ -317,8 +318,8 @@ function ThemesPage() {
           <div className="mt-5">
             <p className="mb-2 text-sm font-medium">Show or hide sections</p>
             <div className="grid gap-2 sm:grid-cols-2">
-              {(current.sectionOrder ?? ["hero", "featured", "categories", "products"]).map((section) => {
-                const enabled = current.enabledSections?.includes(section) ?? true;
+              {allSections.map((section) => {
+                const enabled = current.enabledSections?.includes(section) ?? ["hero", "featured", "categories", "products"].includes(section);
                 return <label key={section} className="flex cursor-pointer items-center justify-between rounded-lg border px-3 py-2 text-sm">
                   <span className="capitalize">{section === "hero" ? "Hero banner" : section}</span>
                   <input type="checkbox" checked={enabled} onChange={(e) => {
@@ -328,6 +329,13 @@ function ThemesPage() {
                 </label>;
               })}
             </div>
+          </div>
+
+          <div className="mt-5 space-y-4 rounded-xl border p-4">
+            <div><Label>Promo banner</Label><Input className="mt-2" value={current.promoText ?? ""} placeholder="Big weekend sale — save up to 30%" onChange={(e) => patchSettings({ promoText: e.target.value })} /></div>
+            <div className="grid gap-3 sm:grid-cols-2"><Input value={current.promoButtonText ?? ""} placeholder="Button text" onChange={(e) => patchSettings({ promoButtonText: e.target.value })} /><Input value={current.promoButtonUrl ?? ""} placeholder="/collections/sale" onChange={(e) => patchSettings({ promoButtonUrl: e.target.value })} /></div>
+            <div><Label>Image + text section</Label><Input className="mt-2" value={current.imageTextHeading ?? ""} placeholder="Tell your brand story" onChange={(e) => patchSettings({ imageTextHeading: e.target.value })} /><Textarea className="mt-2" value={current.imageTextBody ?? ""} placeholder="Write something about your store..." onChange={(e) => patchSettings({ imageTextBody: e.target.value })} /></div>
+            <div><Label>Newsletter heading</Label><Input className="mt-2" value={current.newsletterHeading ?? ""} placeholder="Join our newsletter" onChange={(e) => patchSettings({ newsletterHeading: e.target.value })} /></div>
           </div>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
