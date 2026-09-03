@@ -159,7 +159,16 @@ export interface ThemeSettings {
   heroImageUrl?: string;
   heroImages?: string[];
   announcementText?: string;
-  enabledSections?: ("hero" | "featured" | "categories" | "products")[];
+  enabledSections?: ("hero" | "featured" | "categories" | "products" | "promo" | "imageText" | "testimonials" | "newsletter" | "social")[];
+  promoText?: string;
+  promoButtonText?: string;
+  promoButtonUrl?: string;
+  imageTextImageUrl?: string;
+  imageTextHeading?: string;
+  imageTextBody?: string;
+  testimonials?: { name: string; quote: string }[];
+  newsletterHeading?: string;
+  socialLinks?: { instagram?: string; facebook?: string; tiktok?: string };
   sectionOrder?: ("hero" | "featured" | "categories" | "products")[];
   productColumns?: 2 | 3 | 4;
   productImageRatio?: "square" | "portrait" | "landscape";
