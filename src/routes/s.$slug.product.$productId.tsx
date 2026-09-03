@@ -158,7 +158,8 @@ function ProductPage() {
     );
   }
 
-  const parsedProduct = parseProductInfo(product.description);\n  const soldOut = product.track_stock && product.stock_quantity <= 0;
+  const parsedProduct = parseProductInfo(product.description);
+  const soldOut = product.track_stock && product.stock_quantity <= 0;
   const variantDelta = product.product_variants?.find((v) => v.id === variant)?.price_delta ?? 0;
   const unitPrice = Number(product.price) + Number(variantDelta);
   const variantLabel = (() => {
