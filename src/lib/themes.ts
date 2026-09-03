@@ -10,7 +10,11 @@ export type ThemeId =
   | "terra"
   | "halo"
   | "maison"
-  | "nova";
+  | "nova"
+  | "atlas"
+  | "solstice"
+  | "kinetic"
+  | "atelier";
 
 export interface StoreTheme {
   id: ThemeId;
@@ -104,6 +108,30 @@ export const THEMES: StoreTheme[] = [
     tagline: "Quiet European elegance with an editorial catalogue experience.",
     palette: { bg: "#eee9e1", surface: "#faf8f4", ink: "#25211c", muted: "#756d62", accent: "#3d3429", accentInk: "#ffffff", border: "#d9d1c5" },
     heading: sans, body, buttonRadius: "2px", cardRadius: "8px", bestFor: "Furniture, home, premium craft"
+  },
+  {
+    id: "atlas", name: "Atlas Commerce", photoSet: "beauty", premium: true, layout: "grid",
+    tagline: "A powerful modern marketplace built for big catalogues and serious shopping.",
+    palette: { bg: "#f4f7fb", surface: "#ffffff", ink: "#172033", muted: "#68738a", accent: "#ff6b35", accentInk: "#ffffff", border: "#dce3ee" },
+    heading: sans, body, buttonRadius: "10px", cardRadius: "14px", bestFor: "Marketplaces, general stores, deals"
+  },
+  {
+    id: "solstice", name: "Solstice", photoSet: "fashion", premium: true, layout: "editorial",
+    tagline: "Sunlit editorial design with oversized imagery and premium storytelling.",
+    palette: { bg: "#fff7e8", surface: "#fffdf8", ink: "#302317", muted: "#8b7967", accent: "#d67a2d", accentInk: "#ffffff", border: "#eadbc7" },
+    heading: sans, body, buttonRadius: "4px", cardRadius: "2px", bestFor: "Fashion, lifestyle, photography"
+  },
+  {
+    id: "kinetic", name: "Kinetic", photoSet: "tech", premium: true, layout: "showcase",
+    tagline: "Fast, loud and energetic with a product-launch feel made for modern brands.",
+    palette: { bg: "#080b12", surface: "#111722", ink: "#f7fbff", muted: "#93a0b5", accent: "#8b5cf6", accentInk: "#ffffff", border: "#263247" },
+    heading: sans, body, buttonRadius: "999px", cardRadius: "28px", bestFor: "Gaming, gadgets, streetwear"
+  },
+  {
+    id: "atelier", name: "Atelier", photoSet: "home", premium: true, layout: "lookbook",
+    tagline: "A refined gallery-like boutique for carefully curated collections.",
+    palette: { bg: "#f1eee8", surface: "#faf9f6", ink: "#24211d", muted: "#756f66", accent: "#6f5644", accentInk: "#ffffff", border: "#d8d2c9" },
+    heading: sans, body, buttonRadius: "2px", cardRadius: "6px", bestFor: "Luxury goods, furniture, art"
   },
   {
     id: "nova", name: "Launch", photoSet: "tech", premium: true, layout: "showcase",
