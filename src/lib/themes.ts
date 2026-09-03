@@ -128,6 +128,7 @@ export interface ThemeSettings {
   showCategories?: boolean;
   heroHeadline?: string;
   heroSubline?: string;
+  heroImageUrl?: string;
   sectionOrder?: ("hero" | "featured" | "categories" | "products")[];
   productColumns?: 2 | 3 | 4;
   productImageRatio?: "square" | "portrait" | "landscape";
