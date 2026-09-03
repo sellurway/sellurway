@@ -85,25 +85,18 @@ function ThemesPage() {
   }
 
   async function uploadThemeImage(file: File, key: "heroImageUrl" | "featuredImageUrl" | "productsImageUrl") {
-    if (!activeStore || !file.type.startsWith("image/")) return toast.error("Please choose an image file");
-    setUploading(true);
-    try { const ext=file.name.split(".").pop()||"jpg"; const path=`${activeStore.id}/theme-${key}-${Date.now()}.${ext}`; const {error}=await supabase.storage.from("product-images").upload(path,file,{upsert:true}); if(error) throw error; const {data}=supabase.storage.from("product-images").getPublicUrl(path); patchSettings({[key]:data.publicUrl} as Partial<ThemeSettings>); toast.success("Photo added — remember to save changes"); } catch(e) { toast.error(e instanceof Error?e.message:"Image upload failed"); } finally { setUploading(false); }
+    if (!file.type.startsWith("image/")) return toast.error("Please choose an image file");
+    const reader = new FileReader();
+    reader.onload = () => {
+      patchSettings({ [key]: String(reader.result) } as Partial<ThemeSettings>);
+      toast.success("Photo added — remember to save changes");
+    };
+    reader.onerror = () => toast.error("Could not read that image");
+    reader.readAsDataURL(file);
   }
 
   async function uploadHeroImage(file: File) {
-    if (!activeStore) return;
-    if (!file.type.startsWith("image/")) { toast.error("Please choose an image file"); return; }
-    if (file.size > 8 * 1024 * 1024) { toast.error("Image must be smaller than 8MB"); return; }
-    setUploading(true);
-    try {
-      const ext = file.name.split(".").pop() || "jpg";
-      const path = `${activeStore.id}/theme-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
-      if (error) throw error;
-      const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-      patchSettings({ heroImageUrl: data.publicUrl, heroImages: [...(current.heroImages ?? (current.heroImageUrl ? [current.heroImageUrl] : [])), data.publicUrl] });
-      toast.success("Hero image added — remember to save changes");
-    } catch (e) { toast.error(e instanceof Error ? e.message : "Image upload failed"); } finally { setUploading(false); }
+    await uploadThemeImage(file, "heroImageUrl");
   }
 
   function editTemplate(themeId: string) {
