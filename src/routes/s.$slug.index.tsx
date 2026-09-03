@@ -6,6 +6,7 @@ import { getTheme } from "@/lib/themes";
 import { formatMoney } from "@/lib/format";
 
 export const Route = createFileRoute("/s/$slug/")({
+  head: () => ({ meta: [{ title: "Store | Sellurway" }, { name: "description", content: "Shop online with Sellurway." }] }),
   component: StorefrontHome,
 });
 
