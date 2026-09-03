@@ -159,6 +159,7 @@ export interface ThemeSettings {
   heroImageUrl?: string;
   heroImages?: string[];
   announcementText?: string;
+  enabledSections?: ("hero" | "featured" | "categories" | "products")[];
   sectionOrder?: ("hero" | "featured" | "categories" | "products")[];
   productColumns?: 2 | 3 | 4;
   productImageRatio?: "square" | "portrait" | "landscape";
