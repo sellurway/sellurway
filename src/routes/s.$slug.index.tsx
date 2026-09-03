@@ -143,7 +143,7 @@ function StorefrontHome() {
   const productControls = (
         <div className="mb-8 rounded-2xl border p-3 sm:p-4" style={{ borderColor: "var(--sf-border)", background: "var(--sf-surface)" }}>
           <div className="grid gap-3 md:grid-cols-4">
-            <div className="relative md:col-span-1"><Search className="absolute left-3 top-3 h-4 w-4" style={{ color: "var(--sf-muted)" }} /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products..." className="h-10 w-full rounded-lg border bg-transparent pl-10 pr-3 text-sm" /></div>
+            <div className="relative md:col-span-2"><Search className="absolute left-3 top-3 h-4 w-4 pointer-events-none" style={{ color: "var(--sf-muted)" }} /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products..." aria-label="Search products" className="h-10 w-full rounded-lg border bg-transparent pl-10 pr-3 text-sm" /></div>
             <input value={minPrice} onChange={(e) => setMinPrice(e.target.value)} type="number" placeholder="Min price" className="h-10 rounded-lg border bg-transparent px-3 text-sm" />
             <input value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} type="number" placeholder="Max price" className="h-10 rounded-lg border bg-transparent px-3 text-sm" />
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="h-10 rounded-lg border bg-transparent px-3 text-sm">
