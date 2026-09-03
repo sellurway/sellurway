@@ -76,6 +76,13 @@ function ThemesPage() {
     setSettings({ ...current, ...patch });
   }
 
+  function editTemplate(themeId: string) {
+    setSettings((store?.theme_settings ?? {}) as ThemeSettings);
+    setEditorOpen(true);
+    save.mutate({ theme: themeId });
+    window.setTimeout(() => document.getElementById("theme-editor")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  }
+
   return (
     <DashboardShell
       title="Themes"
