@@ -36,6 +36,7 @@ function ThemesPage() {
   const [selectedSection, setSelectedSection] = useState<"hero" | "featured" | "categories" | "products">("hero");
   const [uploading, setUploading] = useState(false);
   const heroFileRef = useRef<HTMLInputElement>(null);
+  const [bannerDrag, setBannerDrag] = useState<number | null>(null);
 
   const { data: store } = useQuery({
     queryKey: ["store-theme", activeStore?.id],
@@ -89,7 +90,7 @@ function ThemesPage() {
       const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
       if (error) throw error;
       const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-      patchSettings({ heroImageUrl: data.publicUrl });
+      patchSettings({ heroImageUrl: data.publicUrl, heroImages: [...(current.heroImages ?? (current.heroImageUrl ? [current.heroImageUrl] : [])), data.publicUrl] });
       toast.success("Hero image added — remember to save changes");
     } catch (e) { toast.error(e instanceof Error ? e.message : "Image upload failed"); } finally { setUploading(false); }
   }
@@ -153,7 +154,21 @@ function ThemesPage() {
 
             <div className="bg-muted/30 p-4 sm:p-6">
               <div className="mb-4 rounded-xl border bg-background p-4">
-                {selectedSection === "hero" && <div className="space-y-4"><div className="grid gap-3 sm:grid-cols-2"><div><Label>Headline</Label><Input className="mt-1" value={current.heroHeadline ?? ""} placeholder={activeStore.name} onChange={(e) => patchSettings({ heroHeadline: e.target.value })} /></div><div><Label>Subheadline</Label><Input className="mt-1" value={current.heroSubline ?? ""} placeholder="Tell customers what makes your store special" onChange={(e) => patchSettings({ heroSubline: e.target.value })} /></div></div><div><Label>Hero photo</Label><div className="mt-2 flex flex-wrap gap-2"><input ref={heroFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) uploadHeroImage(file); e.currentTarget.value = ""; }} /><Button type="button" variant="outline" onClick={() => heroFileRef.current?.click()} disabled={uploading}><ImagePlus className="mr-2 h-4 w-4" />{uploading ? "Uploading..." : current.heroImageUrl ? "Replace photo" : "Add photo"}</Button>{current.heroImageUrl && <Button type="button" variant="ghost" onClick={() => patchSettings({ heroImageUrl: undefined })}>Remove</Button>}</div>{current.heroImageUrl && <img src={current.heroImageUrl} alt="Hero preview" className="mt-3 h-32 w-full rounded-lg border object-cover" />}</div></div>}
+                {selectedSection === "hero" && <div className="space-y-4"><div className="rounded-xl border bg-muted/20 p-3"><Label>Announcement bar</Label><Input className="mt-2" value={current.announcementText ?? ""} placeholder="Free delivery on orders over R500" onChange={(e) => patchSettings({ announcementText: e.target.value })} /></div><div className="grid gap-3 sm:grid-cols-2"><div><Label>Headline</Label><Input className="mt-1" value={current.heroHeadline ?? ""} placeholder={activeStore.name} onChange={(e) => patchSettings({ heroHeadline: e.target.value })} /></div><div><Label>Subheadline</Label><Input className="mt-1" value={current.heroSubline ?? ""} placeholder="Tell customers what makes your store special" onChange={(e) => patchSettings({ heroSubline: e.target.value })} /></div></div><div><Label>Hero photo</Label><div className="mt-2 flex flex-wrap gap-2"><input ref={heroFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) uploadHeroImage(file); e.currentTarget.value = ""; }} /><Button type="button" variant="outline" onClick={() => heroFileRef.current?.click()} disabled={uploading}><ImagePlus className="mr-2 h-4 w-4" />{uploading ? "Uploading..." : current.heroImageUrl ? "Replace photo" : "Add photo"}</Button>{current.heroImageUrl && <Button type="button" variant="ghost" onClick={() => patchSettings({ heroImageUrl: undefined })}>Remove</Button>}</div>{current.heroImageUrl && <img src={current.heroImageUrl} alt="Hero preview" className="mt-3 h-32 w-full rounded-lg border object-cover" />}
+<div className="rounded-xl border p-3">
+  <p className="text-sm font-medium">Banner slider</p>
+  <p className="mb-3 text-xs text-muted-foreground">Add multiple photos. Drag banners to change their order.</p>
+  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    {(current.heroImages ?? []).map((url, index, list) => (
+      <div key={url + index} draggable onDragStart={() => setBannerDrag(index)} onDragOver={(e) => e.preventDefault()} onDrop={() => { if (bannerDrag === null || bannerDrag === index) return; const next=[...list]; const [moved]=next.splice(bannerDrag,1); next.splice(index,0,moved); patchSettings({ heroImages: next, heroImageUrl: next[0] }); setBannerDrag(null); }} className="group relative cursor-grab overflow-hidden rounded-lg border">
+        <img src={url} alt={`Banner ${index + 1}`} className="h-24 w-full object-cover" />
+        <button type="button" onClick={() => { const next=list.filter((_,i)=>i!==index); patchSettings({ heroImages: next, heroImageUrl: next[0] }); }} className="absolute right-1 top-1 rounded bg-black/70 px-2 py-1 text-xs text-white">×</button>
+        <span className="absolute bottom-1 left-1 rounded bg-black/70 px-2 py-1 text-[10px] text-white">Slide {index + 1}</span>
+      </div>
+    ))}
+    <button type="button" onClick={() => heroFileRef.current?.click()} className="flex h-24 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground hover:bg-muted"><ImagePlus className="mr-2 h-4 w-4" />Add banner</button>
+  </div>
+</div></div></div>}
                 {selectedSection === "products" && <div className="grid gap-3 sm:grid-cols-2"><div><Label>Products per row</Label><select className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={current.productColumns ?? 0} onChange={(e) => patchSettings({ productColumns: e.target.value === "0" ? undefined : Number(e.target.value) as 2 | 3 | 4 })}><option value={0}>Theme default</option><option value={2}>2 products</option><option value={3}>3 products</option><option value={4}>4 products</option></select></div><div><Label>Image shape</Label><select className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={current.productImageRatio ?? "square"} onChange={(e) => patchSettings({ productImageRatio: e.target.value as "square" | "portrait" | "landscape" })}><option value="square">Square</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div></div>}
                 {selectedSection === "featured" && <div className="flex items-center justify-between"><div><p className="font-medium">Featured products</p><p className="text-xs text-muted-foreground">Show highlighted products near the top.</p></div><Switch checked={current.showFeatured !== false} onCheckedChange={(v) => patchSettings({ showFeatured: v })} /></div>}
                 {selectedSection === "categories" && <div className="flex items-center justify-between"><div><p className="font-medium">Categories</p><p className="text-xs text-muted-foreground">Show category navigation to shoppers.</p></div><Switch checked={current.showCategories !== false} onCheckedChange={(v) => patchSettings({ showCategories: v })} /></div>}
