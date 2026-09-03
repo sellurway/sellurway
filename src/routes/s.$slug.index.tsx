@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { Loader2, PackageOpen } from "lucide-react";
+import { Loader2, PackageOpen, Search, Star } from "lucide-react";
 import { productImage, useStore, useStoreCategories, useStoreProducts } from "@/lib/storefront";
 import { getTheme } from "@/lib/themes";
 import { formatMoney } from "@/lib/format";
@@ -24,6 +24,10 @@ function StorefrontHome() {
   const { data: products, isLoading } = useStoreProducts(store.id);
   const { data: categories } = useStoreCategories(store.id);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState("featured");
+  const [search, setSearch] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const theme = getTheme(store.theme);
   const settings = store.theme_settings ?? {};
 
@@ -42,10 +46,21 @@ function StorefrontHome() {
     if (store.banner_url) setMeta('meta[property="og:image"]', "property", "og:image", store.banner_url);
   }, [store.name, store.description, store.banner_url]);
 
-  const list = useMemo(
-    () => (products ?? []).filter((p) => !activeCategory || p.category_id === activeCategory),
-    [products, activeCategory],
-  );
+  const list = useMemo(() => {
+    const filtered = (products ?? []).filter((p) => {
+      const matchesCategory = !activeCategory || p.category_id === activeCategory;
+      const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
+      const matchesMin = !minPrice || p.price >= Number(minPrice);
+      const matchesMax = !maxPrice || p.price <= Number(maxPrice);
+      return matchesCategory && matchesSearch && matchesMin && matchesMax;
+    });
+    return [...filtered].sort((a, b) => {
+      if (sortBy === "price-low") return a.price - b.price;
+      if (sortBy === "price-high") return b.price - a.price;
+      if (sortBy === "name") return a.name.localeCompare(b.name);
+      return Number(b.featured) - Number(a.featured);
+    });
+  }, [products, activeCategory, search, minPrice, maxPrice, sortBy]);
   const featured = useMemo(() => (products ?? []).filter((p) => p.featured).slice(0, 3), [products]);
 
   useEffect(() => {
@@ -228,6 +243,7 @@ function ProductCard({
             </span>
           )}
         </p>
+        <div className="mt-2 flex items-center gap-1 text-xs" style={{ color: "var(--sf-accent)" }}><Star className="h-3.5 w-3.5" fill="currentColor" /><span>Reviews available</span></div>
       </div>
     </Link>
   );
