@@ -9,7 +9,15 @@ import { formatMoney } from "@/lib/format";
 import { addToCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/s/$slug/product/$productId")({
-  head: () => ({ meta: [{ title: "Product | Sellurway" }, { name: "description", content: "View this product on Sellurway." }] }),
+  head: ({ params }) => ({
+    meta: [
+      { title: `Product ${params.productId} | ${params.slug}` },
+      { name: "description", content: `View this product from ${params.slug} on Sellurway.` },
+      { property: "og:title", content: `Product | ${params.slug}` },
+      { property: "og:description", content: `View this product from ${params.slug} on Sellurway.` },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: ProductPage,
 });
 
