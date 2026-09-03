@@ -314,6 +314,22 @@ function ThemesPage() {
             ))}
           </div>
 
+          <div className="mt-5">
+            <p className="mb-2 text-sm font-medium">Show or hide sections</p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {(current.sectionOrder ?? ["hero", "featured", "categories", "products"]).map((section) => {
+                const enabled = current.enabledSections?.includes(section) ?? true;
+                return <label key={section} className="flex cursor-pointer items-center justify-between rounded-lg border px-3 py-2 text-sm">
+                  <span className="capitalize">{section === "hero" ? "Hero banner" : section}</span>
+                  <input type="checkbox" checked={enabled} onChange={(e) => {
+                    const all = current.enabledSections ?? ["hero", "featured", "categories", "products"];
+                    patchSettings({ enabledSections: e.target.checked ? [...new Set([...all, section])] as ThemeSettings["enabledSections"] : all.filter((s) => s !== section) as ThemeSettings["enabledSections"] });
+                  }} />
+                </label>;
+              })}
+            </div>
+          </div>
+
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="columns">Products per row</Label>
