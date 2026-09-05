@@ -4,7 +4,7 @@ export function Logo({ className = "", to = "/" }: { className?: string; to?: st
   return (
     <Link to={to} className={`inline-flex items-center gap-2 ${className}`} aria-label="Sellurway home">
       <img
-        src="/favicon.png"
+        src="/favicon.svg"
         alt=""
         width={40}
         height={40}
