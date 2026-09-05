@@ -1,0 +1,44 @@
+name: Strengthen Google homepage snippet
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update homepage SEO copy
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/routes/index.tsx')
+          text = path.read_text()
+
+          replacements = {
+              'Sellurway — Free Online Store Builder | $10 Lifetime': 'Sellurway — Free Online Store Builder | 3 Products Free',
+              'Launch your online store free with Sellurway. Start with 3 products and 2 themes, then upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.': 'Start selling online free with Sellurway. Get 3 products, 2 free themes, checkout, WhatsApp and delivery orders. Upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.',
+              'Start free with 3 products and 2 themes. Upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.': 'Start free with 3 products, 2 free themes, checkout, WhatsApp and delivery orders. Upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.',
+              'Your customers are already buying on WhatsApp, Instagram and TikTok — Sellurway turns that attention into real orders. Pick a beautiful template, upload your products with photos, and share one link anywhere. Orders, payments, delivery and customers all land in one simple dashboard, so you spend your time selling, not managing tools.': 'Start selling without a monthly bill. Sellurway gives you 3 products and 2 free themes to launch your store, plus checkout, WhatsApp and delivery orders. When you need more, pay $10 once for unlimited products and premium themes — no monthly subscription.',
+          }
+
+          for old, new in replacements.items():
+              text = text.replace(old, new)
+
+          path.write_text(text)
+          PY
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/routes/index.tsx
+          git diff --cached --quiet && exit 0
+          git commit -m 'Strengthen homepage Google search messaging'
+          git push
