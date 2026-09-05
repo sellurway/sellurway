@@ -27,17 +27,17 @@ import throwBlanket from "@/assets/demo-throw.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sellurway — Free Online Store Builder | 3 Products Free" },
+      { title: "Sellurway — Start Selling Online" },
       {
         name: "description",
         content:
-          "Start selling online free with Sellurway. Get 3 products, 2 free themes, checkout, WhatsApp and delivery orders. Upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.",
+          "Start selling online with Sellurway — a modern ecommerce platform built for ambitious businesses. Create a professional store, reach customers everywhere and manage your sales in one place. Built to help businesses launch, sell and grow.",
       },
       { property: "og:title", content: "Sellurway — Free Online Store Builder" },
       {
         property: "og:description",
         content:
-          "Start free with 3 products, 2 free themes, checkout, WhatsApp and delivery orders. Upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.",
+          "Sellurway gives businesses a simple way to build a professional online store, take orders and grow online. Launch your store in minutes and sell your way.",
       },
     ],
   }),
