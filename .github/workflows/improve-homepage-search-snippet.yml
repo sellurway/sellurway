@@ -1,0 +1,70 @@
+name: Improve homepage search snippet
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/improve-homepage-search-snippet.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update homepage SEO copy
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          landing = Path('src/routes/index.tsx')
+          text = landing.read_text()
+
+          old_title = 'Sellurway — Sell your way, anywhere in the world'
+          new_title = 'Sellurway — Free Online Store Builder | $10 Lifetime'
+          if old_title not in text:
+              raise SystemExit('Homepage title target not found')
+          text = text.replace(old_title, new_title, 1)
+
+          old_desc = 'Build a storefront in minutes and take orders by full checkout, direct delivery or WhatsApp. Free to start, $10 once for unlimited products.'
+          new_desc = 'Launch your online store free with Sellurway. Start with 3 products and 2 themes, then upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.'
+          if old_desc not in text:
+              raise SystemExit('Homepage description target not found')
+          text = text.replace(old_desc, new_desc, 1)
+
+          old_og_title = 'Sellurway — Sell your way, anywhere'
+          new_og_title = 'Sellurway — Free Online Store Builder'
+          if old_og_title not in text:
+              raise SystemExit('OG title target not found')
+          text = text.replace(old_og_title, new_og_title, 1)
+
+          old_og_desc = 'Storefronts, orders, customers and analytics in one place. Free forever for 3 products, $10 once for unlimited.'
+          new_og_desc = 'Start free with 3 products and 2 themes. Upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.'
+          if old_og_desc not in text:
+              raise SystemExit('OG description target not found')
+          text = text.replace(old_og_desc, new_og_desc, 1)
+
+          landing.write_text(text)
+
+          root = Path('src/routes/__root.tsx')
+          root_text = root.read_text()
+          root_old = 'Sellurway is the global storefront builder. Launch a store, take orders by checkout, delivery or WhatsApp, and go unlimited for a one-time $10.'
+          root_new = 'Sellurway is a free online store builder. Start with 3 products and 2 themes, then upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.'
+          if root_old not in root_text:
+              raise SystemExit('Root description target not found')
+          root_text = root_text.replace(root_old, root_new, 1)
+          root.write_text(root_text)
+          PY
+
+      - name: Commit and remove workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/routes/index.tsx src/routes/__root.tsx
+          git commit -m "Improve homepage SEO search snippet"
+          git rm .github/workflows/improve-homepage-search-snippet.yml
+          git commit -m "Remove one-time SEO snippet workflow"
+          git push
