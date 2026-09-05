@@ -93,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Sellurway is the global storefront builder. Launch a store, take orders by checkout, delivery or WhatsApp, and go unlimited for a one-time $10.",
+          "Sellurway is a free online store builder. Start with 3 products and 2 themes, then upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.",
       },
       { property: "og:site_name", content: "Sellurway" },
       { property: "og:type", content: "website" },
