@@ -28,6 +28,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Sellurway — Online Store Builder for Businesses" },
+      { rel: "canonical", href: "https://sellurway.vercel.app/" },
       {
         name: "description",
         content:
@@ -118,7 +119,7 @@ function Landing() {
                 Free forever for your first 3 products
               </span>
               <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-                Set up your online shop in
+                Sellurway — Set up your online shop in
                 <span className="text-gradient"> ten minutes.</span>
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
