@@ -112,7 +112,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.",
+          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
       { property: "og:site_name", content: "Sellurway" },
       { property: "og:type", content: "website" },
@@ -121,27 +121,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.",
+          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Sellurway — Online Store Builder for Businesses" },
       {
         name: "twitter:description",
         content:
-          "Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.",
+          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=3" },
-      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=3" },
-      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=3" },
+      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=4" },
+      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=4" },
+      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=4" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
       },
     ],
   }),
