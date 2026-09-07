@@ -31,13 +31,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.",
+          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
-      { property: "og:title", content: "Sellurway — Start Selling Online" },
+      { property: "og:title", content: "Sellurway — Online Store Builder for Businesses" },
       {
         property: "og:description",
         content:
-          "Build a professional online store with Sellurway. Reach customers anywhere and manage your business from one simple platform.",
+          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
     ],
   }),
