@@ -41,6 +41,22 @@ jobs:
               'Sellurway — Online Store Builder for Businesses'
           )
 
+          # Make the brand itself prominent on the homepage, which is an additional
+          # signal Google can use when choosing a site name.
+          text = text.replace(
+              'Set up your online shop in\n                <span className="text-gradient"> ten minutes.</span>',
+              'Sellurway — Set up your online shop in\n                <span className="text-gradient"> ten minutes.</span>'
+          )
+
+          # Add an explicit homepage canonical once, so the preferred URL is unambiguous.
+          marker = '      {\n        name: "description",\n        content:'
+          if 'rel: "canonical"' not in text:
+              text = text.replace(
+                  marker,
+                  '      { rel: "canonical", href: "https://sellurway.vercel.app/" },\n' + marker,
+                  1,
+              )
+
           path.write_text(text)
           PY
 
@@ -51,5 +67,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/routes/index.tsx
           git diff --cached --quiet && exit 0
-          git commit -m 'Finalize homepage search metadata'
+          git commit -m 'Strengthen Sellurway homepage site signals'
           git push
