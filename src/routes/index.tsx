@@ -27,7 +27,7 @@ import throwBlanket from "@/assets/demo-throw.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sellurway — Start Selling Online | Online Store Builder" },
+      { title: "Sellurway — Online Store Builder for Businesses" },
       {
         name: "description",
         content:
