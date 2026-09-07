@@ -17,10 +17,28 @@ import { InstallApp } from "@/components/InstallApp";
 
 const websiteJsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "Sellurway",
-  alternateName: "Sellurway — Sell your way, anywhere",
-  url: "https://sellurway.vercel.app/",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://sellurway.vercel.app/#website",
+      name: "Sellurway",
+      alternateName: "Sellurway",
+      url: "https://sellurway.vercel.app/",
+      publisher: {
+        "@id": "https://sellurway.vercel.app/#organization",
+      },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://sellurway.vercel.app/#organization",
+      name: "Sellurway",
+      url: "https://sellurway.vercel.app/",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://sellurway.vercel.app/sellurway-favicon.svg",
+      },
+    },
+  ],
 };
 
 function NotFoundComponent() {
@@ -89,21 +107,35 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#6d3df5" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "Sellurway" },
-      { title: "Sellurway — Sell your way, anywhere" },
+      { name: "application-name", content: "Sellurway" },
+      { title: "Sellurway — Online Store Builder for Businesses" },
       {
         name: "description",
         content:
-          "Start, run and grow your online business with Sellurway. Build a professional online store, showcase your products, reach customers anywhere and manage your business from one simple platform.",
+          "Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.",
       },
       { property: "og:site_name", content: "Sellurway" },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://sellurway.vercel.app/" },
+      { property: "og:title", content: "Sellurway — Online Store Builder for Businesses" },
+      {
+        property: "og:description",
+        content:
+          "Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Sellurway — Online Store Builder for Businesses" },
+      {
+        name: "twitter:description",
+        content:
+          "Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=2" },
-      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=2" },
-      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=2" },
+      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=3" },
+      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=3" },
+      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=3" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
