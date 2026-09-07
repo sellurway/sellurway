@@ -31,7 +31,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Start, run and grow your online business with Sellurway. Build a professional online store, showcase your products, reach customers anywhere and manage your business from one simple platform.",
+          "Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.",
       },
       { property: "og:title", content: "Sellurway — Start Selling Online" },
       {
