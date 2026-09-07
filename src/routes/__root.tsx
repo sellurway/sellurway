@@ -101,8 +101,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/svg+xml", href: "/sellurway-logo.svg" },
-      { rel: "apple-touch-icon", href: "/sellurway-logo.svg" },
+      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=2" },
+      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=2" },
+      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=2" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -150,7 +151,6 @@ function RootComponent() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <AuthProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <InstallApp />
         <Toaster position="top-center" richColors />
