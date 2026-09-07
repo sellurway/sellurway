@@ -8,6 +8,6 @@
   "background_color": "#ffffff",
   "theme_color": "#6d3df5",
   "icons": [
-    { "src": "/sellurway-logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    { "src": "/sellurway-favicon.svg?v=2", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }
