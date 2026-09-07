@@ -23,6 +23,7 @@ jobs:
           replacements = {
               'Sellurway — Free Online Store Builder | $10 Lifetime': 'Sellurway — Online Store Builder for Businesses',
               'Sellurway — Free Online Store Builder | 3 Products Free': 'Sellurway — Online Store Builder for Businesses',
+              'Sellurway — Start Selling Online | Online Store Builder': 'Sellurway — Online Store Builder for Businesses',
               'Start selling online free with Sellurway. Get 3 products, 2 free themes, checkout, WhatsApp and delivery orders. Upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.': 'Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.',
               'Start selling without a monthly bill. Sellurway gives you 3 products and 2 free themes to launch your store, plus checkout, WhatsApp and delivery orders. When you need more, pay $10 once for unlimited products and premium themes — no monthly subscription.': 'Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.',
               'Start free with 3 products, 2 free themes, checkout, WhatsApp and delivery orders. Upgrade once for $10 to unlock unlimited products and premium themes — no monthly subscription.': 'Build your online store with Sellurway. Create a professional storefront, showcase products, take orders and grow your business from one simple platform.',
