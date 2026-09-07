@@ -31,13 +31,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Launch your online store with Sellurway — a modern platform built for businesses ready to sell online. Create a professional storefront, reach customers anywhere and manage your business from one place.",
+          "Start, run and grow your online business with Sellurway. Build a professional online store, showcase your products, reach customers anywhere and manage your business from one simple platform.",
       },
       { property: "og:title", content: "Sellurway — Start Selling Online" },
       {
         property: "og:description",
         content:
-          "Sellurway helps businesses build a professional online store, reach customers anywhere and grow online — without the complexity.",
+          "Build a professional online store with Sellurway. Reach customers anywhere and manage your business from one simple platform.",
       },
     ],
   }),
@@ -149,10 +149,8 @@ function Landing() {
             </div>
 
             <div className="relative mx-auto w-fit lg:mx-0 lg:justify-self-center">
-              {/* iPhone mockup */}
               <div className="relative w-[270px] rotate-[4deg] rounded-[2.9rem] border-[6px] border-neutral-800 bg-neutral-800 shadow-[var(--shadow-lift)] sm:w-[300px]">
                 <div className="overflow-hidden rounded-[2.45rem] bg-white">
-                  {/* Dynamic Island + status bar */}
                   <div className="relative flex h-9 items-center justify-between px-5 pt-1 text-[10px] font-semibold text-neutral-900">
                     <span>9:41</span>
                     <span className="absolute left-1/2 top-1.5 h-5 w-20 -translate-x-1/2 rounded-full bg-neutral-900" />
@@ -161,7 +159,6 @@ function Landing() {
                       <span className="inline-block h-2 w-1 rounded-[1px] bg-neutral-900/80" />
                     </span>
                   </div>
-                  {/* Storefront screen */}
                   <div className="px-4 pb-5 pt-2">
                     <p className="font-display text-xl font-extrabold tracking-tight text-neutral-900">Kora Home</p>
                     <p className="mt-0.5 text-[10px] text-neutral-500">Handmade homeware · Ships nationwide</p>
@@ -301,56 +298,22 @@ function Landing() {
                 <p className="mt-2 font-display text-4xl font-extrabold">
                   $10 <span className="text-base font-medium text-muted-foreground">once</span>
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">Pay once. Yours forever. No renewals.</p>
+                <p className="mt-1 text-sm text-muted-foreground">No recurring subscription.</p>
                 <ul className="mt-6 space-y-2.5 text-sm">
-                  {[
-                    "Unlimited products",
-                    "All 12 themes including premium",
-                    "Custom theme colours & fonts",
-                    "Advanced analytics",
-                    "Priority support",
-                    "Every future free-plan feature",
-                  ].map((i) => (
+                  {["Unlimited products", "Premium themes", "All free features", "Priority upgrades"].map((i) => (
                     <li key={i} className="flex gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {i}
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" /> {i}
                     </li>
                   ))}
                 </ul>
                 <Button asChild className="mt-7 w-full">
-                  <Link to="/pricing">Get lifetime</Link>
+                  <Link to="/auth" search={{ mode: "signup" }}>Create your store</Link>
                 </Button>
               </div>
             </div>
           </div>
         </section>
-
-        {/* CTA */}
-        <section className="pb-20">
-          <div className="container-page">
-            <div className="overflow-hidden rounded-[var(--radius-2xl)] bg-brand-gradient px-8 py-14 text-center text-white">
-              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Sell your way.</h2>
-              <p className="mx-auto mt-3 max-w-lg text-white/85">
-                Open your storefront today and share the link with your first customer tonight.
-              </p>
-              <Button asChild size="lg" variant="secondary" className="mt-7 h-12 px-7 text-base">
-                <Link to="/auth" search={{ mode: "signup" }}>Create your free store</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
       </main>
-
-      <footer className="border-t py-10">
-        <div className="container-page flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <Logo />
-          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
-            <Link to="/s/$slug" params={{ slug: "demo-kora-home" }} className="hover:text-foreground">Demo store</Link>
-            <Link to="/auth" search={{ mode: "login" }} className="hover:text-foreground">Log in</Link>
-          </nav>
-          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Sellurway</p>
-        </div>
-      </footer>
     </div>
   );
 }
