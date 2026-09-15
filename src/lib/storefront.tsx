@@ -9,7 +9,7 @@ import throwBlanket from "@/assets/demo-throw.jpg";
 import type { ThemeSettings } from "@/lib/themes";
 
 export interface PublicStore {
-  id: string; name: string; slug: string; description: string | null; logo_url: string | null; banner_url: string | null;
+  id: string; name: string; slug: string; custom_domain: string | null; description: string | null; logo_url: string | null; banner_url: string | null;
   currency: string; country: string | null; category: string | null;
   selling_mode: "full_checkout" | "direct_order" | "whatsapp" | "multiple";
   product_action: string; whatsapp_number: string | null; contact_email: string | null; contact_phone: string | null;
@@ -24,14 +24,38 @@ export interface PublicProduct {
   product_variants?: { id: string; name: string; value: string; price_delta: number }[];
 }
 
-const STORE_SELECT = "id,name,slug,description,logo_url,banner_url,currency,country,category,selling_mode,product_action,whatsapp_number,contact_email,contact_phone,theme,theme_settings,delivery_settings,payment_methods,policies,social_links,stripe_enabled";
+const STORE_SELECT = "id,name,slug,custom_domain,description,logo_url,banner_url,currency,country,category,selling_mode,product_action,whatsapp_number,contact_email,contact_phone,theme,theme_settings,delivery_settings,payment_methods,policies,social_links,stripe_enabled";
 
-export function useStoreQuery(slug: string) {
+function normalizeHost(value: string) {
+  return value.toLowerCase().trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/\.$/, "");
+}
+
+export function useStoreQuery(identifier: string) {
+  const normalized = normalizeHost(identifier);
+  const looksLikeDomain = normalized.includes(".");
+
   return useQuery({
-    queryKey: ["storefront", slug],
+    queryKey: ["storefront", looksLikeDomain ? `domain:${normalized}` : `slug:${normalized}`],
     queryFn: async () => {
-      const { data, error } = await supabase.from("stores").select(STORE_SELECT).eq("slug", slug).eq("published", true).eq("suspended", false).maybeSingle();
+      const query = supabase.from("stores").select(STORE_SELECT).eq("published", true).eq("suspended", false);
+      const { data, error } = looksLikeDomain
+        ? await query.eq("custom_domain", normalized).maybeSingle()
+        : await query.eq("slug", normalized).maybeSingle();
       if (error) throw error;
+
+      if (!data && looksLikeDomain && normalized.startsWith("www.")) {
+        const apex = normalized.slice(4);
+        const fallback = await supabase
+          .from("stores")
+          .select(STORE_SELECT)
+          .eq("published", true)
+          .eq("suspended", false)
+          .eq("custom_domain", apex)
+          .maybeSingle();
+        if (fallback.error) throw fallback.error;
+        return (fallback.data as unknown as PublicStore) ?? null;
+      }
+
       return (data as unknown as PublicStore) ?? null;
     },
   });
