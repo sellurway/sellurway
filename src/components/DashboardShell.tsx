@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BarChart3,
   ExternalLink,
+  Globe2,
   LayoutDashboard,
   LifeBuoy,
   LogOut,
@@ -27,6 +28,7 @@ const NAV = [
   { to: "/customers", label: "Customers", icon: Users },
   { to: "/themes", label: "Themes", icon: Palette },
   { to: "/customize", label: "Customize", icon: Sparkles },
+  { to: "/domains", label: "Domains", icon: Globe2 },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/support", label: "Support", icon: LifeBuoy },
