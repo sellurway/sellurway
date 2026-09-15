@@ -3,34 +3,6 @@ import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/r
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
-const PLATFORM_DOMAIN = "sellurway.shop";
-const RESERVED_SUBDOMAINS = new Set(["www", "app", "admin", "dashboard"]);
-
-function rewriteStorefrontHost(request: Request): Request {
-  const url = new URL(request.url);
-  const host = url.hostname.toLowerCase();
-  const suffix = `.${PLATFORM_DOMAIN}`;
-
-  if (!host.endsWith(suffix)) return request;
-
-  const tenant = host.slice(0, -suffix.length);
-  if (!tenant || tenant.includes(".") || RESERVED_SUBDOMAINS.has(tenant)) return request;
-
-  const accept = request.headers.get("accept") ?? "";
-  if (!accept.includes("text/html")) return request;
-
-  if (url.pathname.startsWith("/s/") || url.pathname === "/report" || url.pathname.startsWith("/report/")) {
-    return request;
-  }
-
-  url.pathname = `/s/${tenant}${url.pathname === "/" ? "" : url.pathname}`;
-  return new Request(url.toString(), request);
-}
-
-const hostRoutingMiddleware = createMiddleware().server(async ({ request, next }) => {
-  return next({ request: rewriteStorefrontHost(request) });
-});
-
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
@@ -46,11 +18,14 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   }
 });
 
+// Start installs this automatically when src/start.ts is absent; defining the
+// file opts out, so re-add it explicitly to keep server functions protected
+// from cross-site requests.
 const csrfMiddleware = createCsrfMiddleware({
   filter: (ctx) => ctx.handlerType === "serverFn",
 });
 
 export const startInstance = createStart(() => ({
   functionMiddleware: [attachSupabaseAuth],
-  requestMiddleware: [hostRoutingMiddleware, errorMiddleware, csrfMiddleware],
+  requestMiddleware: [errorMiddleware, csrfMiddleware],
 }));
