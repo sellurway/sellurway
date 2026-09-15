@@ -3,15 +3,32 @@ import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
 const PLATFORM_DOMAIN = "sellurway.shop";
+const PLATFORM_HOSTS = new Set([
+  PLATFORM_DOMAIN,
+  `www.${PLATFORM_DOMAIN}`,
+  "sellurway.vercel.app",
+  "www.sellurway.vercel.app",
+  "localhost",
+  "127.0.0.1",
+]);
 const RESERVED_SUBDOMAINS = new Set(["www", "app", "admin", "dashboard"]);
 
-function tenantFromHost(hostname: string) {
+function tenantFromPlatformHost(hostname: string) {
   const host = hostname.toLowerCase().replace(/\.$/, "");
   const suffix = `.${PLATFORM_DOMAIN}`;
   if (!host.endsWith(suffix)) return null;
   const tenant = host.slice(0, -suffix.length);
   if (!tenant || tenant.includes(".") || RESERVED_SUBDOMAINS.has(tenant)) return null;
   return tenant;
+}
+
+function customDomainFromHost(hostname: string) {
+  const host = hostname.toLowerCase().replace(/\.$/, "");
+  if (!host || PLATFORM_HOSTS.has(host)) return null;
+  if (host.endsWith(`.${PLATFORM_DOMAIN}`)) return null;
+  if (host.endsWith(".vercel.app")) return null;
+  if (host === "localhost" || host === "127.0.0.1") return null;
+  return host;
 }
 
 export const getRouter = () => {
@@ -23,22 +40,33 @@ export const getRouter = () => {
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     rewrite: {
-      // Browser URL → internal route.
-      // Example: https://kora-home.sellurway.shop/ → /s/kora-home
       input: ({ url }) => {
-        const tenant = tenantFromHost(url.hostname);
-        if (!tenant || url.pathname.startsWith("/s/")) return url;
-        url.pathname = `/s/${tenant}${url.pathname === "/" ? "" : url.pathname}`;
+        if (url.pathname.startsWith("/s/")) return url;
+
+        const platformTenant = tenantFromPlatformHost(url.hostname);
+        if (platformTenant) {
+          url.pathname = `/s/${platformTenant}${url.pathname === "/" ? "" : url.pathname}`;
+          return url;
+        }
+
+        const customDomain = customDomainFromHost(url.hostname);
+        if (customDomain) {
+          url.pathname = `/s/${customDomain}${url.pathname === "/" ? "" : url.pathname}`;
+        }
         return url;
       },
-      // Internal route → clean browser URL.
-      // Example: /s/kora-home/product/123 → https://kora-home.sellurway.shop/product/123
       output: ({ url }) => {
         const match = url.pathname.match(/^\/s\/([^/]+)(\/.*)?$/);
         if (!match) return url;
+
         const tenant = match[1];
         if (!tenant) return url;
-        url.hostname = `${tenant}.${PLATFORM_DOMAIN}`;
+
+        if (tenant.includes(".")) {
+          url.hostname = tenant;
+        } else {
+          url.hostname = `${tenant}.${PLATFORM_DOMAIN}`;
+        }
         url.pathname = match[2] || "/";
         return url;
       },
