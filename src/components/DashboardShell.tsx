@@ -11,6 +11,7 @@ import {
   Receipt,
   Settings,
   Shield,
+  Sparkles,
   Users,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +26,7 @@ const NAV = [
   { to: "/orders", label: "Orders", icon: Receipt },
   { to: "/customers", label: "Customers", icon: Users },
   { to: "/themes", label: "Themes", icon: Palette },
+  { to: "/customize", label: "Customize", icon: Sparkles },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/support", label: "Support", icon: LifeBuoy },
