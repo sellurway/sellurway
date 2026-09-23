@@ -238,7 +238,7 @@ function ThemesPage() {
     ))}
     <button type="button" onClick={() => heroFileRef.current?.click()} className="flex h-24 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground hover:bg-muted"><ImagePlus className="mr-2 h-4 w-4" />Add banner</button>
   </div>
-</div></div></div></div>}
+</div></div></div>}
                 {selectedSection === "products" && <div className="space-y-4">
   <div>
     <div className="flex items-center justify-between gap-3"><div><Label>Products in this template</Label><p className="mt-1 text-xs text-muted-foreground">Add a product or choose existing products. Your selection appears in the preview.</p></div><Button type="button" size="sm" onClick={() => setQuickProductOpen(!quickProductOpen)}><span className="mr-1.5 text-lg leading-none">+</span> Add product</Button></div>
