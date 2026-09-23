@@ -27,12 +27,12 @@ import throwBlanket from "@/assets/demo-throw.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sellurway — Online Store Builder for Businesses" },
+      { title: "SellUrWay — Online Store Builder for Businesses" },
       { rel: "canonical", href: "https://sellurway.vercel.app/" },
       {
         name: "description",
         content:
-          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
+          "SellUrWay helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
       { property: "og:title", content: "Sellurway — Online Store Builder for Businesses" },
       {
@@ -116,7 +116,7 @@ function Landing() {
               </span>
 
               <h1 className="mt-5 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
-                Sellurway — Sellurway — Set up your online shop in
+                SellUrWay — Set up your online shop in
                 <span className="text-gradient"> ten minutes.</span>
               </h1>
 
@@ -272,7 +272,7 @@ function Landing() {
       <footer className="border-t py-10">
         <div className="container-page flex flex-col gap-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <Logo />
-          <p>Sellurway — build your store, share your link, make more sales.</p>
+          <p>SellUrWay — build your store, share your link, make more sales.</p>
         </div>
       </footer>
     </div>
