@@ -110,11 +110,26 @@ function StorefrontHome() {
   }, [products, ratings]);
 
   const selectedProductIds = settings.selectedProductIds ?? [];
+  const featuredIds = useMemo(
+    () => new Set(featured.map((p) => p.id)),
+    [featured],
+  );
   const list = useMemo(() => {
-    const filtered = selectedProductIds.length ? products.filter((p) => selectedProductIds.includes(p.id)) : products;
+    let filtered = selectedProductIds.length
+      ? products.filter((p) => selectedProductIds.includes(p.id))
+      : products;
+
+    // Featured products already have their own section above. Do not render
+    // them a second time in the main product grid.
+    if (settings.showFeatured !== false && featuredIds.size > 0) {
+      filtered = filtered.filter((p) => !featuredIds.has(p.id));
+    }
+
     if (sortBy !== "rating") return filtered;
-    return [...filtered].sort((a, b) => (ratings[b.id]?.average ?? 0) - (ratings[a.id]?.average ?? 0));
-  }, [products, selectedProductIds, sortBy, ratings]);
+    return [...filtered].sort(
+      (a, b) => (ratings[b.id]?.average ?? 0) - (ratings[a.id]?.average ?? 0),
+    );
+  }, [products, selectedProductIds, sortBy, ratings, settings.showFeatured, featuredIds]);
   const featured = useMemo(() => products.filter((p) => p.featured).slice(0, 3), [products]);
 
   useEffect(() => {
