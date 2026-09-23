@@ -49,23 +49,18 @@ function Dashboard() {
     queryKey: ["dashboard-stats", activeStore?.id],
     enabled: !!activeStore,
     queryFn: async () => {
-      const storeId = activeStore!.id;
-      const [orders, products, customers] = await Promise.all([
-        supabase.from("orders").select("total,currency,status").eq("store_id", storeId),
-        supabase.from("products").select("id", { count: "exact", head: true }).eq("store_id", storeId),
-        supabase.from("customers").select("id", { count: "exact", head: true }).eq("store_id", storeId),
-      ]);
-      if (orders.error) throw orders.error;
-      const rows = orders.data ?? [];
-      const revenue = rows
-        .filter((o) => o.status !== "cancelled" && o.status !== "refunded")
-        .reduce((s, o) => s + Number(o.total), 0);
+      const { data, error } = await supabase.rpc("get_dashboard_stats", {
+        _store_id: activeStore!.id,
+      });
+      if (error) throw error;
+
+      const row = Array.isArray(data) ? data[0] : data;
       return {
-        revenue,
-        currency: rows[0]?.currency ?? "USD",
-        orders: rows.length,
-        products: products.count ?? 0,
-        customers: customers.count ?? 0,
+        revenue: Number(row?.revenue ?? 0),
+        currency: row?.currency ?? activeStore!.currency ?? "USD",
+        orders: Number(row?.orders ?? 0),
+        products: Number(row?.products ?? 0),
+        customers: Number(row?.customers ?? 0),
       };
     },
   });
