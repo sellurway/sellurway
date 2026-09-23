@@ -29,7 +29,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { getTheme, THEMES, type ThemeSettings } from "@/lib/themes";
-import { formatMoney } from "@/lib/format";
 import { ProductForm, emptyDraft } from "@/components/ProductForm";
 import { ImageUploader } from "@/components/ImageUploader";
 
@@ -102,12 +101,13 @@ function CustomizePage() {
   const activeTheme = getTheme(draftTheme);
 
   const { data: editorProducts = [] } = useQuery({
-    queryKey: ["customizer-products", activeStore.id],
+    queryKey: ["customizer-products", activeStore?.id],
+    enabled: !!activeStore,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
         .select("id,name,price,compare_at_price,featured,status,product_images(url,position)")
-        .eq("store_id", activeStore.id)
+        .eq("store_id", activeStore!.id)
         .eq("status", "active")
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -391,6 +391,7 @@ function ColorField({ label, value, fallback, onChange }: { label: string; value
 type EditorProduct = { id: string; name: string; price: number; compare_at_price: number | null; featured: boolean; images: string[] };
 
 function StorePreview({ storeName, theme, settings, sections, products, currency }: { storeName: string; theme: ReturnType<typeof getTheme>; settings: ThemeSettings; sections: SectionId[]; products: EditorProduct[]; currency: string }) {
+  const money = (amount: number) => new Intl.NumberFormat(undefined, { style: "currency", currency, minimumFractionDigits: 2 }).format(amount);
   const bg = settings.bg || theme.palette.bg;
   const ink = settings.ink || theme.palette.ink;
   const accent = settings.accent || theme.palette.accent;
@@ -411,7 +412,7 @@ function StorePreview({ storeName, theme, settings, sections, products, currency
         if (section === "hero" && settings.showHero !== false) return <section key={section} className="grid gap-5 py-4 sm:grid-cols-[1.1fr_0.9fr] sm:items-center"><div><div className="mb-3 inline-flex rounded-full border px-3 py-1 text-[10px]" style={{ borderColor: theme.palette.border, color: muted }}>New collection</div><h1 className="text-3xl font-extrabold leading-tight sm:text-5xl" style={{ fontFamily: font }}>{settings.heroHeadline || `Welcome to ${storeName}`}</h1><p className="mt-3 max-w-md text-sm leading-relaxed" style={{ color: muted }}>{settings.heroSubline || "A beautiful storefront that is ready for your products and customers."}</p><button className="mt-5 px-5 py-3 text-xs font-semibold text-white" style={{ background: accent, borderRadius: radius }}>Shop now</button></div><div className="min-h-[210px] rounded-2xl border" style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}><div className="h-full min-h-[210px] rounded-2xl" style={{ background: `linear-gradient(135deg, ${accent}22, transparent)` }} /></div></section>;
         if (section === "featured" && settings.showFeatured !== false) return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>Featured products</h2><span className="text-xs" style={{ color: muted }}>View all</span></div><div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{products.filter((product) => product.featured).slice(0, 3).map((product) => <PreviewCard key={product.id} product={product} accent={accent} theme={theme} cardRadius={cardRadius} />)}</div></section>;
         if (section === "categories" && settings.showCategories !== false) return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>Shop by category</h2></div><div className="flex flex-wrap gap-2">{(settings.categoryLabels?.length ? settings.categoryLabels : ["New", "Popular", "Sale"]).map((label) => <span key={label} className="rounded-full border px-3 py-1.5 text-xs" style={{ borderColor: theme.palette.border }}>{label}</span>)}</div></section>;
-        if (section === "products") { const columns = settings.productColumns || 4; const cls = columns === 2 ? "grid-cols-2" : columns === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-4"; const ratio = settings.productImageRatio === "portrait" ? "aspect-[4/5]" : settings.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square"; return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>All products</h2><span className="text-xs" style={{ color: muted }}>Sort</span></div><div className={`grid gap-3 ${cls}`}>{products.filter((product) => !(settings.showFeatured !== false && product.featured)).map((product) => <div key={product.id}><div className={`${ratio} overflow-hidden border`} style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}>{product.images[0] ? <img src={product.images[0]} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full" style={{ background: `linear-gradient(135deg, ${accent}28, transparent)` }} />}</div><p className="mt-2 text-xs font-medium">{product.name}</p><p className="text-[11px]" style={{ color: muted }}>R{product.price.toFixed(2)}</p></div>)}</div></section>; }
+        if (section === "products") { const columns = settings.productColumns || 4; const cls = columns === 2 ? "grid-cols-2" : columns === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-4"; const ratio = settings.productImageRatio === "portrait" ? "aspect-[4/5]" : settings.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square"; return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>All products</h2><span className="text-xs" style={{ color: muted }}>Sort</span></div><div className={`grid gap-3 ${cls}`}>{products.filter((product) => !(settings.showFeatured !== false && product.featured)).map((product) => <div key={product.id}><div className={`${ratio} overflow-hidden border`} style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}>{product.images[0] ? <img src={product.images[0]} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full" style={{ background: `linear-gradient(135deg, ${accent}28, transparent)` }} />}</div><p className="mt-2 text-xs font-medium">{product.name}</p><p className="text-[11px]" style={{ color: muted }}>{money(product.price)}</p></div>)}</div></section>; }
         return null;
       })}
     </div>
