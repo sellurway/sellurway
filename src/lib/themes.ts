@@ -14,7 +14,15 @@ export type ThemeId =
   | "atlas"
   | "solstice"
   | "kinetic"
-  | "atelier";
+  | "atelier"
+  | "pulse"
+  | "canvas"
+  | "street"
+  | "fresh"
+  | "bloom"
+  | "mono"
+  | "market"
+  | "glow";
 
 export interface StoreTheme {
   id: ThemeId;
@@ -138,6 +146,54 @@ export const THEMES: StoreTheme[] = [
     tagline: "Bold colour and playful confidence for a fresh next-generation store.",
     palette: { bg: "#11111a", surface: "#1a1a27", ink: "#ffffff", muted: "#a8a8bd", accent: "#ff4f9a", accentInk: "#ffffff", border: "#303044" },
     heading: sans, body, buttonRadius: "16px", cardRadius: "24px", bestFor: "Gadgets, music, youth brands"
+  }
+,{
+    id: "pulse", name: "Pulse", photoSet: "tech", premium: true, layout: "grid",
+    tagline: "High-energy layouts, sharp cards and a modern shopping experience.",
+    palette: { bg: "#f3f6ff", surface: "#ffffff", ink: "#171b2d", muted: "#68708a", accent: "#ef4444", accentInk: "#ffffff", border: "#dce2f2" },
+    heading: sans, body, buttonRadius: "12px", cardRadius: "16px", bestFor: "Tech, fitness, active brands"
+  },
+  {
+    id: "canvas", name: "Canvas", photoSet: "home", premium: true, layout: "editorial",
+    tagline: "A creative gallery layout that puts photography and storytelling first.",
+    palette: { bg: "#faf8f4", surface: "#ffffff", ink: "#26221d", muted: "#7b746b", accent: "#8a6a52", accentInk: "#ffffff", border: "#e3ddd4" },
+    heading: sans, body, buttonRadius: "4px", cardRadius: "10px", bestFor: "Art, interiors, creative studios"
+  },
+  {
+    id: "street", name: "Street", photoSet: "fashion", premium: true, layout: "showcase",
+    tagline: "Bold urban styling for brands that want their products to stand out.",
+    palette: { bg: "#111214", surface: "#191b1f", ink: "#f7f7f4", muted: "#a5a8ad", accent: "#d7ff3f", accentInk: "#161a08", border: "#2b2e34" },
+    heading: sans, body, buttonRadius: "8px", cardRadius: "14px", bestFor: "Streetwear, sneakers, youth fashion"
+  },
+  {
+    id: "fresh", name: "Fresh", photoSet: "food", premium: true, layout: "grid",
+    tagline: "Light, colourful and approachable for products people love to discover.",
+    palette: { bg: "#f5fbf2", surface: "#ffffff", ink: "#1d2a1c", muted: "#6e7d6d", accent: "#49a942", accentInk: "#ffffff", border: "#dcebd9" },
+    heading: sans, body, buttonRadius: "999px", cardRadius: "22px", bestFor: "Food, wellness, everyday products"
+  },
+  {
+    id: "bloom", name: "Bloom", photoSet: "flowers", premium: true, layout: "lookbook",
+    tagline: "Soft, elegant and expressive for beautiful products and giftable collections.",
+    palette: { bg: "#fff5f8", surface: "#ffffff", ink: "#321f27", muted: "#8a7079", accent: "#d85b87", accentInk: "#ffffff", border: "#f0dbe3" },
+    heading: sans, body, buttonRadius: "18px", cardRadius: "28px", bestFor: "Flowers, gifts, beauty"
+  },
+  {
+    id: "mono", name: "Mono", photoSet: "jewel", premium: true, layout: "list",
+    tagline: "Minimal black-and-white presentation for a clean, premium catalogue.",
+    palette: { bg: "#f7f7f5", surface: "#ffffff", ink: "#141414", muted: "#737373", accent: "#202020", accentInk: "#ffffff", border: "#ddddda" },
+    heading: sans, body, buttonRadius: "4px", cardRadius: "4px", bestFor: "Design, jewellery, minimalist brands"
+  },
+  {
+    id: "market", name: "Market", photoSet: "home", premium: true, layout: "grid",
+    tagline: "Practical, spacious shopping built for variety and everyday browsing.",
+    palette: { bg: "#f5f7f9", surface: "#ffffff", ink: "#17212b", muted: "#6c7782", accent: "#0f766e", accentInk: "#ffffff", border: "#dce2e7" },
+    heading: sans, body, buttonRadius: "10px", cardRadius: "14px", bestFor: "General stores, home, marketplaces"
+  },
+  {
+    id: "glow", name: "Glow", photoSet: "beauty", premium: true, layout: "showcase",
+    tagline: "Soft gradients and polished details for a bright modern storefront.",
+    palette: { bg: "#f8f5ff", surface: "#ffffff", ink: "#241d38", muted: "#7b7191", accent: "#a855f7", accentInk: "#ffffff", border: "#e7def8" },
+    heading: sans, body, buttonRadius: "999px", cardRadius: "24px", bestFor: "Beauty, skincare, creators"
   }
 ];
 
