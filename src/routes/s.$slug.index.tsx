@@ -12,10 +12,10 @@ type RatingInfo = { average: number; count: number };
 export const Route = createFileRoute("/s/$slug/")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.slug} | Sellurway Store` },
-      { name: "description", content: `Shop ${params.slug} on Sellurway. Browse products and discover great deals online.` },
-      { property: "og:title", content: `${params.slug} | Sellurway Store` },
-      { property: "og:description", content: `Shop ${params.slug} on Sellurway.` },
+      { title: `${params.slug} | SellUrWay Store` },
+      { name: "description", content: `Shop ${params.slug} on SellUrWay. Browse products and discover great deals online.` },
+      { property: "og:title", content: `${params.slug} | SellUrWay Store` },
+      { property: "og:description", content: `Shop ${params.slug} on SellUrWay.` },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
@@ -55,8 +55,8 @@ function StorefrontHome() {
   const settings = store.theme_settings ?? {};
 
   useEffect(() => {
-    const title = store.name ? ` | Sellurway` : "Sellurway Store";
-    const description = store.description || `Shop  online on Sellurway.`;
+    const title = store.name ? ` | Sellurway` : "SellUrWay Store";
+    const description = store.description || `Shop  online on SellUrWay.`;
     document.title = title;
     const setMeta = (selector: string, attr: "name" | "property", key: string, content: string) => {
       let el = document.head.querySelector(selector) as HTMLMetaElement | null;
