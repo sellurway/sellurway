@@ -40,15 +40,26 @@ function CustomersPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [activity, setActivity] = useState("all");
+  const [page, setPage] = useState(0);
+  const pageSize = 50;
 
-  const { data: customers, isLoading } = useQuery({
-    queryKey: ["customers", activeStore?.id],
+  const { data: customers, isLoading, isFetching } = useQuery({
+    queryKey: ["customers", activeStore?.id, page, search, sort, from, to, activity],
     enabled: !!activeStore,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("customers")
-        .select("id,name,email,phone,orders_count,total_spent,last_order_at,created_at")
+      let query = supabase.from("customers")
+        .select("id,name,email,phone,orders_count,total_spent,last_order_at,created_at", { count: "exact" })
         .eq("store_id", activeStore!.id);
+      const q = search.trim();
+      if (q) query = query.or(`name.ilike.%${q.replace(/[,%]/g, "")}%,email.ilike.%${q.replace(/[,%]/g, "")}%,phone.ilike.%${q.replace(/[,%]/g, "")}%`);
+      if (activity === "repeat") query = query.gt("orders_count", 1);
+      if (activity === "new") query = query.lte("orders_count", 1);
+      if (from) query = query.gte("last_order_at", from);
+      if (to) query = query.lt("last_order_at", `${to}T23:59:59.999`);
+      if (sort === "spend") query = query.order("total_spent", { ascending: false });
+      else if (sort === "orders") query = query.order("orders_count", { ascending: false });
+      else query = query.order("last_order_at", { ascending: false, nullsFirst: false });
+      const { data, error } = await query.range(page * pageSize, page * pageSize + pageSize - 1);
       if (error) throw error;
       return data ?? [];
     },
@@ -62,24 +73,7 @@ function CustomersPage() {
     );
   }
 
-  const q = search.trim().toLowerCase();
-  const rows = [...(customers ?? [])]
-    .filter(
-      (c) =>
-        (q === "" ||
-          (c.name ?? "").toLowerCase().includes(q) ||
-          (c.email ?? "").toLowerCase().includes(q) ||
-          (c.phone ?? "").includes(q)) &&
-        (activity === "all" ||
-          (activity === "repeat" && c.orders_count > 1) ||
-          (activity === "new" && c.orders_count <= 1)) &&
-        withinRange(c.last_order_at ?? c.created_at, from, to),
-    )
-    .sort((a, b) => {
-      if (sort === "spend") return Number(b.total_spent) - Number(a.total_spent);
-      if (sort === "orders") return b.orders_count - a.orders_count;
-      return new Date(b.last_order_at ?? b.created_at).getTime() - new Date(a.last_order_at ?? a.created_at).getTime();
-    });
+  const rows = customers ?? [];
 
   function exportCsv() {
     if (rows.length === 0) {
@@ -156,6 +150,7 @@ function CustomersPage() {
         </div>
       </div>
 
+      {!isLoading && <div className="mb-4 flex items-center justify-between text-sm text-muted-foreground"><span>Page {page + 1}</span><div className="flex gap-2"><Button variant="outline" size="sm" disabled={page === 0 || isFetching} onClick={() => setPage((p) => p - 1)}>Previous</Button><Button variant="outline" size="sm" disabled={isFetching || rows.length < pageSize} onClick={() => setPage((p) => p + 1)}>Next</Button></div></div>}
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading customers…</p>
