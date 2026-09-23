@@ -32,13 +32,28 @@ function customDomainFromHost(hostname: string) {
 }
 
 export const getRouter = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Avoid refetching the same data on every navigation/focus event.
+        // This reduces database/API traffic while keeping storefront data fresh.
+        staleTime: 30_000,
+        gcTime: 5 * 60_000,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        retry: 2,
+      },
+      mutations: {
+        retry: 1,
+      },
+    },
+  });
 
   const router = createRouter({
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    defaultPreloadStaleTime: 0,
+    defaultPreloadStaleTime: 30_000,
     rewrite: {
       input: ({ url }) => {
         if (url.pathname.startsWith("/s/")) return url;
