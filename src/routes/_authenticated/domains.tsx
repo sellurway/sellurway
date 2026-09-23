@@ -57,18 +57,15 @@ function DomainsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("stores")
-        .select("id,name,slug,theme_settings")
+        .select("id,name,slug,custom_domain")
         .eq("id", activeStore!.id)
         .single();
       if (error) throw error;
-      const settings = data?.theme_settings && typeof data.theme_settings === "object" && !Array.isArray(data.theme_settings)
-        ? data.theme_settings as Record<string, unknown>
-        : {};
       return {
         id: data.id,
         name: data.name,
         slug: data.slug,
-        custom_domain: typeof settings.customDomain === "string" ? settings.customDomain : null,
+        custom_domain: typeof data.custom_domain === "string" ? data.custom_domain : null,
       };
     },
   });
@@ -84,28 +81,9 @@ function DomainsPage() {
       if (normalized && !validDomain(normalized)) {
         throw new Error("Enter a valid domain such as yourstore.com or yourstore.co.za.");
       }
-      const { data: currentStore, error: readError } = await supabase
-        .from("stores")
-        .select("theme_settings")
-        .eq("id", activeStore.id)
-        .single();
-      if (readError) throw readError;
-
-      const currentSettings =
-        currentStore?.theme_settings &&
-        typeof currentStore.theme_settings === "object" &&
-        !Array.isArray(currentStore.theme_settings)
-          ? currentStore.theme_settings as Record<string, unknown>
-          : {};
-
       const { error } = await supabase
         .from("stores")
-        .update({
-          theme_settings: {
-            ...currentSettings,
-            customDomain: normalized || null,
-          },
-        })
+        .update({ custom_domain: normalized || null })
         .eq("id", activeStore.id);
       if (error) {
         if (error.message.toLowerCase().includes("duplicate") || error.message.toLowerCase().includes("unique")) {
