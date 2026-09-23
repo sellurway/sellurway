@@ -84,18 +84,27 @@ function OrdersPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const pageSize = 50;
 
   const queryClient = useQueryClient();
 
-  const { data: orders, isLoading } = useQuery({
-    queryKey: ["orders", activeStore?.id],
+  const { data: orders, isLoading, isFetching } = useQuery({
+    queryKey: ["orders", activeStore?.id, page, search, status, source, from, to],
     enabled: !!activeStore,
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("orders")
-        .select("*")
+        .select("*", { count: "exact" })
         .eq("store_id", activeStore!.id)
         .order("created_at", { ascending: false });
+      if (status !== "all") query = query.eq("status", status);
+      if (source !== "all") query = query.eq("source", source);
+      if (from) query = query.gte("created_at", from);
+      if (to) query = query.lt("created_at", `${to}T23:59:59.999`);
+      const q = search.trim();
+      if (q) query = query.or(`order_number.ilike.%${q.replace(/[,%]/g, "")}%,customer_name.ilike.%${q.replace(/[,%]/g, "")}%,customer_email.ilike.%${q.replace(/[,%]/g, "")}%,customer_phone.ilike.%${q.replace(/[,%]/g, "")}%`);
+      const { data, error } = await query.range(page * pageSize, page * pageSize + pageSize - 1);
       if (error) throw error;
       return (data ?? []) as unknown as OrderRow[];
     },
@@ -148,18 +157,7 @@ function OrdersPage() {
   }
 
   const all = orders ?? [];
-  const q = search.trim().toLowerCase();
-  const filtered = all.filter(
-    (o) =>
-      (status === "all" || o.status === status) &&
-      (source === "all" || o.source === source) &&
-      withinRange(o.created_at, from, to) &&
-      (q === "" ||
-        o.order_number.toLowerCase().includes(q) ||
-        (o.customer_name ?? "").toLowerCase().includes(q) ||
-        (o.customer_email ?? "").toLowerCase().includes(q) ||
-        (o.customer_phone ?? "").includes(q)),
-  );
+  const filtered = all;
   const open = all.find((o) => o.id === openId) ?? null;
   const revenue = filtered
     .filter((o) => o.status !== "cancelled" && o.status !== "refunded")
