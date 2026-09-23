@@ -61,20 +61,52 @@ export function useStoreQuery(identifier: string) {
   });
 }
 
-export function useStoreProducts(storeId: string | undefined) {
+export type StoreProductQueryOptions = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  categoryId?: string | null;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  sortBy?: "featured" | "price-low" | "price-high" | "name" | "rating";
+};
+
+export function useStoreProducts(storeId: string | undefined, options: StoreProductQueryOptions = {}) {
+  const page = Math.max(0, options.page ?? 0);
+  const pageSize = Math.min(48, Math.max(12, options.pageSize ?? 48));
+  const search = options.search?.trim() ?? "";
+  const categoryId = options.categoryId ?? null;
+  const minPrice = options.minPrice;
+  const maxPrice = options.maxPrice;
+  const sortBy = options.sortBy ?? "featured";
+
   return useQuery({
-    queryKey: ["storefront-products", storeId],
+    queryKey: ["storefront-products", storeId, page, pageSize, search, categoryId, minPrice, maxPrice, sortBy],
     enabled: !!storeId,
     queryFn: async () => {
-      // Fetch products and photos separately. This guarantees one storefront card per
-      // product, no matter how many photos that product has.
-      const { data: productRows, error: productError } = await supabase.from("products")
-        .select("id,name,description,price,compare_at_price,featured,stock_quantity,track_stock,category_id")
-        .eq("store_id", storeId!).eq("status", "active").order("created_at", { ascending: false });
+      // Keep large catalogues out of the browser. Filtering, sorting and pagination
+      // happen in Postgres; images are fetched only for the current page.
+      let query = supabase.from("products")
+        .select("id,name,description,price,compare_at_price,featured,stock_quantity,track_stock,category_id", { count: "exact" })
+        .eq("store_id", storeId!)
+        .eq("status", "active");
+
+      if (search) query = query.ilike("name", `%${search.replace(/[%_]/g, "\\$&")}%`);
+      if (categoryId) query = query.eq("category_id", categoryId);
+      if (minPrice != null && Number.isFinite(minPrice)) query = query.gte("price", minPrice);
+      if (maxPrice != null && Number.isFinite(maxPrice)) query = query.lte("price", maxPrice);
+
+      if (sortBy === "price-low") query = query.order("price", { ascending: true }).order("created_at", { ascending: false });
+      else if (sortBy === "price-high") query = query.order("price", { ascending: false }).order("created_at", { ascending: false });
+      else if (sortBy === "name") query = query.order("name", { ascending: true });
+      else query = query.order("featured", { ascending: false }).order("created_at", { ascending: false });
+
+      const from = page * pageSize;
+      const { data: productRows, error: productError, count } = await query.range(from, from + pageSize - 1);
       if (productError) throw productError;
 
       const products = (productRows ?? []) as unknown as Omit<PublicProduct, "product_images">[];
-      if (!products.length) return [];
+      if (!products.length) return { products: [] as PublicProduct[], total: count ?? 0, hasMore: false };
 
       const ids = products.map((product) => product.id);
       const { data: imageRows, error: imageError } = await supabase
@@ -91,14 +123,19 @@ export function useStoreProducts(storeId: string | undefined) {
         imagesByProduct.set(image.product_id, list);
       }
 
-      return products.map((product) => ({
+      const productsWithImages = products.map((product) => ({
         ...product,
         product_images: imagesByProduct.get(product.id) ?? [],
       })) as PublicProduct[];
+
+      return {
+        products: productsWithImages,
+        total: count ?? productsWithImages.length,
+        hasMore: from + productsWithImages.length < (count ?? 0),
+      };
     },
   });
 }
-
 export function useStoreCategories(storeId: string | undefined) {
   return useQuery({
     queryKey: ["storefront-categories", storeId], enabled: !!storeId,
