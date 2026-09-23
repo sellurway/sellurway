@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { THEMES, type ThemeSettings } from "@/lib/themes";
 import { ThemePreview } from "@/components/ThemePreview";
+import { uploadStoreImage, resolveStoreImage } from "@/lib/storage";
 
 
 export const Route = createFileRoute("/_authenticated/themes")({
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/themes")({
 });
 
 function ThemesPage() {
-  const { activeStore, isLifetime } = useAuth();
+  const { activeStore, isLifetime, user } = useAuth();
   const queryClient = useQueryClient();
   const [settings, setSettings] = useState<ThemeSettings | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -38,10 +39,22 @@ function ThemesPage() {
   const [uploading, setUploading] = useState(false);
   const heroFileRef = useRef<HTMLInputElement>(null);
   const featuredFileRef = useRef<HTMLInputElement>(null);
+  const imageTextFileRef = useRef<HTMLInputElement>(null);
   const productsFileRef = useRef<HTMLInputElement>(null);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [bannerDrag, setBannerDrag] = useState<number | null>(null);
   const [sectionDrag, setSectionDrag] = useState<string | null>(null);
   const allSections = ["hero", "promo", "imageText", "featured", "categories", "products", "testimonials", "newsletter", "social"] as const;
+
+  const { data: products } = useQuery({
+    queryKey: ["theme-editor-products", activeStore?.id],
+    enabled: !!activeStore,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("products").select("id,name,price,status").eq("store_id", activeStore!.id).order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
 
   const { data: store } = useQuery({
     queryKey: ["store-theme", activeStore?.id],
@@ -57,7 +70,7 @@ function ThemesPage() {
     },
   });
 
-  const current = settings ?? ((store?.theme_settings ?? {}) as ThemeSettings);
+  const current = settings ?? ((store?.theme_settings ?? {}) as ThemeSettings);\n\n  useEffect(() => {\n    setSelectedProductIds(current.selectedProductIds ?? []);\n  }, [store?.theme_settings]);
 
   const save = useMutation({
     mutationFn: async (patch: { theme?: string; theme_settings?: ThemeSettings }) => {
@@ -173,10 +186,32 @@ function ThemesPage() {
     <button type="button" onClick={() => heroFileRef.current?.click()} className="flex h-24 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground hover:bg-muted"><ImagePlus className="mr-2 h-4 w-4" />Add banner</button>
   </div>
 </div></div></div>}
-                {selectedSection === "products" && <div className="space-y-4"><div><Label>Products section photo</Label><input ref={productsFileRef} type="file" accept="image/*" className="hidden" onChange={(e)=>{const f=e.target.files?.[0]; if(f) uploadThemeImage(f,"productsImageUrl"); e.currentTarget.value="";}} /><div className="mt-2 flex gap-2"><Button type="button" variant="outline" onClick={()=>productsFileRef.current?.click()} disabled={uploading}><ImagePlus className="mr-2 h-4 w-4" />Add photo</Button>{current.productsImageUrl && <Button type="button" variant="ghost" onClick={()=>patchSettings({productsImageUrl:undefined})}>Remove</Button>}</div>{current.productsImageUrl && <img src={current.productsImageUrl} className="mt-3 h-28 w-full rounded-lg object-cover" alt="Products preview" />}</div><div className="grid gap-3 sm:grid-cols-2"><div><Label>Products per row</Label><select className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={current.productColumns ?? 0} onChange={(e) => patchSettings({ productColumns: e.target.value === "0" ? undefined : Number(e.target.value) as 2 | 3 | 4 })}><option value={0}>Theme default</option><option value={2}>2 products</option><option value={3}>3 products</option><option value={4}>4 products</option></select></div><div><Label>Image shape</Label><div className="mt-2 grid grid-cols-3 gap-2"><button type="button" onClick={()=>patchSettings({productImageRatio:"square"})} className={"rounded-lg border p-2 text-left transition " + (current.productImageRatio === "square" || !current.productImageRatio ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted")}><div className="aspect-square w-full rounded-md bg-muted"/><p className="mt-2 text-xs font-medium">Square</p><p className="text-[10px] text-muted-foreground">1:1</p></button><button type="button" onClick={()=>patchSettings({productImageRatio:"portrait"})} className={"rounded-lg border p-2 text-left transition " + (current.productImageRatio === "portrait" ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted")}><div className="aspect-[4/5] w-full rounded-md bg-muted"/><p className="mt-2 text-xs font-medium">Portrait</p><p className="text-[10px] text-muted-foreground">4:5</p></button><button type="button" onClick={()=>patchSettings({productImageRatio:"landscape"})} className={"rounded-lg border p-2 text-left transition " + (current.productImageRatio === "landscape" ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted")}><div className="aspect-[4/3] w-full rounded-md bg-muted"/><p className="mt-2 text-xs font-medium">Landscape</p><p className="text-[10px] text-muted-foreground">4:3</p></button></div><p className="mt-2 text-xs text-muted-foreground">Click a shape to see it immediately in the live preview below.</p></div></div></div>}
+                {selectedSection === "products" && <div className="space-y-4">
+  <div>
+    <Label>Products to show</Label>
+    <p className="mt-1 text-xs text-muted-foreground">Choose exactly which products appear in this template.</p>
+    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+      {(products ?? []).map((p) => {
+        const checked = selectedProductIds.includes(p.id);
+        return <label key={p.id} className={"flex cursor-pointer items-center gap-3 rounded-lg border p-3 " + (checked ? "border-primary bg-primary/5" : "hover:bg-muted")}>
+          <input type="checkbox" checked={checked} onChange={(e) => {
+            const next = e.target.checked ? [...selectedProductIds, p.id] : selectedProductIds.filter((id) => id !== p.id);
+            setSelectedProductIds(next);
+            patchSettings({ selectedProductIds: next });
+          }} />
+          <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{p.name}</span><span className="text-xs text-muted-foreground">{Number(p.price).toFixed(2)} · {p.status}</span></span>
+        </label>;
+      })}
+    </div>
+    {(products ?? []).length === 0 && <p className="mt-2 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">Create products first, then they will appear here.</p>}
+    {selectedProductIds.length > 0 && <Button type="button" variant="ghost" size="sm" className="mt-2" onClick={() => { setSelectedProductIds([]); patchSettings({ selectedProductIds: [] }); }}>Show all products</Button>}
+  </div>
+  <div><Label>Products section photo</Label><input ref={productsFileRef} type="file" accept="image/*" className="hidden" onChange={(e)=>{const f=e.target.files?.[0]; if(f) uploadThemeImage(f,"productsImageUrl"); e.currentTarget.value="";}} /><div className="mt-2 flex gap-2"><Button type="button" variant="outline" onClick={()=>productsFileRef.current?.click()} disabled={uploading}><ImagePlus className="mr-2 h-4 w-4" />{uploading ? "Uploading..." : current.productsImageUrl ? "Replace photo" : "Add photo"}</Button>{current.productsImageUrl && <Button type="button" variant="ghost" onClick={()=>patchSettings({productsImageUrl:undefined})}>Remove</Button>}</div>{current.productsImageUrl && <img src={resolveStoreImage(current.productsImageUrl) ?? current.productsImageUrl} className="mt-3 h-28 w-full rounded-lg object-cover" alt="Products preview" />}</div>
+  <div className="grid gap-3 sm:grid-cols-2"><div><Label>Products per row</Label><select className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={current.productColumns ?? 0} onChange={(e) => patchSettings({ productColumns: e.target.value === "0" ? undefined : Number(e.target.value) as 2 | 3 | 4 })}><option value={0}>Theme default</option><option value={2}>2 products</option><option value={3}>3 products</option><option value={4}>4 products</option></select></div><div><Label>Image shape</Label><div className="mt-2 grid grid-cols-3 gap-2"><button type="button" onClick={()=>patchSettings({productImageRatio:"square"})} className={"rounded-lg border p-2 text-left transition " + (current.productImageRatio === "square" || !current.productImageRatio ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted")}><div className="aspect-square w-full rounded-md bg-muted"/><p className="mt-2 text-xs font-medium">Square</p><p className="text-[10px] text-muted-foreground">1:1</p></button><button type="button" onClick={()=>patchSettings({productImageRatio:"portrait"})} className={"rounded-lg border p-2 text-left transition " + (current.productImageRatio === "portrait" ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted")}><div className="aspect-[4/5] w-full rounded-md bg-muted"/><p className="mt-2 text-xs font-medium">Portrait</p><p className="text-[10px] text-muted-foreground">4:5</p></button><button type="button" onClick={()=>patchSettings({productImageRatio:"landscape"})} className={"rounded-lg border p-2 text-left transition " + (current.productImageRatio === "landscape" ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted")}><div className="aspect-[4/3] w-full rounded-md bg-muted"/><p className="mt-2 text-xs font-medium">Landscape</p><p className="text-[10px] text-muted-foreground">4:3</p></button></div></div></div>
+</div>}
                 {selectedSection === "featured" && <div className="space-y-4"><div className="flex items-center justify-between"><div><p className="font-medium">Featured products</p><p className="text-xs text-muted-foreground">Show highlighted products near the top.</p></div><Switch checked={current.showFeatured !== false} onCheckedChange={(v) => patchSettings({ showFeatured: v })} /></div><div><Label>Featured section photo</Label><input ref={featuredFileRef} type="file" accept="image/*" className="hidden" onChange={(e)=>{const f=e.target.files?.[0];if(f) uploadThemeImage(f,"featuredImageUrl");e.currentTarget.value="";}} /><div className="mt-2"><Button type="button" variant="outline" onClick={()=>featuredFileRef.current?.click()}><ImagePlus className="mr-2 h-4 w-4" />Add photo</Button></div>{current.featuredImageUrl && <img src={current.featuredImageUrl} className="mt-3 h-28 w-full rounded-lg object-cover" alt="" />}</div></div>}
                 {selectedSection === "categories" && <div className="space-y-4"><div className="flex items-center justify-between"><div><p className="font-medium">Categories</p><p className="text-xs text-muted-foreground">Show category navigation to shoppers.</p></div><Switch checked={current.showCategories !== false} onCheckedChange={(v) => patchSettings({ showCategories: v })} /></div><div><Label>Category names</Label><Input className="mt-2" value={(current.categoryLabels ?? ["New","Popular","Sale"]).join(", ")} placeholder="New, Popular, Sale" onChange={(e)=>patchSettings({categoryLabels:e.target.value.split(",").map(x=>x.trim()).filter(Boolean)})} /><p className="mt-1 text-xs text-muted-foreground">Separate categories with commas.</p></div></div>}
-                <div className="mt-3 flex gap-2"><Button size="sm" onClick={() => save.mutate({ theme_settings: current })} disabled={save.isPending}>{save.isPending ? "Saving..." : "Save changes"}</Button><Button size="sm" variant="outline" onClick={() => setEditorOpen(false)}>Done</Button></div>
+                <div className="mt-3 flex gap-2"><Button size="sm" onClick={() => save.mutate({ theme_settings: { ...current, selectedProductIds } })} disabled={save.isPending}>{save.isPending ? "Saving..." : "Save changes"}</Button><Button size="sm" variant="outline" onClick={() => setEditorOpen(false)}>Done</Button></div>
               </div>
               <div className="mb-4 flex items-center justify-center gap-2">
                 <Button size="sm" variant={device === "desktop" ? "secondary" : "ghost"} onClick={() => setDevice("desktop")}><Monitor className="mr-1.5 h-4 w-4" />Desktop</Button>
