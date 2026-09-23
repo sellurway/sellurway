@@ -97,6 +97,25 @@ function CustomizePage() {
 
   const activeTheme = getTheme(draftTheme);
 
+  const { data: editorProducts = [] } = useQuery({
+    queryKey: ["customizer-products", activeStore.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id,name,price,compare_at_price,featured,status,product_images(url,position)")
+        .eq("store_id", activeStore.id)
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []).map((product) => ({
+        ...product,
+        images: [...(product.product_images ?? [])]
+          .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+          .map((image) => image.url),
+      }));
+    },
+  });
+
   const save = useMutation({
     mutationFn: async () => {
       if (!activeStore) throw new Error("No active store");
@@ -253,7 +272,7 @@ function CustomizePage() {
             </div>
             <div className="flex justify-center overflow-auto rounded-2xl border bg-neutral-200/70 p-3 sm:p-5">
               <div className={`overflow-hidden rounded-xl border bg-white shadow-xl transition-all ${device === "mobile" ? "w-[390px] max-w-full" : "w-full max-w-[1160px]"}`}>
-                <StorePreview storeName={store?.name || activeStore.name} theme={activeTheme} settings={draft} sections={sections} />
+                <StorePreview storeName={store?.name || activeStore.name} theme={activeTheme} settings={draft} sections={sections} products={editorProducts} />
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between rounded-xl border bg-background px-3 py-2.5 text-xs text-muted-foreground">
@@ -341,7 +360,9 @@ function ColorField({ label, value, fallback, onChange }: { label: string; value
   return <div><Label className="text-xs">{label}</Label><div className="mt-1.5 flex items-center gap-2"><input aria-label={`${label} color`} type="color" value={value || fallback} onChange={(event) => onChange(event.target.value)} className="h-10 w-11 cursor-pointer rounded-md border bg-background p-1" /><Input value={value || fallback} onChange={(event) => onChange(event.target.value)} className="h-10 text-xs" /></div></div>;
 }
 
-function StorePreview({ storeName, theme, settings, sections }: { storeName: string; theme: ReturnType<typeof getTheme>; settings: ThemeSettings; sections: SectionId[] }) {
+type EditorProduct = { id: string; name: string; price: number; compare_at_price: number | null; featured: boolean; images: string[] };
+
+function StorePreview({ storeName, theme, settings, sections, products }: { storeName: string; theme: ReturnType<typeof getTheme>; settings: ThemeSettings; sections: SectionId[]; products: EditorProduct[] }) {
   const bg = settings.bg || theme.palette.bg;
   const ink = settings.ink || theme.palette.ink;
   const accent = settings.accent || theme.palette.accent;
@@ -360,15 +381,15 @@ function StorePreview({ storeName, theme, settings, sections }: { storeName: str
     <div className="mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-10">
       {sections.map((section) => {
         if (section === "hero" && settings.showHero !== false) return <section key={section} className="grid gap-5 py-4 sm:grid-cols-[1.1fr_0.9fr] sm:items-center"><div><div className="mb-3 inline-flex rounded-full border px-3 py-1 text-[10px]" style={{ borderColor: theme.palette.border, color: muted }}>New collection</div><h1 className="text-3xl font-extrabold leading-tight sm:text-5xl" style={{ fontFamily: font }}>{settings.heroHeadline || `Welcome to ${storeName}`}</h1><p className="mt-3 max-w-md text-sm leading-relaxed" style={{ color: muted }}>{settings.heroSubline || "A beautiful storefront that is ready for your products and customers."}</p><button className="mt-5 px-5 py-3 text-xs font-semibold text-white" style={{ background: accent, borderRadius: radius }}>Shop now</button></div><div className="min-h-[210px] rounded-2xl border" style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}><div className="h-full min-h-[210px] rounded-2xl" style={{ background: `linear-gradient(135deg, ${accent}22, transparent)` }} /></div></section>;
-        if (section === "featured" && settings.showFeatured !== false) return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>Featured products</h2><span className="text-xs" style={{ color: muted }}>View all</span></div><div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{["New arrival", "Best seller", "Featured"].map((name, index) => <PreviewCard key={name} name={name} accent={accent} theme={theme} index={index} cardRadius={cardRadius} />)}</div></section>;
+        if (section === "featured" && settings.showFeatured !== false) return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>Featured products</h2><span className="text-xs" style={{ color: muted }}>View all</span></div><div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{products.filter((product) => product.featured).slice(0, 3).map((product) => <PreviewCard key={product.id} product={product} accent={accent} theme={theme} cardRadius={cardRadius} />)}</div></section>;
         if (section === "categories" && settings.showCategories !== false) return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>Shop by category</h2></div><div className="flex flex-wrap gap-2">{(settings.categoryLabels?.length ? settings.categoryLabels : ["New", "Popular", "Sale"]).map((label) => <span key={label} className="rounded-full border px-3 py-1.5 text-xs" style={{ borderColor: theme.palette.border }}>{label}</span>)}</div></section>;
-        if (section === "products") { const columns = settings.productColumns || 4; const cls = columns === 2 ? "grid-cols-2" : columns === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-4"; const ratio = settings.productImageRatio === "portrait" ? "aspect-[4/5]" : settings.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square"; return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>All products</h2><span className="text-xs" style={{ color: muted }}>Sort</span></div><div className={`grid gap-3 ${cls}`}>{["New arrival", "Best seller", "Featured", "Just in"].map((name, index) => <div key={name}><div className={`${ratio} overflow-hidden border`} style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}><div className="h-full w-full" style={{ background: `linear-gradient(${index * 35 + 120}deg, ${accent}28, transparent)` }} /></div><p className="mt-2 text-xs font-medium">{name}</p><p className="text-[11px]" style={{ color: muted }}>R{[299, 499, 799, 999][index]}.00</p></div>)}</div></section>; }
+        if (section === "products") { const columns = settings.productColumns || 4; const cls = columns === 2 ? "grid-cols-2" : columns === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-4"; const ratio = settings.productImageRatio === "portrait" ? "aspect-[4/5]" : settings.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square"; return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>All products</h2><span className="text-xs" style={{ color: muted }}>Sort</span></div><div className={`grid gap-3 ${cls}`}>{products.filter((product) => !(settings.showFeatured !== false && product.featured)).map((product) => <div key={product.id}><div className={`${ratio} overflow-hidden border`} style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}>{product.images[0] ? <img src={product.images[0]} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full" style={{ background: `linear-gradient(135deg, ${accent}28, transparent)` }} />}</div><p className="mt-2 text-xs font-medium">{product.name}</p><p className="text-[11px]" style={{ color: muted }}>R{product.price.toFixed(2)}</p></div>)}</div></section>; }
         return null;
       })}
     </div>
   </div>;
 }
 
-function PreviewCard({ name, accent, theme, index, cardRadius }: { name: string; accent: string; theme: ReturnType<typeof getTheme>; index: number; cardRadius: string }) {
-  return <div><div className="aspect-square overflow-hidden border" style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}><div className="h-full w-full" style={{ background: `linear-gradient(${index * 35 + 120}deg, ${accent}28, transparent)` }} /></div><p className="mt-2 text-xs font-medium">{name}</p><p className="text-[11px]" style={{ color: theme.palette.muted }}>R{[299, 499, 799][index]}.00</p></div>;
+function PreviewCard({ product, accent, theme, cardRadius }: { product: EditorProduct; accent: string; theme: ReturnType<typeof getTheme>; cardRadius: string }) {
+  return <div><div className="aspect-square overflow-hidden border" style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}>{product.images[0] ? <img src={product.images[0]} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full" style={{ background: `linear-gradient(135deg, ${accent}28, transparent)` }} />}</div><p className="mt-2 text-xs font-medium">{product.name}</p><p className="text-[11px]" style={{ color: theme.palette.muted }}>R{product.price.toFixed(2)}</p></div>;
 }
