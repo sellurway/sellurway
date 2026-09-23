@@ -13,6 +13,7 @@ import {
   PanelLeft,
   PanelRight,
   Smartphone,
+  Plus,
   Sparkles,
   Store,
   Type,
@@ -198,6 +199,18 @@ function CustomizePage() {
                 <div className="mb-3 flex items-center justify-between">
                   <div><p className="text-sm font-semibold">Homepage sections</p><p className="text-xs text-muted-foreground">Drag, reorder and customize.</p></div>
                   <Sparkles className="h-4 w-4 text-primary" />
+                </div>
+                <div className="mb-4 rounded-xl border bg-background p-3">
+                  <p className="text-sm font-semibold">Products & photos</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Create products and upload up to 5 product photos without leaving your store builder.</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button asChild size="sm">
+                      <Link to="/products/new"><Plus className="mr-1.5 h-4 w-4" /> Add product & photos</Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm">
+                      <Link to="/products">Manage products</Link>
+                    </Button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   {sections.map((section, index) => (
