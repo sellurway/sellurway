@@ -148,13 +148,17 @@ function ThemesPage() {
 
   async function uploadThemeImage(file: File, key: "heroImageUrl" | "featuredImageUrl" | "productsImageUrl") {
     if (!file.type.startsWith("image/")) return toast.error("Please choose an image file");
-    const reader = new FileReader();
-    reader.onload = () => {
-      patchSettings({ [key]: String(reader.result) } as Partial<ThemeSettings>);
-      toast.success("Photo added — remember to save changes");
-    };
-    reader.onerror = () => toast.error("Could not read that image");
-    reader.readAsDataURL(file);
+    if (!user?.id) return toast.error("Please sign in again");
+    try {
+      setUploading(true);
+      const url = await uploadStoreImage(file, user.id, "theme");
+      patchSettings({ [key]: url } as Partial<ThemeSettings>);
+      toast.success("Photo added — save changes to publish it");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not upload that image");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function uploadHeroImage(file: File) {
