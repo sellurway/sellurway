@@ -261,7 +261,7 @@ function CustomizePage() {
                 </div>
 
                 <div className="mt-5 border-t pt-5">
-                  <SectionSettingsPanel section={selectedSection} draft={draft} onUpdate={updateDraft} />
+                  <SectionSettingsPanel section={selectedSection} draft={draft} userId={user?.id ?? ""} onUpdate={updateDraft} />
                 </div>
               </div>
             ) : (
@@ -307,7 +307,7 @@ function CustomizePage() {
   );
 }
 
-function SectionSettingsPanel({ section, draft, onUpdate }: { section: SectionId; draft: ThemeSettings; onUpdate: (patch: Partial<ThemeSettings>) => void }) {
+function SectionSettingsPanel({ section, draft, userId, onUpdate }: { section: SectionId; draft: ThemeSettings; userId: string; onUpdate: (patch: Partial<ThemeSettings>) => void }) {
   if (section === "hero") {
     return <div className="space-y-4">
       <div><p className="text-sm font-semibold">Hero banner</p><p className="mt-1 text-xs text-muted-foreground">Edit the first thing shoppers see.</p></div>
