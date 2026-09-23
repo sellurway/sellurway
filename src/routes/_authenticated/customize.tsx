@@ -29,7 +29,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { getTheme, THEMES, type ThemeSettings } from "@/lib/themes";
+import { formatMoney } from "@/lib/format";
 import { ProductForm, emptyDraft } from "@/components/ProductForm";
+import { ImageUploader } from "@/components/ImageUploader";
 
 export const Route = createFileRoute("/_authenticated/customize")({
   head: () => ({
@@ -56,7 +58,7 @@ const sectionMeta: Record<SectionId, { label: string; description: string }> = {
 const defaultSections: SectionId[] = ["hero", "featured", "categories", "products"];
 
 function CustomizePage() {
-  const { activeStore, isLifetime } = useAuth();
+  const { activeStore, isLifetime, user } = useAuth();
   const queryClient = useQueryClient();
   const [panel, setPanel] = useState<Panel>("sections");
   const [selectedSection, setSelectedSection] = useState<SectionId>("hero");
@@ -67,6 +69,7 @@ function CustomizePage() {
   const [future, setFuture] = useState<ThemeSettings[]>([]);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [currency, setCurrency] = useState("ZAR");
 
   const { data: store, isLoading } = useQuery({
     queryKey: ["customizer-store", activeStore?.id],
@@ -74,11 +77,11 @@ function CustomizePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("stores")
-        .select("id,name,slug,theme,theme_settings")
+        .select("id,name,slug,theme,currency,theme_settings")
         .eq("id", activeStore!.id)
         .single();
       if (error) throw error;
-      return data as { id: string; name: string; slug: string; theme: string; theme_settings: ThemeSettings | null };
+      return data as { id: string; name: string; slug: string; theme: string; currency: string | null; theme_settings: ThemeSettings | null };
     },
   });
 
@@ -86,6 +89,7 @@ function CustomizePage() {
     if (!store) return;
     setDraft((store.theme_settings ?? {}) as ThemeSettings);
     setDraftTheme(store.theme || THEMES[0]!.id);
+    setCurrency(store.currency || "ZAR");
     setHistory([]);
     setFuture([]);
   }, [store?.id, store?.theme, store?.theme_settings]);
@@ -121,7 +125,7 @@ function CustomizePage() {
       if (!activeStore) throw new Error("No active store");
       const { error } = await supabase
         .from("stores")
-        .update({ theme: draftTheme, theme_settings: draft } as never)
+        .update({ theme: draftTheme, theme_settings: draft, currency } as never)
         .eq("id", activeStore.id);
       if (error) throw error;
     },
@@ -261,7 +265,7 @@ function CustomizePage() {
                 </div>
               </div>
             ) : (
-              <ThemeSettingsPanel isLifetime={isLifetime} draft={draft} draftTheme={draftTheme} onTheme={setDraftTheme} onUpdate={updateDraft} />
+              <ThemeSettingsPanel isLifetime={isLifetime} draft={draft} draftTheme={draftTheme} currency={currency} userId={user?.id ?? ""} onTheme={setDraftTheme} onCurrency={setCurrency} onUpdate={updateDraft} />
             )}
           </aside>
 
@@ -272,7 +276,7 @@ function CustomizePage() {
             </div>
             <div className="flex justify-center overflow-auto rounded-2xl border bg-neutral-200/70 p-3 sm:p-5">
               <div className={`overflow-hidden rounded-xl border bg-white shadow-xl transition-all ${device === "mobile" ? "w-[390px] max-w-full" : "w-full max-w-[1160px]"}`}>
-                <StorePreview storeName={store?.name || activeStore.name} theme={activeTheme} settings={draft} sections={sections} products={editorProducts} />
+                <StorePreview storeName={store?.name || activeStore.name} theme={activeTheme} settings={draft} sections={sections} products={editorProducts} currency={currency} />
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between rounded-xl border bg-background px-3 py-2.5 text-xs text-muted-foreground">
@@ -311,6 +315,7 @@ function SectionSettingsPanel({ section, draft, onUpdate }: { section: SectionId
       <div><Label className="text-xs">Announcement bar</Label><Input className="mt-1.5" value={draft.announcementText ?? ""} placeholder="Free delivery on selected orders" onChange={(e) => onUpdate({ announcementText: e.target.value })} /></div>
       <div><Label className="text-xs">Headline</Label><Input className="mt-1.5" value={draft.heroHeadline ?? ""} placeholder="Welcome to your store" onChange={(e) => onUpdate({ heroHeadline: e.target.value })} /></div>
       <div><Label className="text-xs">Subheadline</Label><Input className="mt-1.5" value={draft.heroSubline ?? ""} placeholder="Tell customers what makes your store special" onChange={(e) => onUpdate({ heroSubline: e.target.value })} /></div>
+      <ImageUploader value={draft.heroImages ?? []} onChange={(urls) => onUpdate({ heroImages: urls, heroImageUrl: urls[0] })} userId={userId} folder="theme/hero" max={5} label="Hero / banner photos" hint="Upload up to 5 photos. They will appear as a swipeable banner on your storefront." aspect="wide" />
     </div>;
   }
 
@@ -341,7 +346,7 @@ function ToggleRow({ label, checked, onCheckedChange }: { label: string; checked
   return <div className="flex items-center justify-between gap-3 rounded-xl border bg-muted/20 p-3"><span className="text-sm font-medium">{label}</span><Switch checked={checked} onCheckedChange={onCheckedChange} /></div>;
 }
 
-function ThemeSettingsPanel({ isLifetime, draft, draftTheme, onTheme, onUpdate }: { isLifetime: boolean; draft: ThemeSettings; draftTheme: string; onTheme: (theme: string) => void; onUpdate: (patch: Partial<ThemeSettings>) => void }) {
+function ThemeSettingsPanel({ isLifetime, draft, draftTheme, currency, userId, onTheme, onCurrency, onUpdate }: { isLifetime: boolean; draft: ThemeSettings; draftTheme: string; currency: string; userId: string; onTheme: (theme: string) => void; onCurrency: (currency: string) => void; onUpdate: (patch: Partial<ThemeSettings>) => void }) {
   return <div className="max-h-[700px] overflow-y-auto p-4"><div className="space-y-6">
     <div>
       <p className="text-sm font-semibold">Theme</p>
@@ -349,6 +354,29 @@ function ThemeSettingsPanel({ isLifetime, draft, draftTheme, onTheme, onUpdate }
       <div className="mt-3 grid gap-2">
         {THEMES.map((theme) => { const locked = theme.premium && !isLifetime; return <button key={theme.id} disabled={locked} onClick={() => onTheme(theme.id)} className={`flex items-center gap-3 rounded-xl border p-2.5 text-left transition ${draftTheme === theme.id ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "hover:bg-muted"} ${locked ? "cursor-not-allowed opacity-55" : ""}`}><div className="h-10 w-10 shrink-0 rounded-lg border" style={{ background: theme.palette.bg }}><div className="m-2 h-3 w-3 rounded-full" style={{ background: theme.palette.accent }} /></div><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{theme.name}</p><p className="truncate text-[11px] text-muted-foreground">{theme.bestFor}</p></div>{theme.premium && <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold">Premium</span>}</button>; })}
       </div>
+    </div>
+    <div className="border-t pt-5">
+      <div className="flex items-center gap-2"><span className="text-sm">💰</span><p className="text-sm font-semibold">Store currency</p></div>
+      <p className="mt-1 text-xs text-muted-foreground">Choose the currency customers will see for product prices.</p>
+      <select value={currency} onChange={(e) => onCurrency(e.target.value)} className="mt-3 h-10 w-full rounded-md border bg-background px-3 text-sm">
+        <option value="ZAR">South African Rand (ZAR — R)</option>
+        <option value="USD">US Dollar (USD — $)</option>
+        <option value="EUR">Euro (EUR — €)</option>
+        <option value="GBP">British Pound (GBP — £)</option>
+        <option value="AUD">Australian Dollar (AUD — A$)</option>
+        <option value="CAD">Canadian Dollar (CAD — C$)</option>
+        <option value="NZD">New Zealand Dollar (NZD — NZ$)</option>
+        <option value="JPY">Japanese Yen (JPY — ¥)</option>
+        <option value="CNY">Chinese Yuan (CNY — ¥)</option>
+        <option value="INR">Indian Rupee (INR — ₹)</option>
+        <option value="NGN">Nigerian Naira (NGN — ₦)</option>
+        <option value="KES">Kenyan Shilling (KES — KSh)</option>
+        <option value="GHS">Ghanaian Cedi (GHS — GH₵)</option>
+        <option value="AED">UAE Dirham (AED — د.إ)</option>
+        <option value="CHF">Swiss Franc (CHF — CHF)</option>
+        <option value="BRL">Brazilian Real (BRL — R$)</option>
+      </select>
+      <p className="mt-1 text-[11px] text-muted-foreground">Click Save at the top of the editor to publish the currency.</p>
     </div>
     <div className="border-t pt-5"><div className="flex items-center gap-2"><Palette className="h-4 w-4" /><p className="text-sm font-semibold">Colors</p></div><div className="mt-3 grid gap-3"> <ColorField label="Accent" value={draft.accent || ""} fallback={getTheme(draftTheme).palette.accent} onChange={(value) => onUpdate({ accent: value })} /><ColorField label="Page background" value={draft.bg || ""} fallback={getTheme(draftTheme).palette.bg} onChange={(value) => onUpdate({ bg: value })} /><ColorField label="Text" value={draft.ink || ""} fallback={getTheme(draftTheme).palette.ink} onChange={(value) => onUpdate({ ink: value })} /></div></div>
     <div className="border-t pt-5"><div className="flex items-center gap-2"><Type className="h-4 w-4" /><p className="text-sm font-semibold">Typography</p></div><Label className="mt-3 block text-xs">Heading font</Label><select value={draft.headingFont || ""} onChange={(e) => onUpdate({ headingFont: e.target.value || undefined })} className="mt-1.5 h-10 w-full rounded-md border bg-background px-3 text-sm"><option value="">Theme default</option><option value="'Sora', sans-serif">Sora</option><option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans</option><option value="Georgia, serif">Georgia</option><option value="system-ui, sans-serif">System</option></select></div>
@@ -362,7 +390,7 @@ function ColorField({ label, value, fallback, onChange }: { label: string; value
 
 type EditorProduct = { id: string; name: string; price: number; compare_at_price: number | null; featured: boolean; images: string[] };
 
-function StorePreview({ storeName, theme, settings, sections, products }: { storeName: string; theme: ReturnType<typeof getTheme>; settings: ThemeSettings; sections: SectionId[]; products: EditorProduct[] }) {
+function StorePreview({ storeName, theme, settings, sections, products, currency }: { storeName: string; theme: ReturnType<typeof getTheme>; settings: ThemeSettings; sections: SectionId[]; products: EditorProduct[]; currency: string }) {
   const bg = settings.bg || theme.palette.bg;
   const ink = settings.ink || theme.palette.ink;
   const accent = settings.accent || theme.palette.accent;
