@@ -231,6 +231,7 @@ export interface ThemeSettings {
   sectionOrder?: ("hero" | "featured" | "categories" | "products")[];
   productColumns?: 2 | 3 | 4;
   productImageRatio?: "square" | "portrait" | "landscape";
+  selectedProductIds?: string[];
 }
 
 export function resolveThemeVars(theme: StoreTheme, settings: ThemeSettings = {}) {
