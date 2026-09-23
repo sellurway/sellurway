@@ -71,7 +71,7 @@ export const emptyDraft: ProductDraft = {
   variants: [],
 };
 
-export function ProductForm({ initial, storeId }: { initial: ProductDraft; storeId: string }) {
+export function ProductForm({ initial, storeId, onSaved }: { initial: ProductDraft; storeId: string; onSaved?: () => void }) {
   const { user } = useAuth();
   const [draft, setDraft] = useState<ProductDraft>(initial);
   const [newCategory, setNewCategory] = useState("");
@@ -175,7 +175,8 @@ export function ProductForm({ initial, storeId }: { initial: ProductDraft; store
     onSuccess: () => {
       queryClient.invalidateQueries();
       toast.success(draft.id ? "Product updated" : "Product created");
-      navigate({ to: "/products" });
+      if (onSaved) onSaved();
+      else navigate({ to: "/products" });
     },
     onError: (e: Error) => toast.error(e.message),
   });
