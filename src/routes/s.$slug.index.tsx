@@ -1,3 +1,4 @@
+/* Vercel build refresh */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Loader2, PackageOpen, Search, Star } from "lucide-react";
