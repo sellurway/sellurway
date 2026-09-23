@@ -170,7 +170,7 @@ function Landing() {
                         { img: throwBlanket, name: "Wool throw", price: "$96.00" },
                       ].map((product) => (
                         <div key={product.name} className="overflow-hidden rounded-xl bg-neutral-50 ring-1 ring-neutral-100">
-                          <img src={product.img} alt={product.name} className="aspect-square w-full object-cover" loading="lazy" />
+                          <img src={product.img} alt="" className="aspect-square w-full object-cover" loading="lazy" />
                           <div className="p-2">
                             <p className="truncate text-[10px] font-medium text-neutral-900">{product.name}</p>
                             <p className="text-[10px] text-neutral-500">{product.price}</p>
