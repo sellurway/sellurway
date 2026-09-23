@@ -218,7 +218,7 @@ function StorefrontHome() {
         <h1 className={"max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl " + (theme.layout === "editorial" ? "sm:text-6xl" : theme.layout === "showcase" ? "sm:text-5xl" : theme.layout === "lookbook" ? "mx-auto text-center sm:text-5xl" : isDarkTheme ? "sm:text-5xl" : "")} style={{ fontFamily: "var(--sf-heading)" }}>
           {settings.heroHeadline || store.name}
         </h1>
-        <p className={"mt-3 max-w-xl text-base " + (theme.layout === "lookbook" ? "mx-auto text-center" : "") style={{ color: "var(--sf-muted)" }}>
+        <p className={"mt-3 max-w-xl text-base " + (theme.layout === "lookbook" ? "mx-auto text-center" : "")} style={{ color: "var(--sf-muted)" }}>
           {settings.heroSubline || store.description || "Browse the collection below."}
         </p>
       </section>
