@@ -116,7 +116,7 @@ function Landing() {
               </span>
 
               <h1 className="mt-5 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
-                Sellurway — Sellurway — Sellurway — Sellurway — Sellurway — Sellurway — Sellurway — Set up your online shop in
+                Sellurway — Sellurway — Sellurway — Sellurway — Sellurway — Sellurway — Sellurway — Sellurway — Set up your online shop in
                 <span className="text-gradient"> ten minutes.</span>
               </h1>
 
