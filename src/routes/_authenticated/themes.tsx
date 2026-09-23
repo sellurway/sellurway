@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Check, Crown, Lock, Monitor, Smartphone, Settings2, LayoutTemplate, Eye, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
@@ -29,6 +29,14 @@ export const Route = createFileRoute("/_authenticated/themes")({
   component: ThemesPage,
 });
 
+function ProductPreviewImage({ productId, name }: { productId: string; name: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.from("product_images").select("url").eq("product_id", productId).order("position").limit(1).maybeSingle().then(({ data }) => setUrl(data?.url ?? null));
+  }, [productId]);
+  return url ? <img src={url} alt={name} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>;
+}
+
 function ThemesPage() {
   const { activeStore, isLifetime, user } = useAuth();
   const queryClient = useQueryClient();
@@ -42,6 +50,10 @@ function ThemesPage() {
   const imageTextFileRef = useRef<HTMLInputElement>(null);
   const productsFileRef = useRef<HTMLInputElement>(null);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [quickProductOpen, setQuickProductOpen] = useState(false);
+  const [quickProductName, setQuickProductName] = useState("");
+  const [quickProductPrice, setQuickProductPrice] = useState("");
+  const [quickProductImage, setQuickProductImage] = useState<File | null>(null);
   const [bannerDrag, setBannerDrag] = useState<number | null>(null);
   const [sectionDrag, setSectionDrag] = useState<string | null>(null);
   const allSections = ["hero", "promo", "imageText", "featured", "categories", "products", "testimonials", "newsletter", "social"] as const;
@@ -70,7 +82,44 @@ function ThemesPage() {
     },
   });
 
-  const current = settings ?? ((store?.theme_settings ?? {}) as ThemeSettings);\n\n  useEffect(() => {\n    setSelectedProductIds(current.selectedProductIds ?? []);\n  }, [store?.theme_settings]);
+  const current = settings ?? ((store?.theme_settings ?? {}) as ThemeSettings);
+
+  useEffect(() => {
+    setSelectedProductIds(current.selectedProductIds ?? []);
+  }, [store?.theme_settings]);
+
+  const addProduct = useMutation({
+    mutationFn: async () => {
+      if (!quickProductName.trim()) throw new Error("Product name is required.");
+      const price = Number(quickProductPrice);
+      if (!Number.isFinite(price) || price < 0) throw new Error("Enter a valid price.");
+      const { data: product, error } = await supabase.from("products").insert({
+        store_id: activeStore!.id,
+        name: quickProductName.trim(),
+        price,
+        status: "active",
+        featured: false,
+        stock_quantity: 0,
+        track_stock: false,
+      } as never).select("id").single();
+      if (error) throw error;
+      if (quickProductImage) {
+        const url = await uploadStoreImage(quickProductImage, user!.id, "products");
+        const { error: imageError } = await supabase.from("product_images").insert({ product_id: product.id, url, position: 0 } as never);
+        if (imageError) throw imageError;
+      }
+      return product.id as string;
+    },
+    onSuccess: (id) => {
+      setSelectedProductIds((ids) => [...ids, id]);
+      patchSettings({ selectedProductIds: [...selectedProductIds, id] });
+      queryClient.invalidateQueries({ queryKey: ["theme-editor-products", activeStore?.id] });
+      queryClient.invalidateQueries({ queryKey: ["storefront-products", activeStore?.id] });
+      setQuickProductName(""); setQuickProductPrice(""); setQuickProductImage(null); setQuickProductOpen(false);
+      toast.success("Product added to this template");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const save = useMutation({
     mutationFn: async (patch: { theme?: string; theme_settings?: ThemeSettings }) => {
@@ -188,7 +237,15 @@ function ThemesPage() {
 </div></div></div>}
                 {selectedSection === "products" && <div className="space-y-4">
   <div>
-    <Label>Products to show</Label>
+    <div className="flex items-center justify-between gap-3"><div><Label>Products in this template</Label><p className="mt-1 text-xs text-muted-foreground">Add a product or choose existing products. Your selection appears in the preview.</p></div><Button type="button" size="sm" onClick={() => setQuickProductOpen(!quickProductOpen)}><span className="mr-1.5 text-lg leading-none">+</span> Add product</Button></div>
+    {quickProductOpen && <div className="rounded-xl border bg-muted/20 p-4">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div><Label>Product name</Label><Input className="mt-1" value={quickProductName} onChange={(e)=>setQuickProductName(e.target.value)} placeholder="Wireless Headphones" /></div>
+        <div><Label>Price</Label><Input className="mt-1" type="number" min="0" value={quickProductPrice} onChange={(e)=>setQuickProductPrice(e.target.value)} placeholder="599" /></div>
+      </div>
+      <div className="mt-3"><Label>Product picture</Label><Input className="mt-1" type="file" accept="image/*" onChange={(e)=>setQuickProductImage(e.target.files?.[0] ?? null)} /></div>
+      <div className="mt-3 flex gap-2"><Button type="button" size="sm" onClick={()=>addProduct.mutate()} disabled={addProduct.isPending}>{addProduct.isPending ? "Adding..." : "Add to store + template"}</Button><Button type="button" size="sm" variant="ghost" onClick={()=>setQuickProductOpen(false)}>Cancel</Button></div>
+    </div>
     <p className="mt-1 text-xs text-muted-foreground">Choose exactly which products appear in this template.</p>
     <div className="mt-2 grid gap-2 sm:grid-cols-2">
       {(products ?? []).map((p) => {
