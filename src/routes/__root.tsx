@@ -21,8 +21,8 @@ const websiteJsonLd = {
     {
       "@type": "WebSite",
       "@id": "https://sellurway.vercel.app/#website",
-      name: "Sellurway",
-      alternateName: "Sellurway",
+      name: "SellUrWay",
+      alternateName: "SellUrWay",
       url: "https://sellurway.vercel.app/",
       publisher: {
         "@id": "https://sellurway.vercel.app/#organization",
@@ -31,7 +31,7 @@ const websiteJsonLd = {
     {
       "@type": "Organization",
       "@id": "https://sellurway.vercel.app/#organization",
-      name: "Sellurway",
+      name: "SellUrWay",
       url: "https://sellurway.vercel.app/",
       logo: {
         "@type": "ImageObject",
@@ -106,29 +106,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#6d3df5" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "Sellurway" },
-      { name: "application-name", content: "Sellurway" },
-      { title: "Sellurway — Online Store Builder for Businesses" },
+      { name: "apple-mobile-web-app-title", content: "SellUrWay" },
+      { name: "application-name", content: "SellUrWay" },
+      { title: "SellUrWay — Online Store Builder for Businesses" },
       {
         name: "description",
         content:
-          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
+          "SellUrWay helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
-      { property: "og:site_name", content: "Sellurway" },
+      { property: "og:site_name", content: "SellUrWay" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://sellurway.vercel.app/" },
-      { property: "og:title", content: "Sellurway — Online Store Builder for Businesses" },
+      { property: "og:title", content: "SellUrWay — Online Store Builder for Businesses" },
       {
         property: "og:description",
         content:
-          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
+          "SellUrWay helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Sellurway — Online Store Builder for Businesses" },
+      { name: "twitter:title", content: "SellUrWay — Online Store Builder for Businesses" },
       {
         name: "twitter:description",
         content:
-          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
+          "SellUrWay helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
     ],
     links: [
