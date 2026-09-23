@@ -104,9 +104,9 @@ function AnalyticsPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Revenue", value: formatMoney(revenue, currency) },
-          { label: "Orders", value: String(valid.length) },
+          { label: "Orders", value: String(validOrderCount) },
           { label: "Average order", value: formatMoney(aov, currency) },
-          { label: "Cancelled / refunded", value: String(orders.length - valid.length) },
+          { label: "Cancelled / refunded", value: String(cancelledRefunded) },
         ].map((s) => (
           <div key={s.label} className="surface-card p-5">
             <p className="font-display text-2xl font-bold">{s.value}</p>
