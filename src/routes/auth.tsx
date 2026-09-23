@@ -209,8 +209,8 @@ function AuthPage() {
               <p>ways to sell</p>
             </div>
             <div>
-              <p className="font-display text-xl font-bold text-white">8</p>
-              <p>themes</p>
+              <p className="font-display text-xl font-bold text-white">24</p>
+              <p>templates</p>
             </div>
             <div>
               <p className="font-display text-xl font-bold text-white">$10</p>
