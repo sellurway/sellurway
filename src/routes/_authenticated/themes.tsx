@@ -20,10 +20,10 @@ import { uploadStoreImage, resolveStoreImage } from "@/lib/storage";
 export const Route = createFileRoute("/_authenticated/themes")({
   head: () => ({
     meta: [
-      { title: "Themes — Sellurway" },
+      { title: "Themes — SellUrWay" },
       { name: "description", content: "Pick a storefront template and fine-tune colours, fonts and sections." },
-      { property: "og:title", content: "Themes — Sellurway" },
-      { property: "og:description", content: "24 storefront templates available in Sellurway." },
+      { property: "og:title", content: "Themes — SellUrWay" },
+      { property: "og:description", content: "24 storefront templates available in SellUrWay." },
       { name: "robots", content: "noindex" },
     ],
   }),
