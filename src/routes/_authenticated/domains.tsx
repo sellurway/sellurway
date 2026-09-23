@@ -49,9 +49,11 @@ function DomainsPage() {
   const queryClient = useQueryClient();
   const [domain, setDomain] = useState("");
 
-  const { data: store, isLoading } = useQuery({
+  const { data: store, isLoading, isError, error } = useQuery({
     queryKey: ["store-domain", activeStore?.id],
     enabled: !!activeStore,
+    retry: false,
+    staleTime: 30_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("stores")
@@ -94,10 +96,28 @@ function DomainsPage() {
   });
 
   if (!activeStore) return <NoStore />;
-  if (isLoading || !store) {
+  if (isLoading) {
     return (
       <DashboardShell title="Domains">
-        <p className="text-sm text-muted-foreground">Loading domain settings…</p>
+        <div className="surface-card p-5">
+          <p className="text-sm text-muted-foreground">Loading domain settings…</p>
+        </div>
+      </DashboardShell>
+    );
+  }
+
+  if (isError || !store) {
+    return (
+      <DashboardShell title="Domains">
+        <div className="surface-card p-5">
+          <p className="font-medium">Domain settings could not be loaded.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {error instanceof Error ? error.message : "Please refresh the page and try again."}
+          </p>
+          <Button className="mt-4" variant="outline" onClick={() => queryClient.invalidateQueries({ queryKey: ["store-domain", activeStore.id] })}>
+            Try again
+          </Button>
+        </div>
       </DashboardShell>
     );
   }
