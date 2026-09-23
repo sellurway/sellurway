@@ -30,15 +30,24 @@ function StorefrontHome() {
   const [searchDraft, setSearchDraft] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [page, setPage] = useState(0);
+  const [loadedProducts, setLoadedProducts] = useState<import("@/lib/storefront").PublicProduct[]>([]);
   const { data: productPage, isLoading, isFetching } = useStoreProducts(store.id, {
-    page: 0,
+    page,
     search,
     categoryId: activeCategory,
     minPrice: minPrice ? Number(minPrice) : null,
     maxPrice: maxPrice ? Number(maxPrice) : null,
     sortBy: sortBy as "featured" | "price-low" | "price-high" | "name" | "rating",
   });
-  const products = productPage?.products ?? [];
+  const pageProducts = productPage?.products ?? [];
+  useEffect(() => {
+    setLoadedProducts((current) => page === 0 ? pageProducts : [...current, ...pageProducts]);
+  }, [page, pageProducts]);
+  useEffect(() => {
+    setPage(0);
+  }, [search, activeCategory, minPrice, maxPrice, sortBy]);
+  const products = loadedProducts;
   const { data: categories } = useStoreCategories(store.id);
   const [ratings, setRatings] = useState<Record<string, RatingInfo>>({});
   const theme = getTheme(store.theme);
@@ -216,10 +225,7 @@ function StorefrontHome() {
               <button
                 type="button"
                 disabled={isFetching}
-                onClick={() => {
-                  const el = document.getElementById("store-products");
-                  el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
+                onClick={() => setPage((current) => current + 1)}
                 className="rounded-lg border px-5 py-2.5 text-sm font-semibold"
                 style={{ borderColor: "var(--sf-border)" }}
               >
