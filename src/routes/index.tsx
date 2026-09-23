@@ -65,7 +65,7 @@ const modes = [
 
 const features = [
   { icon: Package, title: "Product management", body: "Add multiple photos, variants, stock, categories and featured products." },
-  { icon: Palette, title: "Store themes", body: "Choose a storefront style and make your shop look like your brand." },
+  { icon: Palette, title: "24 storefront templates", body: "Choose from 24 storefront templates and make your shop look like your brand." },
   { icon: BarChart3, title: "Analytics", body: "Track revenue, orders, average order value and your best-selling products." },
   { icon: Globe2, title: "Sell anywhere", body: "Set your currency, delivery areas and fees for the customers you serve." },
   { icon: ShieldCheck, title: "Secure by default", body: "Your store data is protected with database security and server-side checks." },
@@ -234,7 +234,7 @@ function Landing() {
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Themes that fit your trade.</h2>
-                <p className="mt-3 max-w-xl text-muted-foreground">Choose a storefront style that makes your products look great on every screen.</p>
+                <p className="mt-3 max-w-xl text-muted-foreground">Explore all 24 storefront templates, each designed to make your products look great on every screen.</p>
               </div>
               <Button asChild variant="outline"><Link to="/pricing">Compare plans</Link></Button>
             </div>
