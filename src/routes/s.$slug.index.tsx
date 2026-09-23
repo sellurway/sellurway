@@ -24,14 +24,22 @@ export const Route = createFileRoute("/s/$slug/")({
 function StorefrontHome() {
   const { slug } = useParams({ from: "/s/$slug/" });
   const store = useStore();
-  const { data: products, isLoading } = useStoreProducts(store.id);
-  const { data: categories } = useStoreCategories(store.id);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("featured");
   const [search, setSearch] = useState("");
   const [searchDraft, setSearchDraft] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const { data: productPage, isLoading, isFetching } = useStoreProducts(store.id, {
+    page: 0,
+    search,
+    categoryId: activeCategory,
+    minPrice: minPrice ? Number(minPrice) : null,
+    maxPrice: maxPrice ? Number(maxPrice) : null,
+    sortBy: sortBy as "featured" | "price-low" | "price-high" | "name" | "rating",
+  });
+  const products = productPage?.products ?? [];
+  const { data: categories } = useStoreCategories(store.id);
   const [ratings, setRatings] = useState<Record<string, RatingInfo>>({});
   const theme = getTheme(store.theme);
   const settings = store.theme_settings ?? {};
@@ -52,7 +60,7 @@ function StorefrontHome() {
   }, [store.name, store.description, store.banner_url]);
 
   useEffect(() => {
-    if (!products?.length) return;
+    if (!products.length) return;
     let cancelled = false;
     Promise.all(products.map(async (product) => {
       try {
@@ -69,25 +77,12 @@ function StorefrontHome() {
   }, [products]);
 
   const selectedProductIds = settings.selectedProductIds ?? [];
-  const visibleProducts = useMemo(() => selectedProductIds.length ? (products ?? []).filter((p) => selectedProductIds.includes(p.id)) : (products ?? []), [products, selectedProductIds]);
-
   const list = useMemo(() => {
-    const filtered = visibleProducts.filter((p) => {
-      const matchesCategory = !activeCategory || p.category_id === activeCategory;
-      const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
-      const matchesMin = !minPrice || p.price >= Number(minPrice);
-      const matchesMax = !maxPrice || p.price <= Number(maxPrice);
-      return matchesCategory && matchesSearch && matchesMin && matchesMax;
-    });
-    return [...filtered].sort((a, b) => {
-      if (sortBy === "price-low") return a.price - b.price;
-      if (sortBy === "price-high") return b.price - a.price;
-      if (sortBy === "name") return a.name.localeCompare(b.name);
-      if (sortBy === "rating") return (ratings[b.id]?.average ?? 0) - (ratings[a.id]?.average ?? 0);
-      return Number(b.featured) - Number(a.featured);
-    });
-  }, [visibleProducts, activeCategory, search, minPrice, maxPrice, sortBy, ratings]);
-  const featured = useMemo(() => visibleProducts.filter((p) => p.featured).slice(0, 3), [visibleProducts]);
+    const filtered = selectedProductIds.length ? products.filter((p) => selectedProductIds.includes(p.id)) : products;
+    if (sortBy !== "rating") return filtered;
+    return [...filtered].sort((a, b) => (ratings[b.id]?.average ?? 0) - (ratings[a.id]?.average ?? 0));
+  }, [products, selectedProductIds, sortBy, ratings]);
+  const featured = useMemo(() => products.filter((p) => p.featured).slice(0, 3), [products]);
 
   useEffect(() => {
     const id = "sellurway-store-jsonld";
@@ -216,6 +211,22 @@ function StorefrontHome() {
           <div className={`grid gap-4 ${gridClass}`}>
             {list.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} imageRatio={imageRatio} layout={theme.layout} />)}
           </div>
+          {productPage?.hasMore && (
+            <div className="mt-8 flex justify-center">
+              <button
+                type="button"
+                disabled={isFetching}
+                onClick={() => {
+                  const el = document.getElementById("store-products");
+                  el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="rounded-lg border px-5 py-2.5 text-sm font-semibold"
+                style={{ borderColor: "var(--sf-border)" }}
+              >
+                {isFetching ? "Loading…" : "More products"}
+              </button>
+            </div>
+          )}
         )}
       </section>
     ),
