@@ -29,6 +29,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { getTheme, THEMES, type ThemeSettings } from "@/lib/themes";
+import { ProductForm, emptyDraft } from "@/components/ProductForm";
 
 export const Route = createFileRoute("/_authenticated/customize")({
   head: () => ({
@@ -65,6 +66,7 @@ function CustomizePage() {
   const [history, setHistory] = useState<ThemeSettings[]>([]);
   const [future, setFuture] = useState<ThemeSettings[]>([]);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [showAddProduct, setShowAddProduct] = useState(false);
 
   const { data: store, isLoading } = useQuery({
     queryKey: ["customizer-store", activeStore?.id],
@@ -204,8 +206,8 @@ function CustomizePage() {
                   <p className="text-sm font-semibold">Products & photos</p>
                   <p className="mt-1 text-xs text-muted-foreground">Create products and upload up to 5 product photos without leaving your store builder.</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <Button asChild size="sm">
-                      <Link to="/products/new"><Plus className="mr-1.5 h-4 w-4" /> Add product & photos</Link>
+                    <Button size="sm" onClick={() => setShowAddProduct(true)}>
+                      <Plus className="mr-1.5 h-4 w-4" /> Add product
                     </Button>
                     <Button asChild variant="outline" size="sm">
                       <Link to="/products">Manage products</Link>
@@ -261,6 +263,23 @@ function CustomizePage() {
           </section>
         </div>
       </div>
+
+      {showAddProduct && (
+        <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="Add product">
+          <div className="my-4 w-full max-w-6xl rounded-2xl border bg-background shadow-2xl sm:my-8">
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-2xl border-b bg-background/95 px-5 py-4 backdrop-blur">
+              <div>
+                <p className="text-lg font-semibold">Add product</p>
+                <p className="text-xs text-muted-foreground">It goes live in your store as soon as you save it.</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setShowAddProduct(false)}>Cancel</Button>
+            </div>
+            <div className="p-4 sm:p-6">
+              <ProductForm initial={emptyDraft} storeId={activeStore.id} onSaved={() => setShowAddProduct(false)} />
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardShell>
   );
 }
