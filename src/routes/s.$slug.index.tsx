@@ -105,12 +105,15 @@ function StorefrontHome() {
   }, [store.name, store.description, store.banner_url, store.logo_url]);
 
 
+  const isDarkTheme = ["vault", "circuit", "kinetic", "street", "nova"].includes(theme.id);
   const defaultGridClass =
     theme.layout === "list"
-      ? "grid-cols-1 sm:grid-cols-2"
+      ? "grid-cols-1"
       : theme.layout === "editorial"
         ? "grid-cols-2 lg:grid-cols-3"
-        : "grid-cols-2 lg:grid-cols-4";
+        : theme.layout === "lookbook"
+          ? "grid-cols-2 lg:grid-cols-3"
+          : "grid-cols-2 lg:grid-cols-4";
 
   const gridClass =
     settings.productColumns === 2
@@ -161,7 +164,7 @@ function StorefrontHome() {
     hero: settings.showHero !== false ? (
       <section className={"py-10 md:py-14 " + (theme.layout === "showcase" ? "md:py-20" : theme.layout === "editorial" ? "md:py-24" : "")}>
         {heroImages.length > 0 && (
-          <div className={"relative mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" ? "shadow-2xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
+          <div className={"relative mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" ? "shadow-2xl" : theme.layout === "lookbook" ? "md:mx-auto md:max-w-5xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
             <img src={heroImages[activeHero]} alt="" className={"w-full object-cover transition-opacity duration-500 " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
             {heroImages.length > 1 && <>
               <button aria-label="Previous banner" onClick={() => setActiveHero((i) => (i - 1 + heroImages.length) % heroImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-3 py-2 text-white">‹</button>
@@ -170,10 +173,10 @@ function StorefrontHome() {
             </>}
           </div>
         )}
-        <h1 className={"max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl " + (theme.layout === "editorial" ? "sm:text-6xl" : theme.layout === "showcase" ? "sm:text-5xl" : "")} style={{ fontFamily: "var(--sf-heading)" }}>
+        <h1 className={"max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl " + (theme.layout === "editorial" ? "sm:text-6xl" : theme.layout === "showcase" ? "sm:text-5xl" : theme.layout === "lookbook" ? "mx-auto text-center sm:text-5xl" : isDarkTheme ? "sm:text-5xl" : "")} style={{ fontFamily: "var(--sf-heading)" }}>
           {settings.heroHeadline || store.name}
         </h1>
-        <p className="mt-3 max-w-xl text-base" style={{ color: "var(--sf-muted)" }}>
+        <p className={"mt-3 max-w-xl text-base " + (theme.layout === "lookbook" ? "mx-auto text-center" : "") style={{ color: "var(--sf-muted)" }}>
           {settings.heroSubline || store.description || "Browse the collection below."}
         </p>
       </section>
@@ -183,7 +186,7 @@ function StorefrontHome() {
       <section id="store-products" className="pb-10">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--sf-muted)" }}>Featured</h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} large imageRatio={imageRatio} layout={theme.layout} />)}
+          {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} large imageRatio={imageRatio} layout={theme.layout} themeId={theme.id} />)}
         </div>
       </section>
     ) : null,
@@ -236,6 +239,7 @@ function ProductCard({
   large,
   imageRatio = "aspect-square",
   layout = "grid",
+  themeId,
 }: {
   slug: string;
   product: import("@/lib/storefront").PublicProduct;
@@ -244,6 +248,7 @@ function ProductCard({
   large?: boolean;
   imageRatio?: string;
   layout?: "grid" | "editorial" | "list" | "showcase" | "lookbook";
+  themeId?: string;
 }) {
   const img = productImage(product);
   const soldOut = product.track_stock && product.stock_quantity <= 0;
@@ -251,10 +256,10 @@ function ProductCard({
     <Link
       to="/s/$slug/product/$productId"
       params={{ slug, productId: product.id }}
-      className={"group block overflow-hidden border transition hover:opacity-95 " + (layout === "editorial" ? "even:translate-y-8" : layout === "lookbook" ? "first:md:col-span-2" : layout === "showcase" ? "shadow-lg hover:-translate-y-1" : "")}
+      className={"group block overflow-hidden border transition " + (layout === "editorial" ? "even:translate-y-8 hover:-translate-y-1" : layout === "lookbook" ? "first:md:col-span-2 hover:-translate-y-1" : layout === "showcase" ? "shadow-lg hover:-translate-y-1" : layout === "list" ? "md:flex md:items-stretch hover:shadow-md" : themeId === "street" ? "hover:-rotate-1" : themeId === "nova" ? "hover:scale-[1.02]" : "hover:opacity-95")}
       style={{ borderColor: "var(--sf-border)", borderRadius: "var(--sf-card-radius)", background: "var(--sf-surface)" }}
     >
-      <div className={`relative w-full overflow-hidden ${large ? (layout === "showcase" ? "aspect-[16/8]" : "aspect-[4/3]") : layout === "list" ? "aspect-[16/7]" : imageRatio}`}>
+      <div className={`relative w-full overflow-hidden ${layout === "list" ? "md:w-56 md:shrink-0 aspect-[16/7] md:aspect-square" : large ? (layout === "showcase" ? "aspect-[16/8]" : "aspect-[4/3]") : imageRatio}`}>
         {img ? (
           <img
             src={img}
@@ -276,7 +281,7 @@ function ProductCard({
           </span>
         )}
       </div>
-      <div className={"p-3.5 " + (layout === "editorial" ? "py-5" : layout === "showcase" ? "p-5" : "")}>
+      <div className={"p-3.5 " + (layout === "editorial" ? "py-5" : layout === "showcase" ? "p-5" : layout === "list" ? "flex flex-1 flex-col justify-center md:p-6" : themeId === "street" ? "p-4 uppercase tracking-wide" : themeId === "nova" ? "p-5" : "")}>
         <p className="truncate text-sm font-medium">{product.name}</p>
         <p className="mt-1 flex items-baseline gap-2 text-sm">
           <span className="font-semibold">{formatMoney(product.price, currency)}</span>
