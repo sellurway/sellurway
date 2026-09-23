@@ -52,7 +52,7 @@ function ProductReviews({ productId }: { productId: string }) {
   const [sending, setSending] = useState(false);
 
   const loadReviews = async () => {
-    const response = await fetch(REVIEWS_API + "?product_id=" + encodeURIComponent(productId));
+    const response = await fetch(REVIEWS_API + "?product_id=" + encodeURIComponent(productId), { cache: "no-store" });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Couldn't load reviews");
     setReviews(data.reviews || []);
