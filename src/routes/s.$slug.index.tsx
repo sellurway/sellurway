@@ -71,19 +71,43 @@ function StorefrontHome() {
   useEffect(() => {
     if (!products.length) return;
     let cancelled = false;
-    Promise.all(products.map(async (product) => {
-      try {
-        const response = await fetch(REVIEWS_API + "?product_id=" + encodeURIComponent(product.id));
-        if (!response.ok) return [product.id, { average: 0, count: 0 }] as const;
-        const data = await response.json();
-        const reviews = data.reviews ?? [];
-        const count = reviews.length;
-        const average = count ? reviews.reduce((sum: number, review: { rating: number }) => sum + Number(review.rating || 0), 0) / count : 0;
-        return [product.id, { average, count }] as const;
-      } catch { return [product.id, { average: 0, count: 0 }] as const; }
-    })).then((entries) => { if (!cancelled) setRatings(Object.fromEntries(entries)); });
+    const missing = products.filter((product) => !ratings[product.id]);
+    if (!missing.length) return;
+
+    // Avoid a burst of N simultaneous requests when a large page is loaded.
+    // The reviews Worker currently exposes one-product GETs, so keep a small
+    // concurrency window until the API supports batch aggregation.
+    const run = async () => {
+      const results: [string, RatingInfo][] = [];
+      let cursor = 0;
+      const worker = async () => {
+        while (!cancelled) {
+          const product = missing[cursor++];
+          if (!product) return;
+          try {
+            const response = await fetch(REVIEWS_API + "?product_id=" + encodeURIComponent(product.id));
+            if (!response.ok) {
+              results.push([product.id, { average: 0, count: 0 }]);
+              continue;
+            }
+            const data = await response.json();
+            const reviews = Array.isArray(data.reviews) ? data.reviews : [];
+            const count = reviews.length;
+            const average = count
+              ? reviews.reduce((sum: number, review: { rating: number }) => sum + Number(review.rating || 0), 0) / count
+              : 0;
+            results.push([product.id, { average, count }]);
+          } catch {
+            results.push([product.id, { average: 0, count: 0 }]);
+          }
+        }
+      };
+      await Promise.all(Array.from({ length: Math.min(4, missing.length) }, worker));
+      if (!cancelled && results.length) setRatings((current) => ({ ...current, ...Object.fromEntries(results) }));
+    };
+    void run();
     return () => { cancelled = true; };
-  }, [products]);
+  }, [products, ratings]);
 
   const selectedProductIds = settings.selectedProductIds ?? [];
   const list = useMemo(() => {
@@ -169,7 +193,7 @@ function StorefrontHome() {
       <section className={"py-10 md:py-14 " + (theme.layout === "showcase" ? "md:py-20" : theme.layout === "editorial" ? "md:py-24" : "")}>
         {heroImages.length > 0 && (
           <div className={"relative mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" ? "shadow-2xl" : theme.layout === "lookbook" ? "md:mx-auto md:max-w-5xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
-            <img src={heroImages[activeHero]} alt="" className={"w-full object-cover transition-opacity duration-500 " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
+            <img src={heroImages[activeHero]} alt="" loading="eager" fetchPriority="high" decoding="async" className={"w-full object-cover transition-opacity duration-500 " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
             {heroImages.length > 1 && <>
               <button aria-label="Previous banner" onClick={() => setActiveHero((i) => (i - 1 + heroImages.length) % heroImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-3 py-2 text-white">‹</button>
               <button aria-label="Next banner" onClick={() => setActiveHero((i) => (i + 1) % heroImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-3 py-2 text-white">›</button>
@@ -217,10 +241,11 @@ function StorefrontHome() {
             <p className="mt-3 text-sm" style={{ color: "var(--sf-muted)" }}>No products here yet. Check back soon.</p>
           </div>
         ) : (
-          <div className={`grid gap-4 ${gridClass}`}>
-            {list.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} imageRatio={imageRatio} layout={theme.layout} />)}
-          </div>
-          {productPage?.hasMore && (
+          <>
+            <div className={`grid gap-4 ${gridClass}`}>
+              {list.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} imageRatio={imageRatio} layout={theme.layout} />)}
+            </div>
+            {productPage?.hasMore && (
             <div className="mt-8 flex justify-center">
               <button
                 type="button"
@@ -229,10 +254,11 @@ function StorefrontHome() {
                 className="rounded-lg border px-5 py-2.5 text-sm font-semibold"
                 style={{ borderColor: "var(--sf-border)" }}
               >
-                {isFetching ? "Loading…" : "More products"}
-              </button>
-            </div>
-          )}
+                  {isFetching ? "Loading…" : "More products"}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
     ),
@@ -282,6 +308,7 @@ function ProductCard({
             src={img}
             alt={product.name}
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
           />
         ) : (
