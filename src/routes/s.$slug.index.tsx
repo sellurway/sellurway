@@ -68,8 +68,11 @@ function StorefrontHome() {
     return () => { cancelled = true; };
   }, [products]);
 
+  const selectedProductIds = settings.selectedProductIds ?? [];
+  const visibleProducts = useMemo(() => selectedProductIds.length ? (products ?? []).filter((p) => selectedProductIds.includes(p.id)) : (products ?? []), [products, selectedProductIds]);
+
   const list = useMemo(() => {
-    const filtered = (products ?? []).filter((p) => {
+    const filtered = visibleProducts.filter((p) => {
       const matchesCategory = !activeCategory || p.category_id === activeCategory;
       const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
       const matchesMin = !minPrice || p.price >= Number(minPrice);
@@ -83,8 +86,8 @@ function StorefrontHome() {
       if (sortBy === "rating") return (ratings[b.id]?.average ?? 0) - (ratings[a.id]?.average ?? 0);
       return Number(b.featured) - Number(a.featured);
     });
-  }, [products, activeCategory, search, minPrice, maxPrice, sortBy, ratings]);
-  const featured = useMemo(() => (products ?? []).filter((p) => p.featured).slice(0, 3), [products]);
+  }, [visibleProducts, activeCategory, search, minPrice, maxPrice, sortBy, ratings]);
+  const featured = useMemo(() => visibleProducts.filter((p) => p.featured).slice(0, 3), [visibleProducts]);
 
   useEffect(() => {
     const id = "sellurway-store-jsonld";
@@ -199,7 +202,7 @@ function StorefrontHome() {
     products: (
       <section className="pb-10">
 
-        {isLoading ? (
+        {settings.productsImageUrl && <img src={settings.productsImageUrl} alt="" className="mb-5 h-32 w-full object-cover" style={{ borderRadius: "var(--sf-card-radius)" }} />}\n        {isLoading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--sf-muted)" }} /></div>
         ) : list.length === 0 ? (
           <div className="flex flex-col items-center justify-center border border-dashed py-20 text-center" style={{ borderColor: "var(--sf-border)", borderRadius: "var(--sf-card-radius)" }}>
