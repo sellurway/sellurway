@@ -25,7 +25,7 @@ BEGIN
     WHERE store_id = _store_id AND created_at >= _since
   ),
   source_summary AS (
-    SELECT source::TEXT AS source,
+    SELECT COALESCE(source::TEXT, 'unknown') AS source,
            COALESCE(SUM(total) FILTER (WHERE status NOT IN ('cancelled','refunded')), 0)::NUMERIC AS revenue
     FROM public.orders
     WHERE store_id = _store_id AND created_at >= _since
