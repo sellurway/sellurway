@@ -37,22 +37,30 @@ function AnalyticsPage() {
     queryKey: ["analytics", activeStore?.id, days],
     enabled: !!activeStore,
     queryFn: async () => {
-      const since = new Date(Date.now() - Number(days) * 86400000).toISOString();
-      const [orders, items] = await Promise.all([
-        supabase
-          .from("orders")
-          .select("total,currency,status,source,created_at")
-          .eq("store_id", activeStore!.id)
-          .gte("created_at", since),
-        supabase
-          .from("order_items")
-          .select("product_name,quantity,line_total,created_at")
-          .eq("store_id", activeStore!.id)
-          .gte("created_at", since),
-      ]);
-      if (orders.error) throw orders.error;
-      if (items.error) throw items.error;
-      return { orders: orders.data ?? [], items: items.data ?? [] };
+      const { data, error } = await supabase.rpc("get_store_analytics", {
+        _store_id: activeStore!.id,
+        _days: Number(days),
+      });
+      if (error) throw error;
+      return (data ?? {
+        revenue: 0,
+        orders: 0,
+        cancelled_refunded: 0,
+        average_order: 0,
+        currency: activeStore!.currency ?? "USD",
+        by_source: {},
+        top_products: [],
+        daily: [],
+      }) as {
+        revenue: number;
+        orders: number;
+        cancelled_refunded: number;
+        average_order: number;
+        currency: string;
+        by_source: Record<string, number>;
+        top_products: { name: string; qty: number; revenue: number }[];
+        daily: { key: string; total: number }[];
+      };
     },
   });
 
@@ -64,37 +72,16 @@ function AnalyticsPage() {
     );
   }
 
-  const orders = data?.orders ?? [];
-  const valid = orders.filter((o) => o.status !== "cancelled" && o.status !== "refunded");
-  const currency = orders[0]?.currency ?? "USD";
-  const revenue = valid.reduce((s, o) => s + Number(o.total), 0);
-  const aov = valid.length ? revenue / valid.length : 0;
+  const revenue = Number(data?.revenue ?? 0);
+  const currency = data?.currency ?? activeStore.currency ?? "USD";
+  const validOrderCount = Number(data?.orders ?? 0);
+  const aov = Number(data?.average_order ?? 0);
+  const cancelledRefunded = Number(data?.cancelled_refunded ?? 0);
 
-  const bySource = valid.reduce<Record<string, number>>((acc, o) => {
-    acc[o.source] = (acc[o.source] ?? 0) + Number(o.total);
-    return acc;
-  }, {});
+  const bySource = data?.by_source ?? {};
+  const topProducts = data?.top_products ?? [];
+  const buckets = data?.daily ?? [];
 
-  const topProducts = Object.values(
-    (data?.items ?? []).reduce<Record<string, { name: string; qty: number; revenue: number }>>((acc, i) => {
-      const row = acc[i.product_name] ?? { name: i.product_name, qty: 0, revenue: 0 };
-      row.qty += i.quantity;
-      row.revenue += Number(i.line_total);
-      acc[i.product_name] = row;
-      return acc;
-    }, {}),
-  )
-    .sort((a, b) => b.revenue - a.revenue)
-    .slice(0, 8);
-
-  const buckets = Array.from({ length: Math.min(Number(days), 30) }, (_, i) => {
-    const day = new Date(Date.now() - (Math.min(Number(days), 30) - 1 - i) * 86400000);
-    const key = day.toISOString().slice(0, 10);
-    const total = valid
-      .filter((o) => o.created_at.slice(0, 10) === key)
-      .reduce((s, o) => s + Number(o.total), 0);
-    return { key, total };
-  });
   const peak = Math.max(1, ...buckets.map((b) => b.total));
 
   return (
