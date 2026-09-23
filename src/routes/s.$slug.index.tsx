@@ -110,6 +110,7 @@ function StorefrontHome() {
   }, [products, ratings]);
 
   const selectedProductIds = settings.selectedProductIds ?? [];
+  const featured = useMemo(() => products.filter((p) => p.featured).slice(0, 3), [products]);
   const featuredIds = useMemo(
     () => new Set(featured.map((p) => p.id)),
     [featured],
@@ -130,8 +131,6 @@ function StorefrontHome() {
       (a, b) => (ratings[b.id]?.average ?? 0) - (ratings[a.id]?.average ?? 0),
     );
   }, [products, selectedProductIds, sortBy, ratings, settings.showFeatured, featuredIds]);
-  const featured = useMemo(() => products.filter((p) => p.featured).slice(0, 3), [products]);
-
   useEffect(() => {
     const id = "sellurway-store-jsonld";
     let script = document.getElementById(id) as HTMLScriptElement | null;
