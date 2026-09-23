@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/themes")({
       { title: "Themes — Sellurway" },
       { name: "description", content: "Pick a storefront template and fine-tune colours, fonts and sections." },
       { property: "og:title", content: "Themes — Sellurway" },
-      { property: "og:description", content: "Twelve storefront templates, nine of them exclusive to Lifetime." },
+      { property: "og:description", content: "24 storefront templates available in Sellurway." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -109,7 +109,7 @@ function ThemesPage() {
   return (
     <DashboardShell
       title="Themes"
-      description="Choose from all available premium storefront templates and customize them."
+      description="Choose from all 24 storefront templates and customize them."
       actions={
         !isLifetime ? (
           <Button asChild variant="outline">
