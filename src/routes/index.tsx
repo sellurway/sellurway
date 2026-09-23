@@ -34,11 +34,11 @@ export const Route = createFileRoute("/")({
         content:
           "SellUrWay helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
-      { property: "og:title", content: "Sellurway — Online Store Builder for Businesses" },
+      { property: "og:title", content: "SellUrWay — Online Store Builder for Businesses" },
       {
         property: "og:description",
         content:
-          "Sellurway helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
+          "SellUrWay helps businesses build professional online stores, reach customers anywhere and manage their online business in one place.",
       },
     ],
   }),
@@ -116,7 +116,7 @@ function Landing() {
               </span>
 
               <h1 className="mt-5 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
-                SellUrWay — Sellurway — Set up your online shop in
+                SellUrWay — Set up your online shop in
                 <span className="text-gradient"> ten minutes.</span>
               </h1>
 
