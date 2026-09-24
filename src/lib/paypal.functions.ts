@@ -199,3 +199,29 @@ export const capturePayPalPayment = createServerFn({ method: "POST" })
     await supabaseAdmin.from("payments").update({ status: "paid", provider_reference: capture.id }).eq("id", payment.id);
     return { paid: true as const, captureId: capture.id };
   });
+
+export const completePayPalSellerOnboarding = createServerFn({ method: "POST" })
+  .inputValidator((input: { trackingId: string; merchantIdInPayPal: string; permissionsGranted: boolean }) => input)
+  .handler(async ({ data }) => {
+    if (!data.trackingId.startsWith("sellurway_") || !data.merchantIdInPayPal || !data.permissionsGranted) {
+      throw new Error("PayPal seller connection was not completed.");
+    }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const storeId = data.trackingId.slice("sellurway_".length);
+    const { data: store } = await supabaseAdmin.from("stores").select("id,theme_settings").eq("id", storeId).maybeSingle();
+    if (!store) throw new Error("Store not found.");
+    const settings = (store.theme_settings ?? {}) as Record<string, unknown>;
+    const paypal = (settings.paypal ?? {}) as Record<string, unknown>;
+    const nextSettings = {
+      ...settings,
+      paypal: {
+        ...paypal,
+        status: "connected",
+        trackingId: data.trackingId,
+        merchantId: data.merchantIdInPayPal,
+      },
+    };
+    const { error } = await supabaseAdmin.from("stores").update({ theme_settings: nextSettings }).eq("id", store.id);
+    if (error) throw error;
+    return { connected: true as const };
+  });
