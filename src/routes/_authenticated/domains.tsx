@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CheckCircle2, Copy, Globe2, Info, ExternalLink, XCircle } from "lucide-react";
+import { CheckCircle2, Copy, Globe2, Info, ExternalLink, XCircle, Link2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,6 +48,7 @@ function DomainsPage() {
   const { activeStore } = useAuth();
   const queryClient = useQueryClient();
   const [domain, setDomain] = useState("");
+  const [slug, setSlug] = useState("");
 
   const { data: store, isLoading, isError, error } = useQuery({
     queryKey: ["store-domain", activeStore?.id],
@@ -72,7 +73,35 @@ function DomainsPage() {
 
   useEffect(() => {
     setDomain(store?.custom_domain ?? "");
-  }, [store?.id, store?.custom_domain]);
+    setSlug(store?.slug ?? "");
+  }, [store?.id, store?.custom_domain, store?.slug]);
+
+  const saveSlug = useMutation({
+    mutationFn: async () => {
+      if (!activeStore) throw new Error("No active store");
+      const normalized = slug.trim().toLowerCase().replace(/\\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
+      if (!normalized || normalized.length < 2) throw new Error("Enter a store link with at least 2 letters or numbers.");
+      if (normalized.length > 50) throw new Error("Your store link must be 50 characters or less.");
+      const { data: existing, error: lookupError } = await supabase
+        .from("stores")
+        .select("id")
+        .eq("slug", normalized)
+        .neq("id", activeStore.id)
+        .maybeSingle();
+      if (lookupError) throw lookupError;
+      if (existing) throw new Error("That store link is already taken. Choose another one.");
+      const { error } = await supabase.from("stores").update({ slug: normalized }).eq("id", activeStore.id);
+      if (error) throw error;
+      return normalized;
+    },
+    onSuccess: (normalized) => {
+      setSlug(normalized);
+      queryClient.invalidateQueries({ queryKey: ["store-domain", activeStore?.id] });
+      queryClient.invalidateQueries({ queryKey: ["my-stores"] });
+      toast.success("Store link updated");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   const save = useMutation({
     mutationFn: async () => {
@@ -141,6 +170,41 @@ function DomainsPage() {
       description="Give your store its own professional web address, such as yourbrand.com."
     >
       <div className="grid gap-6 lg:grid-cols-[1.15fr_.85fr]">
+        <div className="surface-card space-y-5 p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Link2 className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-display font-semibold">Your SellUrWay store link</p>
+              <p className="mt-1 text-sm text-muted-foreground">Choose the address customers use to open your store.</p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="store-slug">Store link</Label>
+            <div className="flex gap-2">
+              <div className="flex min-w-0 flex-1 items-center rounded-md border bg-muted/30 px-3 text-sm text-muted-foreground">
+                <span className="shrink-0">sellurway.vercel.app/</span>
+                <Input
+                  id="store-slug"
+                  className="h-8 border-0 bg-transparent px-1 shadow-none focus-visible:ring-0"
+                  value={slug}
+                  onChange={(event) => setSlug(event.target.value)}
+                  placeholder="your-store"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                />
+              </div>
+              <Button onClick={() => saveSlug.mutate()} disabled={saveSlug.isPending}>
+                {saveSlug.isPending ? "Saving…" : "Save"}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">Use letters, numbers and hyphens. Changing this link does not change your shop name.</p>
+          </div>
+        </div>
+
         <div className="surface-card space-y-5 p-5">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
