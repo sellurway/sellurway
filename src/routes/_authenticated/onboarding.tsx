@@ -169,7 +169,7 @@ function Onboarding() {
             <div className="space-y-1.5">
               <Label htmlFor="slug">Store link</Label>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">/s/</span>
+                <span className="text-sm text-muted-foreground">{PLATFORM_DOMAIN}/</span>
                 <Input id="slug" value={form.slug} maxLength={40} onChange={(e) => void checkSlug(e.target.value)} placeholder="kora-home" />
               </div>
               <p className="text-xs text-muted-foreground">
@@ -353,7 +353,7 @@ function Onboarding() {
           <div className="space-y-5">
             <h1 className="font-display text-2xl font-bold tracking-tight">Add your products</h1>
             <p className="text-sm text-muted-foreground">
-              Your store is live at <span className="font-medium">/s/{form.slug}</span>. Add up to 3 products on the free
+              Your store is live at <span className="font-medium">{form.slug}.{PLATFORM_DOMAIN}</span>. Add up to 3 products on the free
               plan, each with up to 5 photos. Lifetime unlocks unlimited products and every premium template.
             </p>
             <div className="rounded-xl border p-5">
