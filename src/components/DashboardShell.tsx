@@ -13,6 +13,7 @@ import {
   Shield,
   Sparkles,
   Users,
+  Globe2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -29,6 +30,8 @@ const NAV = [
   { to: "/customize", label: "Customize", icon: Sparkles },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/staff", label: "Staff", icon: Users },
+  { to: "/domains", label: "Domains", icon: Globe2 },
   { to: "/support", label: "Support", icon: LifeBuoy },
 ] as const;
 
