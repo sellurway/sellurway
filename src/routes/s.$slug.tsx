@@ -85,7 +85,10 @@ function StorefrontLayout() {
   }
 
   const theme = getTheme(store.theme);
-  const vars = resolveThemeVars(theme, store.theme_settings ?? {});
+  const themeSettings = store.theme_settings ?? {};
+  const activeLayout = themeSettings.layoutOverride || theme.layout;
+  const themedStore = { ...theme, layout: activeLayout };
+  const vars = resolveThemeVars(themedStore, themeSettings);
   const showCart = store.selling_mode === "full_checkout" || store.selling_mode === "multiple";
 
   return (
