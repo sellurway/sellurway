@@ -111,7 +111,12 @@ function StorefrontHome() {
   }, [products, ratings]);
 
   const selectedProductIds = settings.selectedProductIds ?? [];
-  const featured = useMemo(() => products.filter((p) => p.featured).slice(0, 3), [products]);
+  const featured = useMemo(
+    () => selectedProductIds.length
+      ? products.filter((p) => selectedProductIds.includes(p.id))
+      : products.filter((p) => p.featured).slice(0, 3),
+    [products, selectedProductIds],
+  );
   const featuredIds = useMemo(
     () => new Set(featured.map((p) => p.id)),
     [featured],
