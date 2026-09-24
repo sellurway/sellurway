@@ -5,16 +5,38 @@ import { CheckCircle2, Clock3, Loader2, WalletCards } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { createPayPalSellerOnboarding, getPayPalSellerConnection } from "@/lib/paypal.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export function PayPalConnectCard({ storeId }: { storeId: string }) {
   const getConnection = useServerFn(getPayPalSellerConnection);
   const startOnboarding = useServerFn(createPayPalSellerOnboarding);
+
+  async function getSupabaseSessionData() {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session?.access_token) {
+      throw new Error("Your SellUrWay session is missing. Please sign in again.");
+    }
+
+    const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"];
+    const supabasePublishableKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+    if (!supabaseUrl || !supabasePublishableKey) {
+      throw new Error("SellUrWay Supabase connection is not available.");
+    }
+
+    return {
+      storeId,
+      supabaseUrl,
+      supabasePublishableKey,
+      accessToken: data.session.access_token,
+    };
+  }
+
   const connection = useQuery({
     queryKey: ["paypal-connection", storeId],
-    queryFn: () => getConnection({ data: { storeId } }),
+    queryFn: async () => getConnection({ data: await getSupabaseSessionData() }),
   });
   const connect = useMutation({
-    mutationFn: () => startOnboarding({ data: { storeId } }),
+    mutationFn: async () => startOnboarding({ data: await getSupabaseSessionData() }),
     onSuccess: ({ actionUrl }) => {
       void connection.refetch();
       window.location.assign(actionUrl);
