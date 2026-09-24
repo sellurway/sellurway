@@ -1,6 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-
 const PAYPAL_API = "https://api-m.paypal.com";
 const PAYPAL_ATTRIBUTION_ID = process.env.PAYPAL_PARTNER_ATTRIBUTION_ID;
 
@@ -40,11 +38,33 @@ async function paypalRequest<T>(path: string, init: RequestInit & { accessToken:
   return result;
 }
 
+async function getSellerSupabase(input: {
+  supabaseUrl: string;
+  supabasePublishableKey: string;
+  accessToken: string;
+}) {
+  if (!/^https:\/\/[^\s]+$/.test(input.supabaseUrl)) throw new Error("Invalid Supabase URL.");
+  if (!input.supabasePublishableKey || !input.accessToken) throw new Error("Supabase session is missing. Please sign in again.");
+
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(input.supabaseUrl, input.supabasePublishableKey, {
+    global: {
+      headers: { Authorization: "Bearer " + input.accessToken },
+    },
+    auth: { persistSession: false, autoRefreshToken: false, storage: undefined },
+  });
+
+  const { data: userData, error: userError } = await supabase.auth.getUser(input.accessToken);
+  if (userError || !userData.user) throw new Error("Your SellUrWay session is no longer valid. Please sign in again.");
+
+  return { supabase, userId: userData.user.id };
+}
+
 export const getPayPalSellerConnection = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: { storeId: string }) => input)
-  .handler(async ({ data, context }) => {
-    const { data: store, error } = await context.supabase.from("stores").select("id,theme_settings").eq("id", data.storeId).eq("owner_id", context.userId).maybeSingle();
+  .inputValidator((input: { storeId: string; supabaseUrl: string; supabasePublishableKey: string; accessToken: string }) => input)
+  .handler(async ({ data }) => {
+    const { supabase, userId } = await getSellerSupabase(data);
+    const { data: store, error } = await supabase.from("stores").select("id,theme_settings").eq("id", data.storeId).eq("owner_id", userId).maybeSingle();
     if (error) throw error;
     if (!store) throw new Error("Store not found.");
     const settings = (store.theme_settings ?? {}) as Record<string, unknown>;
@@ -57,10 +77,10 @@ export const getPayPalSellerConnection = createServerFn({ method: "GET" })
   });
 
 export const createPayPalSellerOnboarding = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: { storeId: string }) => input)
-  .handler(async ({ data, context }) => {
-    const { data: store, error } = await context.supabase.from("stores").select("id,name,slug,theme_settings").eq("id", data.storeId).eq("owner_id", context.userId).maybeSingle();
+  .inputValidator((input: { storeId: string; supabaseUrl: string; supabasePublishableKey: string; accessToken: string }) => input)
+  .handler(async ({ data }) => {
+    const { supabase, userId } = await getSellerSupabase(data);
+    const { data: store, error } = await supabase.from("stores").select("id,name,slug,theme_settings").eq("id", data.storeId).eq("owner_id", userId).maybeSingle();
     if (error) throw error;
     if (!store) throw new Error("Store not found.");
     const organization = process.env.PAYPAL_PARTNER_ORGANIZATION;
