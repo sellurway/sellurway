@@ -227,7 +227,13 @@ function StorefrontHome() {
 
     featured: settings.showFeatured !== false && featured.length > 0 ? (
       <section id="store-products" className="pb-10">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--sf-muted)" }}>Featured</h2>
+        {settings.featuredImageUrl && (
+          <img src={settings.featuredImageUrl} alt="" loading="lazy" className="mb-5 h-40 w-full object-cover sm:h-56" style={{ borderRadius: "var(--sf-card-radius)" }} />
+        )}
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--sf-heading)" }}>{settings.featuredHeading || "Featured products"}</h2>
+          <p className="mt-1 text-sm" style={{ color: "var(--sf-muted)" }}>{settings.featuredSubline || "Shop our most-loved products."}</p>
+        </div>
         <div className="grid gap-4 sm:grid-cols-3">
           {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} large imageRatio={imageRatio} layout={theme.layout} themeId={theme.id} />)}
         </div>
