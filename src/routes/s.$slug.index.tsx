@@ -51,8 +51,9 @@ function StorefrontHome() {
   const products = loadedProducts;
   const { data: categories } = useStoreCategories(store.id);
   const [ratings, setRatings] = useState<Record<string, RatingInfo>>({});
-  const theme = getTheme(store.theme);
+  const baseTheme = getTheme(store.theme);
   const settings = store.theme_settings ?? {};
+  const theme = { ...baseTheme, layout: settings.layoutOverride || baseTheme.layout };
 
   useEffect(() => {
     const title = store.name ? ` | Sellurway` : "SellUrWay Store";
@@ -159,9 +160,15 @@ function StorefrontHome() {
       ? "grid-cols-1"
       : theme.layout === "editorial"
         ? "grid-cols-2 lg:grid-cols-3"
-        : theme.layout === "lookbook"
+        : theme.layout === "lookbook" || theme.layout === "bento" || theme.layout === "split"
           ? "grid-cols-2 lg:grid-cols-3"
-          : "grid-cols-2 lg:grid-cols-4";
+          : theme.layout === "minimal"
+            ? "grid-cols-2 lg:grid-cols-5"
+            : theme.layout === "catalog"
+              ? "grid-cols-2 lg:grid-cols-4"
+              : theme.layout === "masonry"
+                ? "grid-cols-2 lg:grid-cols-3"
+                : "grid-cols-2 lg:grid-cols-4";
 
   const gridClass =
     settings.productColumns === 2
@@ -210,10 +217,10 @@ function StorefrontHome() {
 
   const sections: Record<string, ReactNode> = {
     hero: settings.showHero !== false ? (
-      <section className={"py-10 md:py-14 " + (theme.layout === "showcase" ? "md:py-20" : theme.layout === "editorial" ? "md:py-24" : "")}>
+      <section className={"py-10 md:py-14 " + (theme.layout === "showcase" || theme.layout === "immersive" ? "md:py-20" : theme.layout === "editorial" ? "md:py-24" : theme.layout === "bento" ? "md:py-16" : "")}>
         {heroImages.length > 0 && (
-          <div className={"relative mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" ? "shadow-2xl" : theme.layout === "lookbook" ? "md:mx-auto md:max-w-5xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
-            <img src={heroImages[activeHero]} alt="" loading="eager" fetchPriority="high" decoding="async" className={"w-full object-cover transition-opacity duration-500 " + (theme.layout === "showcase" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : "h-44 sm:h-64")} />
+          <div className={"relative mb-8 overflow-hidden " + (theme.layout === "editorial" ? "md:-mx-8" : theme.layout === "showcase" || theme.layout === "immersive" ? "shadow-2xl" : theme.layout === "lookbook" ? "md:mx-auto md:max-w-5xl" : theme.layout === "split" ? "md:mx-0 md:max-w-3xl" : "")} style={{ borderRadius: "var(--sf-card-radius)" }}>
+            <img src={heroImages[activeHero]} alt="" loading="eager" fetchPriority="high" decoding="async" className={"w-full object-cover transition-opacity duration-500 " + (theme.layout === "showcase" || theme.layout === "immersive" ? "h-56 sm:h-[28rem]" : theme.layout === "editorial" ? "h-64 sm:h-[32rem]" : theme.layout === "bento" ? "h-52 sm:h-72" : "h-44 sm:h-64")} />
             {heroImages.length > 1 && <>
               <button aria-label="Previous banner" onClick={() => setActiveHero((i) => (i - 1 + heroImages.length) % heroImages.length)} className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-3 py-2 text-white">‹</button>
               <button aria-label="Next banner" onClick={() => setActiveHero((i) => (i + 1) % heroImages.length)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-3 py-2 text-white">›</button>
@@ -221,7 +228,7 @@ function StorefrontHome() {
             </>}
           </div>
         )}
-        <h1 className={"max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl " + (theme.layout === "editorial" ? "sm:text-6xl" : theme.layout === "showcase" ? "sm:text-5xl" : theme.layout === "lookbook" ? "mx-auto text-center sm:text-5xl" : isDarkTheme ? "sm:text-5xl" : "")} style={{ fontFamily: "var(--sf-heading)" }}>
+        <h1 className={"max-w-2xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl " + (theme.layout === "editorial" ? "sm:text-6xl" : theme.layout === "showcase" ? "sm:text-5xl" : theme.layout === "lookbook" || theme.layout === "split" ? "mx-auto text-center sm:text-5xl" : theme.layout === "immersive" ? "sm:text-6xl" : isDarkTheme ? "sm:text-5xl" : "")} style={{ fontFamily: "var(--sf-heading)" }}>
           {settings.heroHeadline || store.name}
         </h1>
         <p className={"mt-3 max-w-xl text-base " + (theme.layout === "lookbook" ? "mx-auto text-center" : "")} style={{ color: "var(--sf-muted)" }}>
@@ -239,7 +246,7 @@ function StorefrontHome() {
           <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--sf-heading)" }}>{settings.featuredHeading || "Featured products"}</h2>
           <p className="mt-1 text-sm" style={{ color: "var(--sf-muted)" }}>{settings.featuredSubline || "Shop our most-loved products."}</p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className={"grid gap-4 " + (theme.layout === "bento" || theme.layout === "masonry" ? "sm:grid-cols-2 lg:grid-cols-4" : theme.layout === "list" || theme.layout === "catalog" ? "sm:grid-cols-3" : "sm:grid-cols-3")}>
           {featured.map((p) => <ProductCard key={p.id} slug={slug} product={p} currency={store.currency} rating={ratings[p.id]} large imageRatio={imageRatio} layout={theme.layout} themeId={theme.id} />)}
         </div>
       </section>
