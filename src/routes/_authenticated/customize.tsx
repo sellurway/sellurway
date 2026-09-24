@@ -261,7 +261,7 @@ function CustomizePage() {
                 </div>
 
                 <div className="mt-5 border-t pt-5">
-                  <SectionSettingsPanel section={selectedSection} draft={draft} userId={user?.id ?? ""} onUpdate={updateDraft} />
+                  <SectionSettingsPanel section={selectedSection} draft={draft} userId={user?.id ?? ""} products={editorProducts} onUpdate={updateDraft} />
                 </div>
               </div>
             ) : (
@@ -307,7 +307,7 @@ function CustomizePage() {
   );
 }
 
-function SectionSettingsPanel({ section, draft, userId, onUpdate }: { section: SectionId; draft: ThemeSettings; userId: string; onUpdate: (patch: Partial<ThemeSettings>) => void }) {
+function SectionSettingsPanel({ section, draft, userId, products, onUpdate }: { section: SectionId; draft: ThemeSettings; userId: string; products: EditorProduct[]; onUpdate: (patch: Partial<ThemeSettings>) => void }) {
   if (section === "hero") {
     return <div className="space-y-4">
       <div><p className="text-sm font-semibold">Hero banner</p><p className="mt-1 text-xs text-muted-foreground">Edit the first thing shoppers see.</p></div>
@@ -326,6 +326,24 @@ function SectionSettingsPanel({ section, draft, userId, onUpdate }: { section: S
       <div><Label className="text-xs">Featured heading</Label><Input className="mt-1.5" value={draft.featuredHeading ?? ""} placeholder="Featured products" onChange={(e) => onUpdate({ featuredHeading: e.target.value })} /></div>
       <div><Label className="text-xs">Featured subheadline</Label><Input className="mt-1.5" value={draft.featuredSubline ?? ""} placeholder="Shop our most-loved products" onChange={(e) => onUpdate({ featuredSubline: e.target.value })} /></div>
       <ImageUploader value={draft.featuredImageUrl ? [draft.featuredImageUrl] : []} onChange={(urls) => onUpdate({ featuredImageUrl: urls[0] || undefined })} userId={userId} folder="theme/featured" max={1} label="Featured section picture" hint="Upload one picture to display above your featured products." aspect="wide" />
+      <div className="space-y-2">
+        <Label className="text-xs">Featured products</Label>
+        <p className="text-[11px] text-muted-foreground">Choose as many products as you want. These choices override the product Featured switches for this section.</p>
+        <div className="max-h-56 space-y-1.5 overflow-y-auto rounded-xl border p-2">
+          {products.length === 0 ? <p className="p-2 text-xs text-muted-foreground">Add products first.</p> : products.map((product) => {
+            const selected = (draft.selectedProductIds ?? []).includes(product.id);
+            return <label key={product.id} className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-muted">
+              <input type="checkbox" checked={selected} onChange={(e) => {
+                const current = draft.selectedProductIds ?? [];
+                onUpdate({ selectedProductIds: e.target.checked ? [...current, product.id] : current.filter((id) => id !== product.id) });
+              }} />
+              {product.images[0] ? <img src={product.images[0]} alt="" className="h-10 w-10 rounded-md object-cover" /> : <div className="h-10 w-10 rounded-md bg-muted" />}
+              <span className="min-w-0 flex-1 truncate text-xs font-medium">{product.name}</span>
+              <span className="text-xs text-muted-foreground">{new Intl.NumberFormat(undefined, { style: "currency", currency: "ZAR" }).format(product.price)}</span>
+            </label>;
+          })}
+        </div>
+      </div>
     </div>;
   }
 
@@ -402,6 +420,8 @@ function StorePreview({ storeName, theme, settings, sections, products, currency
   const radius = settings.buttonStyle === "pill" ? "999px" : settings.buttonStyle === "square" ? "4px" : "12px";
   const cardRadius = theme.cardRadius;
   const font = settings.headingFont || theme.heading;
+  const featuredIds = settings.selectedProductIds ?? [];
+  const featuredProducts = featuredIds.length ? products.filter((p) => featuredIds.includes(p.id)) : products.filter((p) => p.featured).slice(0, 3);
 
   return <div style={{ background: bg, color: ink } as CSSProperties} className="min-h-[640px]" aria-label="Storefront preview">
     <div className="border-b px-4 py-2 text-center text-[11px]" style={{ borderColor: theme.palette.border, color: muted }}>{settings.announcementText || "Free delivery on selected orders"}</div>
@@ -416,7 +436,7 @@ function StorePreview({ storeName, theme, settings, sections, products, currency
         if (section === "featured" && settings.showFeatured !== false) return <section key={section} className="mt-9">
           {settings.featuredImageUrl && <img src={settings.featuredImageUrl} alt="" className="mb-4 h-28 w-full object-cover sm:h-40" style={{ borderRadius: cardRadius }} />}
           <div className="mb-3"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>{settings.featuredHeading || "Featured products"}</h2><p className="mt-1 text-xs" style={{ color: muted }}>{settings.featuredSubline || "Shop our most-loved products."}</p></div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{products.filter((product) => product.featured).slice(0, 3).map((product) => <PreviewCard key={product.id} product={product} accent={accent} theme={theme} cardRadius={cardRadius} />)}</div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{featuredProducts.map((product) => <PreviewCard key={product.id} product={product} accent={accent} theme={theme} cardRadius={cardRadius} />)}</div>
         </section>;
         if (section === "categories" && settings.showCategories !== false) return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>Shop by category</h2></div><div className="flex flex-wrap gap-2">{(settings.categoryLabels?.length ? settings.categoryLabels : ["New", "Popular", "Sale"]).map((label) => <span key={label} className="rounded-full border px-3 py-1.5 text-xs" style={{ borderColor: theme.palette.border }}>{label}</span>)}</div></section>;
         if (section === "products") { const columns = settings.productColumns || 4; const cls = columns === 2 ? "grid-cols-2" : columns === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-4"; const ratio = settings.productImageRatio === "portrait" ? "aspect-[4/5]" : settings.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square"; return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>All products</h2><span className="text-xs" style={{ color: muted }}>Sort</span></div><div className={`grid gap-3 ${cls}`}>{products.filter((product) => !(settings.showFeatured !== false && product.featured)).map((product) => <div key={product.id}><div className={`${ratio} overflow-hidden border`} style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}>{product.images[0] ? <img src={product.images[0]} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full" style={{ background: `linear-gradient(135deg, ${accent}28, transparent)` }} />}</div><p className="mt-2 text-xs font-medium">{product.name}</p><p className="text-[11px]" style={{ color: muted }}>{money(product.price)}</p></div>)}</div></section>; }
