@@ -213,7 +213,7 @@ function DomainsPage() {
               ["1", "Buy your domain", "Use any domain registrar and buy the exact domain your store should use."],
               ["2", "Add it to Vercel", "In Vercel, open your Sellurway project → Settings → Domains and add the merchant domain."],
               ["3", "Copy Vercel's DNS records", "Vercel will show the exact record(s) required for the domain. Use those values at the registrar."],
-              ["4", "Wait for verification", "Once DNS is correct, Vercel verifies the domain and provisions HTTPS."],
+              ["4", "Wait for verification", "Once DNS is correct, Vercel verifies the domain."],
             ].map(([step, title, text]) => (
               <div key={step} className="flex gap-3">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">{step}</div>
