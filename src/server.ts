@@ -13,8 +13,8 @@ function normalizeHost(value: string): string {
   return value
     .toLowerCase()
     .trim()
-    .replace(/^https?:\\/\\//, "")
-    .replace(/\\.$/, "");
+    .replace(/^https?:\/\//, "")
+    .replace(/\.$/, "");
 }
 
 function isPlatformHost(host: string): boolean {
