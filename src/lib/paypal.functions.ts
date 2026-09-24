@@ -92,9 +92,6 @@ export const createPayPalSellerOnboarding = createServerFn({ method: "POST" })
     const { data: store, error } = await supabase.from("stores").select("id,name,slug,theme_settings").eq("id", data.storeId).eq("owner_id", userId).maybeSingle();
     if (error) throw error;
     if (!store) throw new Error("Store not found.");
-    const organization = process.env.PAYPAL_PARTNER_ORGANIZATION;
-    if (!organization) throw new Error("PayPal marketplace approval is not finished yet. SellUrWay still needs the PayPal partner organization value.");
-
     const accessToken = await getPayPalAccessToken();
     const trackingId = "sellurway_" + store.id;
     const currentSettings = (store.theme_settings ?? {}) as Record<string, unknown>;
@@ -105,7 +102,18 @@ export const createPayPalSellerOnboarding = createServerFn({ method: "POST" })
       method: "POST",
       headers: { Authorization: "Bearer " + accessToken, "Content-Type": "application/json", ...(PAYPAL_ATTRIBUTION_ID ? { "PayPal-Partner-Attribution-Id": PAYPAL_ATTRIBUTION_ID } : {}) },
       body: JSON.stringify({
-        operations: [{ operation: "API_INTEGRATION", api_integration_preference: { rest_api_integration: { integration_method: "SDK", integration_type: "THIRD_PARTY", third_party_details: { signup_mode: "VERIFY_WITH_PAYPAL", organization } } } }],
+        operations: [{
+          operation: "API_INTEGRATION",
+          api_integration_preference: {
+            rest_api_integration: {
+              integration_method: "PAYPAL",
+              integration_type: "THIRD_PARTY",
+              third_party_details: {
+                features: ["PAYMENT", "REFUND"],
+              },
+            },
+          },
+        }],
         products: ["PPCP"],
         legal_consents: [{ type: "SHARE_DATA_CONSENT", granted: true }],
         legal_country_code: "ZA",
@@ -120,7 +128,11 @@ export const createPayPalSellerOnboarding = createServerFn({ method: "POST" })
     const result = (await response.json()) as { links?: Array<{ href?: string; rel?: string }>; error?: string; message?: string; details?: Array<{ description?: string }> };
     if (!response.ok) {
       const detail = result.details?.map((item) => item.description).filter(Boolean).join(" ");
-      throw new Error(detail || result.message || result.error || "PayPal seller onboarding could not be started.");
+      const paypalMessage = detail || result.message || result.error || "PayPal seller onboarding could not be started.";
+      if (response.status === 401) {
+        throw new Error("PayPal has not approved SellUrWay as a marketplace partner yet. The PayPal partner review must be completed before live seller onboarding can start.");
+      }
+      throw new Error(paypalMessage);
     }
     const actionUrl = result.links?.find((link) => link.rel === "action_url")?.href ?? result.links?.find((link) => link.rel === "self")?.href;
     if (!actionUrl) throw new Error("PayPal did not return a seller onboarding URL.");
