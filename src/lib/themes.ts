@@ -29,7 +29,7 @@ export interface StoreTheme {
   name: string;
   tagline: string;
   premium: boolean;
-  layout: "grid" | "editorial" | "list" | "showcase" | "lookbook";
+  layout: "grid" | "editorial" | "list" | "showcase" | "lookbook" | "bento" | "split" | "catalog" | "minimal" | "immersive";
   photoSet: "home" | "fashion" | "food" | "jewel" | "beauty" | "tech" | "flowers";
   palette: {
     bg: string;
@@ -58,13 +58,13 @@ export const THEMES: StoreTheme[] = [
     heading: sans, body, buttonRadius: "18px", cardRadius: "28px", bestFor: "Beauty, skincare, lifestyle"
   },
   {
-    id: "vault", name: "Noir Luxury", photoSet: "jewel", premium: true, layout: "showcase",
+    id: "vault", name: "Noir Luxury", photoSet: "jewel", premium: true, layout: "immersive",
     tagline: "A cinematic dark storefront built to make products feel expensive.",
     palette: { bg: "#0b0c10", surface: "#15171d", ink: "#f5f1e8", muted: "#a7a096", accent: "#d6b25e", accentInk: "#17120a", border: "#292c34" },
     heading: sans, body, buttonRadius: "6px", cardRadius: "12px", bestFor: "Luxury, jewellery, watches"
   },
   {
-    id: "drift", name: "Studio", photoSet: "home", premium: true, layout: "list",
+    id: "drift", name: "Studio", photoSet: "home", premium: true, layout: "split",
     tagline: "Calm, architectural and image-led with plenty of breathing room.",
     palette: { bg: "#f2f5f5", surface: "#ffffff", ink: "#1c292b", muted: "#6d7b7c", accent: "#466b6d", accentInk: "#ffffff", border: "#d8e0df" },
     heading: sans, body, buttonRadius: "999px", cardRadius: "4px", bestFor: "Home, furniture, design"
@@ -76,13 +76,13 @@ export const THEMES: StoreTheme[] = [
     heading: sans, body, buttonRadius: "0px", cardRadius: "0px", bestFor: "Fashion, art, photography"
   },
   {
-    id: "ember", name: "Food Rush", photoSet: "food", premium: true, layout: "showcase",
+    id: "ember", name: "Food Rush", photoSet: "food", premium: true, layout: "bento",
     tagline: "Warm, hungry and energetic — designed to turn browsing into orders.",
     palette: { bg: "#fff2e7", surface: "#ffffff", ink: "#32170f", muted: "#956d5b", accent: "#e9512e", accentInk: "#ffffff", border: "#f3d4c5" },
     heading: sans, body, buttonRadius: "999px", cardRadius: "22px", bestFor: "Food, drinks, takeaways"
   },
   {
-    id: "horizon", name: "Apple Tech", photoSet: "tech", premium: true, layout: "grid",
+    id: "horizon", name: "Apple Tech", photoSet: "tech", premium: true, layout: "minimal",
     tagline: "Sharp, futuristic and confident with a high-end technology feel.",
     palette: { bg: "#eef4ff", surface: "#ffffff", ink: "#111b35", muted: "#64718c", accent: "#315efb", accentInk: "#ffffff", border: "#d7e1f5" },
     heading: sans, body, buttonRadius: "12px", cardRadius: "20px", bestFor: "Tech, gadgets, digital products"
@@ -94,19 +94,19 @@ export const THEMES: StoreTheme[] = [
     heading: sans, body, buttonRadius: "20px", cardRadius: "30px", bestFor: "Beauty, fashion, premium gifts"
   },
   {
-    id: "circuit", name: "Neon Circuit", photoSet: "tech", premium: true, layout: "editorial",
+    id: "circuit", name: "Neon Circuit", photoSet: "tech", premium: true, layout: "immersive",
     tagline: "Electric contrast and modern UI energy for products with an edge.",
     palette: { bg: "#0b1020", surface: "#121a30", ink: "#f4f7ff", muted: "#95a3c5", accent: "#5cf0c2", accentInk: "#062219", border: "#253252" },
     heading: sans, body, buttonRadius: "10px", cardRadius: "18px", bestFor: "Gaming, tech, sneakers"
   },
   {
-    id: "terra", name: "Green Market", photoSet: "flowers", premium: true, layout: "list",
+    id: "terra", name: "Green Market", photoSet: "flowers", premium: true, layout: "catalog",
     tagline: "Organic textures, natural tones and an effortless handcrafted feel.",
     palette: { bg: "#f7f4ea", surface: "#fffdf8", ink: "#283022", muted: "#727866", accent: "#637b45", accentInk: "#ffffff", border: "#dfe3d1" },
     heading: sans, body, buttonRadius: "14px", cardRadius: "24px", bestFor: "Plants, handmade, organic goods"
   },
   {
-    id: "halo", name: "Social Drop", photoSet: "fashion", premium: true, layout: "grid",
+    id: "halo", name: "Social Drop", photoSet: "fashion", premium: true, layout: "bento",
     tagline: "Bright and polished with soft gradients and a modern social-commerce feel.",
     palette: { bg: "#f6f4ff", surface: "#ffffff", ink: "#201b3d", muted: "#77718f", accent: "#7657e8", accentInk: "#ffffff", border: "#e2ddf8" },
     heading: sans, body, buttonRadius: "999px", cardRadius: "26px", bestFor: "Fashion, accessories, creators"
@@ -118,25 +118,25 @@ export const THEMES: StoreTheme[] = [
     heading: sans, body, buttonRadius: "2px", cardRadius: "8px", bestFor: "Furniture, home, premium craft"
   },
   {
-    id: "atlas", name: "Atlas Commerce", photoSet: "beauty", premium: true, layout: "grid",
+    id: "atlas", name: "Atlas Commerce", photoSet: "beauty", premium: true, layout: "catalog",
     tagline: "A powerful modern marketplace built for big catalogues and serious shopping.",
     palette: { bg: "#f4f7fb", surface: "#ffffff", ink: "#172033", muted: "#68738a", accent: "#ff6b35", accentInk: "#ffffff", border: "#dce3ee" },
     heading: sans, body, buttonRadius: "10px", cardRadius: "14px", bestFor: "Marketplaces, general stores, deals"
   },
   {
-    id: "solstice", name: "Solstice", photoSet: "fashion", premium: true, layout: "editorial",
+    id: "solstice", name: "Solstice", photoSet: "fashion", premium: true, layout: "split",
     tagline: "Sunlit editorial design with oversized imagery and premium storytelling.",
     palette: { bg: "#fff7e8", surface: "#fffdf8", ink: "#302317", muted: "#8b7967", accent: "#d67a2d", accentInk: "#ffffff", border: "#eadbc7" },
     heading: sans, body, buttonRadius: "4px", cardRadius: "2px", bestFor: "Fashion, lifestyle, photography"
   },
   {
-    id: "kinetic", name: "Kinetic", photoSet: "tech", premium: true, layout: "showcase",
+    id: "kinetic", name: "Kinetic", photoSet: "tech", premium: true, layout: "immersive",
     tagline: "Fast, loud and energetic with a product-launch feel made for modern brands.",
     palette: { bg: "#080b12", surface: "#111722", ink: "#f7fbff", muted: "#93a0b5", accent: "#8b5cf6", accentInk: "#ffffff", border: "#263247" },
     heading: sans, body, buttonRadius: "999px", cardRadius: "28px", bestFor: "Gaming, gadgets, streetwear"
   },
   {
-    id: "atelier", name: "Atelier", photoSet: "home", premium: true, layout: "lookbook",
+    id: "atelier", name: "Atelier", photoSet: "home", premium: true, layout: "masonry",
     tagline: "A refined gallery-like boutique for carefully curated collections.",
     palette: { bg: "#f1eee8", surface: "#faf9f6", ink: "#24211d", muted: "#756f66", accent: "#6f5644", accentInk: "#ffffff", border: "#d8d2c9" },
     heading: sans, body, buttonRadius: "2px", cardRadius: "6px", bestFor: "Luxury goods, furniture, art"
@@ -148,7 +148,7 @@ export const THEMES: StoreTheme[] = [
     heading: sans, body, buttonRadius: "16px", cardRadius: "24px", bestFor: "Gadgets, music, youth brands"
   }
 ,{
-    id: "pulse", name: "Pulse", photoSet: "tech", premium: true, layout: "grid",
+    id: "pulse", name: "Pulse", photoSet: "tech", premium: true, layout: "bento",
     tagline: "High-energy layouts, sharp cards and a modern shopping experience.",
     palette: { bg: "#f3f6ff", surface: "#ffffff", ink: "#171b2d", muted: "#68708a", accent: "#ef4444", accentInk: "#ffffff", border: "#dce2f2" },
     heading: sans, body, buttonRadius: "12px", cardRadius: "16px", bestFor: "Tech, fitness, active brands"
@@ -160,7 +160,7 @@ export const THEMES: StoreTheme[] = [
     heading: sans, body, buttonRadius: "4px", cardRadius: "10px", bestFor: "Art, interiors, creative studios"
   },
   {
-    id: "street", name: "Street", photoSet: "fashion", premium: true, layout: "showcase",
+    id: "street", name: "Street", photoSet: "fashion", premium: true, layout: "catalog",
     tagline: "Bold urban styling for brands that want their products to stand out.",
     palette: { bg: "#111214", surface: "#191b1f", ink: "#f7f7f4", muted: "#a5a8ad", accent: "#d7ff3f", accentInk: "#161a08", border: "#2b2e34" },
     heading: sans, body, buttonRadius: "8px", cardRadius: "14px", bestFor: "Streetwear, sneakers, youth fashion"
@@ -178,19 +178,19 @@ export const THEMES: StoreTheme[] = [
     heading: sans, body, buttonRadius: "18px", cardRadius: "28px", bestFor: "Flowers, gifts, beauty"
   },
   {
-    id: "mono", name: "Mono", photoSet: "jewel", premium: true, layout: "list",
+    id: "mono", name: "Mono", photoSet: "jewel", premium: true, layout: "minimal",
     tagline: "Minimal black-and-white presentation for a clean, premium catalogue.",
     palette: { bg: "#f7f7f5", surface: "#ffffff", ink: "#141414", muted: "#737373", accent: "#202020", accentInk: "#ffffff", border: "#ddddda" },
     heading: sans, body, buttonRadius: "4px", cardRadius: "4px", bestFor: "Design, jewellery, minimalist brands"
   },
   {
-    id: "market", name: "Market", photoSet: "home", premium: true, layout: "grid",
+    id: "market", name: "Market", photoSet: "home", premium: true, layout: "catalog",
     tagline: "Practical, spacious shopping built for variety and everyday browsing.",
     palette: { bg: "#f5f7f9", surface: "#ffffff", ink: "#17212b", muted: "#6c7782", accent: "#0f766e", accentInk: "#ffffff", border: "#dce2e7" },
     heading: sans, body, buttonRadius: "10px", cardRadius: "14px", bestFor: "General stores, home, marketplaces"
   },
   {
-    id: "glow", name: "Glow", photoSet: "beauty", premium: true, layout: "showcase",
+    id: "glow", name: "Glow", photoSet: "beauty", premium: true, layout: "split",
     tagline: "Soft gradients and polished details for a bright modern storefront.",
     palette: { bg: "#f8f5ff", surface: "#ffffff", ink: "#241d38", muted: "#7b7191", accent: "#a855f7", accentInk: "#ffffff", border: "#e7def8" },
     heading: sans, body, buttonRadius: "999px", cardRadius: "24px", bestFor: "Beauty, skincare, creators"
@@ -207,6 +207,7 @@ export interface ThemeSettings {
   bg?: string;
   headingFont?: string;
   buttonStyle?: "rounded" | "pill" | "square";
+  layoutOverride?: StoreTheme["layout"];
   showHero?: boolean;
   showFeatured?: boolean;
   showCategories?: boolean;
@@ -237,6 +238,7 @@ export interface ThemeSettings {
 }
 
 export function resolveThemeVars(theme: StoreTheme, settings: ThemeSettings = {}) {
+  const effectiveLayout = settings.layoutOverride || theme.layout;
   const radius =
     settings.buttonStyle === "pill"
       ? "999px"
@@ -247,6 +249,7 @@ export function resolveThemeVars(theme: StoreTheme, settings: ThemeSettings = {}
           : theme.buttonRadius;
 
   return {
+    "--sf-layout": effectiveLayout,
     "--sf-bg": settings.bg || theme.palette.bg,
     "--sf-surface": theme.palette.surface,
     "--sf-ink": settings.ink || theme.palette.ink,
