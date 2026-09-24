@@ -8,22 +8,28 @@ import { useStore, whatsappLink } from "@/lib/storefront";
 import { formatMoney } from "@/lib/format";
 import { labelize } from "@/lib/store-options";
 import { confirmStripePayment, createStripeCheckout, trackOrder } from "@/lib/stripe.functions";
+import { capturePayPalPayment } from "@/lib/paypal.functions";
 
 export const Route = createFileRoute("/s/$slug/confirmation")({
-  validateSearch: (search: Record<string, unknown>): { order: string; session_id?: string } => {
+  validateSearch: (search: Record<string, unknown>): { order: string; session_id?: string; token?: string } => {
     const order = typeof search["order"] === "string" ? (search["order"] as string) : "";
     const session = search["session_id"];
-    return typeof session === "string" && session ? { order, session_id: session } : { order };
+    const token = search["token"];
+    const result: { order: string; session_id?: string; token?: string } = { order };
+    if (typeof session === "string" && session) result.session_id = session;
+    if (typeof token === "string" && token) result.token = token;
+    return result;
   },
   component: ConfirmationPage,
 });
 
 function ConfirmationPage() {
   const { slug } = useParams({ from: "/s/$slug/confirmation" });
-  const { order, session_id } = Route.useSearch();
+  const { order, session_id, token } = Route.useSearch();
   const store = useStore();
   const [summary, setSummary] = useState<{ total: number; currency: string } | null>(null);
   const [payBusy, setPayBusy] = useState(false);
+  const capturePayPal = useServerFn(capturePayPalPayment);
 
   const confirmPayment = useServerFn(confirmStripePayment);
   const startCheckout = useServerFn(createStripeCheckout);
@@ -47,8 +53,14 @@ function ConfirmationPage() {
     queryFn: () => confirmPayment({ data: { slug, orderNumber: order, sessionId: session_id! } }),
   });
 
+  const paypalCaptureQuery = useQuery({
+    queryKey: ["paypal-capture", slug, order, token],
+    enabled: !!order && !!token,
+    queryFn: () => capturePayPal({ data: { slug, orderNumber: order, paypalOrderId: token! } }),
+  });
+
   const statusQuery = useQuery({
-    queryKey: ["order-status", slug, order, confirmQuery.data?.paid],
+    queryKey: ["order-status", slug, order, confirmQuery.data?.paid, paypalCaptureQuery.data?.paid],
     enabled: !!order,
     queryFn: () => lookup({ data: { slug, orderNumber: order } }),
   });
