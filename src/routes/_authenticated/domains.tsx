@@ -48,6 +48,7 @@ function DomainsPage() {
   const { activeStore } = useAuth();
   const queryClient = useQueryClient();
   const [slug, setSlug] = useState("");
+  const [customDomain, setCustomDomain] = useState("");
 
   const { data: store, isLoading, isError, error } = useQuery({
     queryKey: ["store-domain", activeStore?.id],
@@ -71,7 +72,7 @@ function DomainsPage() {
 
   useEffect(() => {
     setSlug(store?.slug ?? "");
-  }, [store?.id, store?.custom_domain, store?.slug]);
+  }, [store?.id, store?.slug]);
 
   const saveSlug = useMutation({
     mutationFn: async () => {
@@ -129,8 +130,6 @@ function DomainsPage() {
   }
 
   const defaultUrl = `https://sellurway.vercel.app/${store.slug}`;
-  const customUrl = store.custom_domain ? `https://${store.custom_domain}` : null;
-
   function copy(value: string) {
     navigator.clipboard.writeText(value);
     toast.success("Copied");
@@ -185,27 +184,47 @@ function DomainsPage() {
             <div>
               <p className="font-display font-semibold">Custom domain</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Connect a domain you already own, such as yourbrand.com.
+                Connect a domain you already own to your SellUrWay store.
               </p>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="custom-domain">Your domain</Label>
+            <Input
+              id="custom-domain"
+              value={customDomain}
+              onChange={(event) => setCustomDomain(normalizeDomain(event.target.value))}
+              placeholder="yourstore.com"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+            />
+            <Button
+              className="w-full"
+              onClick={() => {
+                if (!validDomain(customDomain)) {
+                  toast.error("Enter a valid domain, for example yourstore.com");
+                  return;
+                }
+                toast.info("Custom-domain connection is being prepared for SellUrWay.");
+              }}
+            >
+              Connect domain
+            </Button>
           </div>
 
           <div className="rounded-xl border bg-muted/20 p-4">
-            <p className="text-sm font-medium">Custom domain setup is temporarily unavailable</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Your SellUrWay store link works now. Custom-domain storage needs access to the database managed by Lovable, so this section will stay safely disabled until that database access is available.
-            </p>
-          </div>
-
-          <div className="rounded-xl border p-4">
-            <div className="flex gap-3">
-              <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                You do not need to pay for anything to use and edit your free SellUrWay store link.
-              </p>
+            <p className="text-sm font-medium">How customers connect it</p>
+            <div className="mt-3 space-y-3 text-xs text-muted-foreground">
+              <p><span className="font-semibold text-foreground">1.</span> Enter the domain you bought.</p>
+              <p><span className="font-semibold text-foreground">2.</span> SellUrWay will provide the DNS record(s) needed for your store.</p>
+              <p><span className="font-semibold text-foreground">3.</span> Add those records at the company where you bought the domain.</p>
+              <p><span className="font-semibold text-foreground">4.</span> Return here and verify the connection.</p>
             </div>
           </div>
         </div>
+
         <div className="surface-card space-y-5 p-5">
           <p className="font-display font-semibold">Domain setup</p>
           <div className="space-y-4">
