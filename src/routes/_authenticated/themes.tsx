@@ -43,6 +43,7 @@ function ThemesPage() {
   const queryClient = useQueryClient();
   const [settings, setSettings] = useState<ThemeSettings | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
+  const [editorThemeId, setEditorThemeId] = useState<string>(THEMES[0]!.id);
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
   const [selectedSection, setSelectedSection] = useState<"hero" | "promo" | "imageText" | "featured" | "categories" | "products" | "testimonials" | "newsletter" | "social">("hero");
   const [uploading, setUploading] = useState(false);
@@ -84,6 +85,11 @@ function ThemesPage() {
   });
 
   const current = settings ?? ((store?.theme_settings ?? {}) as ThemeSettings);
+  const editorTheme = THEMES.find((theme) => theme.id === editorThemeId) ?? THEMES[0]!;
+
+  useEffect(() => {
+    if (store?.theme) setEditorThemeId(store.theme);
+  }, [store?.theme]);
 
   useEffect(() => {
     setSelectedProductIds(current.selectedProductIds ?? []);
@@ -167,10 +173,12 @@ function ThemesPage() {
   }
 
   function editTemplate(themeId: string) {
+    // The editor must immediately use the theme the user clicked, not the first/default theme.
+    setEditorThemeId(themeId);
     setSettings((store?.theme_settings ?? {}) as ThemeSettings);
     setEditorOpen(true);
-    window.setTimeout(() => document.getElementById("theme-editor")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
     save.mutate({ theme: themeId });
+    window.setTimeout(() => document.getElementById("theme-editor")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
   return (
@@ -262,38 +270,42 @@ function ThemesPage() {
 
 <div className="mt-3 flex gap-2"><Button size="sm" onClick={() => save.mutate({ theme_settings: { ...current, selectedProductIds } })} disabled={save.isPending}>{save.isPending ? "Saving..." : "Save changes"}</Button><Button size="sm" variant="outline" onClick={() => setEditorOpen(false)}>Done</Button></div>
               </div>
+              <div className="mb-3 flex items-center justify-between gap-2 rounded-lg border bg-background px-3 py-2">
+                <div><p className="text-sm font-semibold">Editing {editorTheme.name}</p><p className="text-[11px] text-muted-foreground">This preview uses the selected theme.</p></div>
+                <span className="rounded-full border px-2 py-1 text-[10px] font-medium" style={{ borderColor: editorTheme.palette.border }}>Theme: {editorTheme.id}</span>
+              </div>
               <div className="mb-4 flex items-center justify-center gap-2">
                 <Button size="sm" variant={device === "desktop" ? "secondary" : "ghost"} onClick={() => setDevice("desktop")}><Monitor className="mr-1.5 h-4 w-4" />Desktop</Button>
                 <Button size="sm" variant={device === "mobile" ? "secondary" : "ghost"} onClick={() => setDevice("mobile")}><Smartphone className="mr-1.5 h-4 w-4" />Mobile</Button>
               </div>
 
-              <div className={"mx-auto overflow-hidden border bg-background shadow-xl transition-all " + (device === "mobile" ? "max-w-[390px] rounded-[28px]" : "max-w-5xl rounded-xl")}>
-                <div className="flex items-center justify-between border-b px-5 py-4">
-                  <span className="font-semibold">{activeStore.name}</span>
-                  <span className="text-xs text-muted-foreground">Shop</span>
+              <div className={"mx-auto overflow-hidden border shadow-xl transition-all " + (device === "mobile" ? "max-w-[390px] rounded-[28px]" : "max-w-5xl rounded-xl")} style={{ background: editorTheme.palette.bg, color: editorTheme.palette.ink, borderColor: editorTheme.palette.border, fontFamily: editorTheme.body }}>
+                <div className="flex items-center justify-between border-b px-5 py-4" style={{ borderColor: editorTheme.palette.border, background: editorTheme.palette.surface }}>
+                  <span className="font-semibold" style={{ fontFamily: editorTheme.heading }}>{activeStore.name}</span>
+                  <span className="text-xs" style={{ color: editorTheme.palette.muted }}>Shop · {editorTheme.name}</span>
                 </div>
                 {current.showHero !== false && (
                   <section className={"border-b p-6 " + (selectedSection === "hero" ? "ring-2 ring-inset ring-primary" : "")}>
                     {current.heroImageUrl ? <img src={current.heroImageUrl} alt="" className="mb-3 h-28 w-full rounded-lg object-cover" /> : <div className="mb-3 h-28 rounded-lg bg-muted" />}
-                    <h2 className="text-2xl font-bold">{current.heroHeadline || activeStore.name}</h2>
-                    <p className="mt-2 text-sm text-muted-foreground">{current.heroSubline || "Your store, your style. Discover the latest collection."}</p>
-                    <button className="mt-4 rounded-md px-4 py-2 text-sm font-medium text-white" style={{ background: current.accent || "#111318" }}>Shop now</button>
+                    <h2 className="text-2xl font-bold" style={{ fontFamily: current.headingFont || editorTheme.heading }}>{current.heroHeadline || activeStore.name}</h2>
+                    <p className="mt-2 text-sm" style={{ color: editorTheme.palette.muted }}>{current.heroSubline || "Your store, your style. Discover the latest collection."}</p>
+                    <button className="mt-4 px-4 py-2 text-sm font-medium text-white" style={{ background: current.accent || editorTheme.palette.accent, borderRadius: current.buttonStyle === "pill" ? "999px" : current.buttonStyle === "square" ? "4px" : editorTheme.buttonRadius }}>Shop now</button>
                   </section>
                 )}
                 {current.showFeatured !== false && (
                   <section className={"p-5 " + (selectedSection === "featured" ? "ring-2 ring-inset ring-primary" : "")}>
-                    <h3 className="mb-3 font-semibold">Featured products</h3>
+                    <h3 className="mb-3 font-semibold" style={{ fontFamily: current.headingFont || editorTheme.heading }}>Featured products</h3>
                     <div className="grid grid-cols-3 gap-3">
                       {[1,2,3].map((n) => <div key={n} className="space-y-2"><div className="aspect-square rounded-md bg-muted" /><div className="h-3 w-3/4 rounded bg-muted" /><div className="h-3 w-1/2 rounded bg-muted" /></div>)}
                     </div>
                   </section>
                 )}
                 {current.showCategories !== false && (
-                  <section className={"border-t p-5 " + (selectedSection === "categories" ? "ring-2 ring-inset ring-primary" : "")}>
+                  <section className={"border-t p-5 " + (selectedSection === "categories" ? "ring-2 ring-inset ring-primary" : "")} style={{ borderColor: editorTheme.palette.border }}>
                     <div className="flex gap-2 overflow-hidden">{["New", "Popular", "Sale"].map(x => <span key={x} className="rounded-full border px-3 py-1 text-xs">{x}</span>)}</div>
                   </section>
                 )}
-                <section className={"border-t p-5 " + (selectedSection === "products" ? "ring-2 ring-inset ring-primary" : "")}>
+                <section className={"border-t p-5 " + (selectedSection === "products" ? "ring-2 ring-inset ring-primary" : "")} style={{ borderColor: editorTheme.palette.border }}>
                   <div className="mb-3 flex items-center justify-between gap-3"><h3 className="font-semibold">Products</h3><span className="rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{current.productImageRatio === "portrait" ? "Portrait · 4:5" : current.productImageRatio === "landscape" ? "Landscape · 4:3" : "Square · 1:1"}</span></div>
                   <div className={"grid gap-3 " + (current.productColumns === 2 ? "grid-cols-2" : current.productColumns === 3 ? "grid-cols-3" : "grid-cols-2 sm:grid-cols-4")}>
                     {[1,2,3,4].map(n => <div key={n}><div className={(current.productImageRatio === "portrait" ? "aspect-[4/5]" : current.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square") + " rounded-md bg-muted"} /><div className="mt-2 h-3 w-4/5 rounded bg-muted" /></div>)}
