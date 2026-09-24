@@ -21,6 +21,8 @@ import {
   type SellingMode,
 } from "@/lib/store-options";
 
+const PLATFORM_DOMAIN = "sellurway.com";
+
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
