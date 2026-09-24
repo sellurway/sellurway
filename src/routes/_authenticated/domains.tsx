@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CheckCircle2, Copy, Globe2, Info, ExternalLink, XCircle, Link2 } from "lucide-react";
+import { Copy, Globe2, Info, ExternalLink, Link2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,7 +47,6 @@ function validDomain(value: string) {
 function DomainsPage() {
   const { activeStore } = useAuth();
   const queryClient = useQueryClient();
-  const [domain, setDomain] = useState("");
   const [slug, setSlug] = useState("");
 
   const { data: store, isLoading, isError, error } = useQuery({
@@ -66,13 +65,11 @@ function DomainsPage() {
         id: data.id,
         name: data.name,
         slug: data.slug,
-        custom_domain: null,
       };
     },
   });
 
   useEffect(() => {
-    setDomain(store?.custom_domain ?? "");
     setSlug(store?.slug ?? "");
   }, [store?.id, store?.custom_domain, store?.slug]);
 
@@ -103,31 +100,6 @@ function DomainsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const save = useMutation({
-    mutationFn: async () => {
-      if (!activeStore) throw new Error("No active store");
-      const normalized = normalizeDomain(domain);
-      if (normalized && !validDomain(normalized)) {
-        throw new Error("Enter a valid domain such as yourstore.com or yourstore.co.za.");
-      }
-      const { error } = await supabase
-        .from("stores")
-        .update({ custom_domain: normalized || null })
-        .eq("id", activeStore.id);
-      if (error) {
-        if (error.message.toLowerCase().includes("duplicate") || error.message.toLowerCase().includes("unique")) {
-          throw new Error("That domain is already connected to another Sellurway store.");
-        }
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["store-domain", activeStore?.id] });
-      queryClient.invalidateQueries({ queryKey: ["storefront"] });
-      toast.success(domain.trim() ? "Custom domain saved" : "Custom domain removed");
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
 
   if (!activeStore) return <NoStore />;
   if (isLoading) {
@@ -211,70 +183,29 @@ function DomainsPage() {
               <Globe2 className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-display font-semibold">Your own domain</p>
+              <p className="font-display font-semibold">Custom domain</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Customers can visit your store on a normal domain ending in .com, .co.za, .shop, .store, and more.
+                Connect a domain you already own, such as yourbrand.com.
               </p>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="custom-domain">Custom domain</Label>
-            <div className="flex gap-2">
-              <Input
-                id="custom-domain"
-                value={domain}
-                onChange={(event) => setDomain(event.target.value)}
-                placeholder="yourstore.com"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck={false}
-              />
-              <Button onClick={() => save.mutate()} disabled={save.isPending}>
-                {save.isPending ? "Saving…" : "Save"}
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Enter only the domain name. You do not need to type https://.
+          <div className="rounded-xl border bg-muted/20 p-4">
+            <p className="text-sm font-medium">Custom domain setup is temporarily unavailable</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Your SellUrWay store link works now. Custom-domain storage needs access to the database managed by Lovable, so this section will stay safely disabled until that database access is available.
             </p>
           </div>
-
-          {customUrl ? (
-            <div className="rounded-xl border bg-primary/5 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <CheckCircle2 className="h-4 w-4 text-primary" /> Custom domain saved
-                  </div>
-                  <a href={customUrl} target="_blank" rel="noreferrer" className="mt-1 block text-sm underline break-all">
-                    {customUrl}
-                  </a>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => copy(customUrl)} aria-label="Copy custom domain">
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="rounded-xl border bg-muted/20 p-4">
-              <p className="text-sm font-medium">No custom domain connected</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Your free/default storefront address remains available while you set up your own domain.
-              </p>
-            </div>
-          )}
 
           <div className="rounded-xl border p-4">
             <div className="flex gap-3">
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p>The domain is purchased and owned by the merchant. Sellurway connects it to the storefront.</p>
-                <p>After the domain is added to your Vercel project and its DNS records point to Vercel, HTTPS is handled there.</p>
-              </div>
+              <p className="text-sm text-muted-foreground">
+                You do not need to pay for anything to use and edit your free SellUrWay store link.
+              </p>
             </div>
           </div>
         </div>
-
         <div className="surface-card space-y-5 p-5">
           <p className="font-display font-semibold">Domain setup</p>
           <div className="space-y-4">
@@ -295,14 +226,14 @@ function DomainsPage() {
           </div>
 
           <div className="border-t pt-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fallback Sellurway URL</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Your free SellUrWay URL</p>
             <div className="mt-2 flex gap-2">
               <Input readOnly value={defaultUrl} />
-              <Button variant="outline" size="icon" onClick={() => copy(defaultUrl)} aria-label="Copy fallback URL">
+              <Button variant="outline" size="icon" onClick={() => copy(defaultUrl)} aria-label="Copy store URL">
                 <Copy className="h-4 w-4" />
               </Button>
             </div>
-          </div>
+          </div>/div>
 
           <a
             href="https://vercel.com/dashboard"
@@ -314,21 +245,7 @@ function DomainsPage() {
           </a>
         </div>
       </div>
-
-      {customUrl && (
-        <div className="mt-6 surface-card p-5">
-          <div className="flex gap-3">
-            <XCircle className="mt-0.5 h-5 w-5 text-muted-foreground" />
-            <div>
-              <p className="font-medium">Need to change domains?</p>
-              <p className="mt-1 text-sm text-muted-foreground">Replace the domain above and save. The previous domain will no longer be mapped to this store in Sellurway.</p>
-              <Button variant="outline" className="mt-3" onClick={() => { setDomain(""); save.mutate(); }} disabled={save.isPending}>
-                Disconnect current domain
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+}
     </DashboardShell>
   );
 }
