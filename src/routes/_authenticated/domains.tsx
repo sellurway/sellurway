@@ -49,6 +49,9 @@ function DomainsPage() {
   const queryClient = useQueryClient();
   const [slug, setSlug] = useState("");
   const [customDomain, setCustomDomain] = useState("");
+  const [dnsRecords, setDnsRecords] = useState<Array<{type: string; name: string; value: string}>[]>([]);
+  const [domainStatus, setDomainStatus] = useState<"idle" | "pending" | "connected">("idle");
+  const [customDomain, setCustomDomain] = useState("");
 
   const { data: store, isLoading, isError, error } = useQuery({
     queryKey: ["store-domain", activeStore?.id],
@@ -58,7 +61,7 @@ function DomainsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("stores")
-        .select("id,name,slug")
+        .select("id,name,slug,theme_settings")
         .eq("id", activeStore!.id)
         .single();
       if (error) throw error;
@@ -66,13 +69,53 @@ function DomainsPage() {
         id: data.id,
         name: data.name,
         slug: data.slug,
+        theme_settings: (data.theme_settings ?? {}) as Record<string, unknown>,
       };
     },
   });
 
   useEffect(() => {
     setSlug(store?.slug ?? "");
-  }, [store?.id, store?.slug]);
+    const savedDomain = typeof store?.theme_settings?.customDomain === "string" ? store.theme_settings.customDomain : "";
+    setCustomDomain(savedDomain);
+    setDomainStatus(savedDomain ? "connected" : "idle");
+  }, [store?.id, store?.slug, store?.theme_settings]);
+
+  const connectDomain = useMutation({
+    mutationFn: async () => {
+      if (!activeStore) throw new Error("No active store");
+      const normalized = normalizeDomain(customDomain);
+      if (!validDomain(normalized)) throw new Error("Enter a valid domain, for example yourstore.com");
+      setDomainStatus("pending");
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) throw new Error("Your session has expired. Please log in again.");
+      const response = await fetch("/api/domains/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({ storeId: activeStore.id, domain: normalized }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || "Could not connect this domain.");
+      const currentSettings = (store?.theme_settings ?? {}) as Record<string, unknown>;
+      const { error } = await supabase.from("stores").update({
+        theme_settings: { ...currentSettings, customDomain: normalized },
+      }).eq("id", activeStore.id);
+      if (error) throw error;
+      return { domain: normalized, dnsRecords: Array.isArray(payload.dnsRecords) ? payload.dnsRecords : [] };
+    },
+    onSuccess: ({ domain, dnsRecords: records }) => {
+      setCustomDomain(domain);
+      setDnsRecords(records);
+      setDomainStatus(records.length ? "pending" : "connected");
+      queryClient.invalidateQueries({ queryKey: ["store-domain", activeStore?.id] });
+      toast.success(records.length ? "Domain added — finish the DNS setup below." : "Domain connected");
+    },
+    onError: (error: Error) => {
+      setDomainStatus("idle");
+      toast.error(error.message);
+    },
+  });
 
   const saveSlug = useMutation({
     mutationFn: async () => {
@@ -183,46 +226,36 @@ function DomainsPage() {
             </div>
             <div>
               <p className="font-display font-semibold">Custom domain</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Connect a domain you already own to your SellUrWay store.
-              </p>
+              <p className="mt-1 text-sm text-muted-foreground">Connect a domain you already own to this store.</p>
             </div>
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="custom-domain">Your domain</Label>
-            <Input
-              id="custom-domain"
-              value={customDomain}
-              onChange={(event) => setCustomDomain(normalizeDomain(event.target.value))}
-              placeholder="yourstore.com"
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-            />
-            <Button
-              className="w-full"
-              onClick={() => {
-                if (!validDomain(customDomain)) {
-                  toast.error("Enter a valid domain, for example yourstore.com");
-                  return;
-                }
-                toast.info("Custom-domain connection is being prepared for SellUrWay.");
-              }}
-            >
-              Connect domain
+            <Input id="custom-domain" value={customDomain} onChange={(e) => setCustomDomain(normalizeDomain(e.target.value))} placeholder="yourstore.com" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+            <Button className="w-full" onClick={() => connectDomain.mutate()} disabled={connectDomain.isPending}>
+              {connectDomain.isPending ? "Connecting…" : domainStatus === "connected" ? "Reconnect domain" : "Connect domain"}
             </Button>
           </div>
-
-          <div className="rounded-xl border bg-muted/20 p-4">
-            <p className="text-sm font-medium">How customers connect it</p>
-            <div className="mt-3 space-y-3 text-xs text-muted-foreground">
-              <p><span className="font-semibold text-foreground">1.</span> Enter the domain you bought.</p>
-              <p><span className="font-semibold text-foreground">2.</span> SellUrWay will provide the DNS record(s) needed for your store.</p>
-              <p><span className="font-semibold text-foreground">3.</span> Add those records at the company where you bought the domain.</p>
-              <p><span className="font-semibold text-foreground">4.</span> Return here and verify the connection.</p>
+          {dnsRecords.length > 0 && (
+            <div className="rounded-xl border p-4">
+              <p className="text-sm font-medium">Add these DNS records at your domain registrar</p>
+              <div className="mt-3 space-y-2">
+                {dnsRecords.map((record, index) => (
+                  <div key={index} className="rounded-lg bg-muted/30 p-3 text-xs">
+                    <p><span className="font-semibold">Type:</span> {record.type}</p>
+                    <p><span className="font-semibold">Name:</span> {record.name}</p>
+                    <p className="break-all"><span className="font-semibold">Value:</span> {record.value}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">After DNS updates, click Connect domain again to check the connection.</p>
             </div>
-          </div>
+          )}
+          {domainStatus === "connected" && (
+            <div className="rounded-xl border p-4 text-sm">
+              <span className="font-medium">✓ Domain connected:</span> {customDomain}
+            </div>
+          )}
         </div>
 
         <div className="surface-card space-y-5 p-5">
