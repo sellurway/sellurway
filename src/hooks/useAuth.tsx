@@ -74,13 +74,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryKey: ["my-stores", userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: owned, error: ownedError } = await supabase
         .from("stores")
         .select("id,name,slug")
         .eq("owner_id", userId!)
         .order("created_at", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as Store[];
+      if (ownedError) throw ownedError;
+
+      const { data: memberships, error: memberError } = await supabase
+        .from("store_members")
+        .select("store_id")
+        .eq("user_id", userId!);
+      if (memberError) throw memberError;
+
+      const memberStoreIds = (memberships ?? []).map((member) => member.store_id);
+      if (!memberStoreIds.length) return (owned ?? []) as Store[];
+
+      const { data: memberStores, error: storesError } = await supabase
+        .from("stores")
+        .select("id,name,slug")
+        .in("id", memberStoreIds)
+        .order("created_at", { ascending: true });
+      if (storesError) throw storesError;
+
+      const byId = new Map<string, Store>();
+      for (const store of (owned ?? []) as Store[]) byId.set(store.id, store);
+      for (const store of (memberStores ?? []) as Store[]) byId.set(store.id, store);
+      return [...byId.values()];
     },
   });
 
