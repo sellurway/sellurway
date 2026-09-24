@@ -58,7 +58,7 @@ function DomainsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("stores")
-        .select("id,name,slug,custom_domain")
+        .select("id,name,slug")
         .eq("id", activeStore!.id)
         .single();
       if (error) throw error;
@@ -66,7 +66,7 @@ function DomainsPage() {
         id: data.id,
         name: data.name,
         slug: data.slug,
-        custom_domain: typeof data.custom_domain === "string" ? data.custom_domain : null,
+        custom_domain: null,
       };
     },
   });
@@ -79,7 +79,7 @@ function DomainsPage() {
   const saveSlug = useMutation({
     mutationFn: async () => {
       if (!activeStore) throw new Error("No active store");
-      const normalized = slug.trim().toLowerCase().replace(/\\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
+      const normalized = slug.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
       if (!normalized || normalized.length < 2) throw new Error("Enter a store link with at least 2 letters or numbers.");
       if (normalized.length > 50) throw new Error("Your store link must be 50 characters or less.");
       const { data: existing, error: lookupError } = await supabase
@@ -156,7 +156,7 @@ function DomainsPage() {
     );
   }
 
-  const defaultUrl = `https://${store.slug}.sellurway.shop`;
+  const defaultUrl = `https://sellurway.vercel.app/${store.slug}`;
   const customUrl = store.custom_domain ? `https://${store.custom_domain}` : null;
 
   function copy(value: string) {
