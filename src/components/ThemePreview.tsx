@@ -133,6 +133,18 @@ export function ThemePreview({ theme, className = "" }: { theme: StoreTheme; cla
             </div>
           </div>
         </div>
+      ) : theme.layout === "bento" ? (
+        <div className="grid grid-cols-3 gap-2 p-3"><div className="col-span-2 row-span-2">{card(shots[0]!, 0, "aspect-square")}</div>{card(shots[1]!, 1, "aspect-square")}{card(shots[2]!, 2, "aspect-square")}</div>
+      ) : theme.layout === "split" ? (
+        <div className="grid grid-cols-2 gap-2 p-3 items-center"><div className="space-y-2"><div className="h-3 w-4/5 rounded-full" style={{ background: p.ink }} /><div className="h-1.5 w-3/5 rounded-full" style={{ background: p.muted }} /><span className="inline-block px-2 py-1 text-[7px]" style={{ background: p.accent, color: p.accentInk, borderRadius: theme.buttonRadius }}>Shop collection</span></div>{card(shots[0]!, 0, "aspect-[4/5]")}</div>
+      ) : theme.layout === "catalog" ? (
+        <div className="space-y-1 p-3">{shots.map((s, i) => <div key={i} className="flex items-center gap-2 border-b py-2" style={{ borderColor: p.border }}><img src={s} alt="" className="h-10 w-10 object-cover" /><div className="flex-1"><div className="h-1.5 w-2/3 rounded-full" style={{ background: p.ink }} /><div className="mt-1 h-1 w-1/3 rounded-full" style={{ background: p.muted }} /></div><span className="text-[8px] font-semibold" style={{ color: p.accent }}>R499</span></div>)}</div>
+      ) : theme.layout === "minimal" ? (
+        <div className="p-3"><img src={shots[0]!} alt="" className="aspect-[16/10] w-full object-cover" /><div className="flex items-center justify-between py-3"><span className="text-[10px] font-bold">Featured collection</span><span className="text-[8px]" style={{ color: p.accent }}>View all →</span></div></div>
+      ) : theme.layout === "immersive" ? (
+        <div className="relative p-3"><img src={shots[0]!} alt="" className="aspect-[16/10] w-full object-cover" style={{ borderRadius: theme.cardRadius }} /><div className="absolute inset-x-6 bottom-6 rounded-lg p-2" style={{ background: p.bg + "dd" }}><div className="h-2 w-1/2 rounded-full" style={{ background: p.ink }} /><div className="mt-1 h-1.5 w-1/3 rounded-full" style={{ background: p.muted }} /></div></div>
+      ) : theme.layout === "masonry" ? (
+        <div className="columns-2 gap-2 p-3 space-y-2">{shots.map((s, i) => <div key={i} className="break-inside-avoid">{card(s, i, i % 2 ? "aspect-square" : "aspect-[4/5]")}</div>)}</div>
       ) : (
         <div className="grid grid-cols-2 gap-2 p-3">{shots.slice(0, 4).map((s, i) => card(s, i))}</div>
       )}
