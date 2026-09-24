@@ -29,7 +29,7 @@ export interface StoreTheme {
   name: string;
   tagline: string;
   premium: boolean;
-  layout: "grid" | "editorial" | "list" | "showcase" | "lookbook" | "bento" | "split" | "catalog" | "minimal" | "immersive";
+  layout: "grid" | "editorial" | "list" | "showcase" | "lookbook" | "bento" | "split" | "catalog" | "minimal" | "immersive" | "masonry";
   photoSet: "home" | "fashion" | "food" | "jewel" | "beauty" | "tech" | "flowers";
   palette: {
     bg: string;
