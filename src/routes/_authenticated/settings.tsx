@@ -207,7 +207,7 @@ function SettingsPage() {
   }
 
   const set = <K extends keyof Form>(key: K, value: Form[K]) => setForm({ ...form, [key]: value });
-  const storeUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/s/${activeStore.slug}`;
+  const storeUrl = `https://${activeStore.slug}.sellurway.com`;
 
   return (
     <DashboardShell
