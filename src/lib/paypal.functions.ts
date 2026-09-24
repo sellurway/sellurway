@@ -43,7 +43,16 @@ async function getSellerSupabase(input: {
   supabasePublishableKey: string;
   accessToken: string;
 }) {
-  if (!/^https:\/\/[^\s]+$/.test(input.supabaseUrl)) throw new Error("Invalid Supabase URL.");
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(input.supabaseUrl);
+  } catch {
+    throw new Error("Invalid Supabase URL.");
+  }
+  const hostname = parsedUrl.hostname.toLowerCase();
+  if (parsedUrl.protocol !== "https:" || !(hostname.endsWith(".supabase.co") || hostname.endsWith(".supabase.in"))) {
+    throw new Error("Invalid Supabase URL.");
+  }
   if (!input.supabasePublishableKey || !input.accessToken) throw new Error("Supabase session is missing. Please sign in again.");
 
   const { createClient } = await import("@supabase/supabase-js");
