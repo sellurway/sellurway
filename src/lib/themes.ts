@@ -226,6 +226,8 @@ export interface ThemeSettings {
   newsletterHeading?: string;
   socialLinks?: { instagram?: string; facebook?: string; tiktok?: string };
   featuredImageUrl?: string;
+  featuredHeading?: string;
+  featuredSubline?: string;
   productsImageUrl?: string;
   categoryLabels?: string[];
   sectionOrder?: ("hero" | "featured" | "categories" | "products")[];
