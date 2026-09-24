@@ -2,7 +2,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
-const PLATFORM_DOMAIN = "sellurway.shop";
+const PLATFORM_DOMAIN = "sellurway.com";
 const PLATFORM_HOSTS = new Set([
   PLATFORM_DOMAIN,
   `www.${PLATFORM_DOMAIN}`,
