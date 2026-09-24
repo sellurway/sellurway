@@ -116,7 +116,7 @@ export const createPayPalSellerOnboarding = createServerFn({ method: "POST" })
     const actionUrl = result.links?.find((link) => link.rel === "action_url")?.href ?? result.links?.find((link) => link.rel === "self")?.href;
     if (!actionUrl) throw new Error("PayPal did not return a seller onboarding URL.");
 
-    const { error: updateError } = await context.supabase.from("stores").update({ theme_settings: nextSettings }).eq("id", store.id).eq("owner_id", context.userId);
+    const { error: updateError } = await supabase.from("stores").update({ theme_settings: nextSettings }).eq("id", store.id).eq("owner_id", userId);
     if (updateError) throw updateError;
     return { actionUrl, trackingId, storeName: store.name, slug: store.slug };
   });
