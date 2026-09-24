@@ -332,7 +332,7 @@ function ProductCard({
     <Link
       to="/s/$slug/product/$productId"
       params={{ slug, productId: product.id }}
-      className={"group block overflow-hidden border transition " + (layout === "editorial" ? "even:translate-y-8 hover:-translate-y-1" : layout === "lookbook" ? "first:md:col-span-2 hover:-translate-y-1" : layout === "showcase" ? "shadow-lg hover:-translate-y-1" : layout === "list" ? "md:flex md:items-stretch hover:shadow-md" : themeId === "street" ? "hover:-rotate-1" : themeId === "nova" ? "hover:scale-[1.02]" : "hover:opacity-95")}
+      className={"group block overflow-hidden border transition " + (layout === "editorial" ? "even:translate-y-8 hover:-translate-y-1" : layout === "lookbook" ? "first:md:col-span-2 hover:-translate-y-1" : layout === "showcase" || layout === "immersive" ? "shadow-lg hover:-translate-y-1" : layout === "list" ? "md:flex md:items-stretch hover:shadow-md" : layout === "bento" ? "first:md:col-span-2 first:md:row-span-2 hover:-translate-y-1" : layout === "split" ? "odd:md:translate-y-6 hover:-translate-y-1" : layout === "catalog" ? "border-dashed hover:border-solid" : layout === "minimal" ? "border-0 shadow-none hover:opacity-80" : layout === "masonry" ? "hover:-translate-y-1" : themeId === "street" ? "hover:-rotate-1" : themeId === "nova" ? "hover:scale-[1.02]" : "hover:opacity-95")}
       style={{ borderColor: "var(--sf-border)", borderRadius: "var(--sf-card-radius)", background: "var(--sf-surface)" }}
     >
       <div className={`relative w-full overflow-hidden ${layout === "list" ? "md:w-56 md:shrink-0 aspect-[16/7] md:aspect-square" : large ? (layout === "showcase" ? "aspect-[16/8]" : "aspect-[4/3]") : imageRatio}`}>
@@ -358,7 +358,7 @@ function ProductCard({
           </span>
         )}
       </div>
-      <div className={"p-3.5 " + (layout === "editorial" ? "py-5" : layout === "showcase" ? "p-5" : layout === "list" ? "flex flex-1 flex-col justify-center md:p-6" : themeId === "street" ? "p-4 uppercase tracking-wide" : themeId === "nova" ? "p-5" : "")}>
+      <div className={"p-3.5 " + (layout === "editorial" ? "py-5" : layout === "showcase" || layout === "immersive" ? "p-5" : layout === "list" ? "flex flex-1 flex-col justify-center md:p-6" : layout === "bento" ? "p-5" : layout === "split" ? "p-4 md:p-6" : layout === "catalog" ? "p-3" : layout === "minimal" ? "px-0 py-3" : themeId === "street" ? "p-4 uppercase tracking-wide" : themeId === "nova" ? "p-5" : "")}>
         <p className="truncate text-sm font-medium">{product.name}</p>
         <p className="mt-1 flex items-baseline gap-2 text-sm">
           <span className="font-semibold">{formatMoney(product.price, currency)}</span>
