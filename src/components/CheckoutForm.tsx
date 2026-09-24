@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { createStripeCheckout } from "@/lib/stripe.functions";
+import { createPayPalCheckout } from "@/lib/paypal.functions";
 import { useDeliveryAreas, type PublicStore } from "@/lib/storefront";
 import { formatMoney } from "@/lib/format";
 import type { CartLine } from "@/lib/cart";
@@ -31,6 +32,7 @@ const field =
 export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
   const navigate = useNavigate();
   const startStripeCheckout = useServerFn(createStripeCheckout);
+  const startPayPalCheckout = useServerFn(createPayPalCheckout);
   const { data: areas } = useDeliveryAreas(store.id);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
@@ -136,6 +138,18 @@ export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
           }
         } catch {
           toast.error("We couldn't open the card payment page. Your order is saved — you can pay from the next screen.");
+        }
+      }
+
+      if (payment === "paypal") {
+        try {
+          const { approvalUrl } = await startPayPalCheckout({
+            data: { slug: store.slug, orderNumber: result.order_number, origin: window.location.origin },
+          });
+          window.location.href = approvalUrl;
+          return;
+        } catch (err) {
+          toast.error(err instanceof Error ? err.message : "We couldn't open PayPal. Your order is saved.");
         }
       }
 
