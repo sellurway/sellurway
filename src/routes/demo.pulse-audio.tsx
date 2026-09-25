@@ -31,7 +31,7 @@ const products = [
     price: 149,
     category: "headphones",
     tag: "Best seller",
-    image: "https://images.unsplash.com/photo-1752055831529-669caee003c3?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1752055831529-669caee003c3?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-air-buds",
@@ -39,7 +39,7 @@ const products = [
     price: 89,
     category: "earbuds",
     tag: "New",
-    image: "https://images.unsplash.com/photo-1686554825516-2a3dfb4ca93d?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1686554825516-2a3dfb4ca93d?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-boom-speaker",
@@ -47,7 +47,7 @@ const products = [
     price: 129,
     category: "speakers",
     tag: "Popular",
-    image: "https://images.unsplash.com/photo-1727061181133-3797c19254f5?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1727061181133-3797c19254f5?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-studio-mic",
@@ -55,7 +55,7 @@ const products = [
     price: 119,
     category: "studio",
     tag: "Creator pick",
-    image: "https://images.unsplash.com/photo-1691392774565-3bea10c45b08?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1691392774565-3bea10c45b08?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-vinyl-one",
@@ -63,7 +63,7 @@ const products = [
     price: 249,
     category: "vinyl",
     tag: "Classic",
-    image: "https://images.unsplash.com/photo-1613311106434-89edb8bb30c8?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1613311106434-89edb8bb30c8?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-studio-headset",
@@ -71,7 +71,7 @@ const products = [
     price: 179,
     category: "headphones",
     tag: "Studio",
-    image: "https://images.unsplash.com/photo-1557256080-c76847e4e52a?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1557256080-c76847e4e52a?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-bass-max",
@@ -79,7 +79,7 @@ const products = [
     price: 199,
     category: "speakers",
     tag: "Deep bass",
-    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1727061181133-3797c19254f5?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-room-speaker",
@@ -87,7 +87,7 @@ const products = [
     price: 159,
     category: "speakers",
     tag: "Home audio",
-    image: "https://images.unsplash.com/photo-1589003077984-894e133dabab?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1727061181133-3797c19254f5?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-mini-speaker",
@@ -95,7 +95,7 @@ const products = [
     price: 79,
     category: "speakers",
     tag: "Compact",
-    image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1727061181133-3797c19254f5?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-party-speaker",
@@ -103,7 +103,7 @@ const products = [
     price: 229,
     category: "speakers",
     tag: "Party pick",
-    image: "https://images.unsplash.com/photo-1593448452110-9c7f0f0e0f5?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1727061181133-3797c19254f5?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-stereo-speaker",
@@ -111,7 +111,7 @@ const products = [
     price: 289,
     category: "speakers",
     tag: "Premium",
-    image: "https://images.unsplash.com/photo-1589256469067-ea99122bbdc3?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1727061181133-3797c19254f5?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-air-01",
@@ -119,7 +119,7 @@ const products = [
     price: 59,
     category: "earbuds",
     tag: "Everyday",
-    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1686554825516-2a3dfb4ca93d?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-air-02",
@@ -127,7 +127,7 @@ const products = [
     price: 69,
     category: "earbuds",
     tag: "New",
-    image: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1686554825516-2a3dfb4ca93d?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-air-03",
@@ -135,7 +135,7 @@ const products = [
     price: 79,
     category: "earbuds",
     tag: "Best seller",
-    image: "https://images.unsplash.com/photo-1631867675167-90a456a90863?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1686554825516-2a3dfb4ca93d?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-air-04",
@@ -143,7 +143,7 @@ const products = [
     price: 99,
     category: "earbuds",
     tag: "Pro sound",
-    image: "https://images.unsplash.com/photo-1598331668826-20cecc596b86?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1686554825516-2a3dfb4ca93d?auto=format&fit=crop&fm=jpg&q=82&w=1000",
   },
   {
     id: "pulse-air-05",
@@ -151,7 +151,55 @@ const products = [
     price: 119,
     category: "earbuds",
     tag: "Premium",
-    image: "https://images.unsplash.com/photo-1608156639585-b3a032ef9689?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+    image: "https://images.unsplash.com/photo-1686554825516-2a3dfb4ca93d?auto=format&fit=crop&fm=jpg&q=82&w=1000",
+  },
+  {
+    id: "pulse-mixer-pro",
+    name: "Pulse Studio Mixer",
+    price: 299,
+    category: "studio",
+    tag: "Pro setup",
+    image: "https://images.unsplash.com/photo-1624269797847-1825704dd05a?auto=format&fit=crop&fm=jpg&q=82&w=1200",
+  },
+  {
+    id: "pulse-dj-deck",
+    name: "Pulse DJ Deck",
+    price: 399,
+    category: "studio",
+    tag: "DJ gear",
+    image: "https://images.unsplash.com/photo-1642784352365-9cd3b81cdfbc?auto=format&fit=crop&fm=jpg&q=82&w=1200",
+  },
+  {
+    id: "pulse-monitor-headphones",
+    name: "Pulse Monitor Headphones",
+    price: 189,
+    category: "headphones",
+    tag: "Studio",
+    image: "https://images.unsplash.com/photo-1587311865307-b564f4af6e1b?auto=format&fit=crop&fm=jpg&q=82&w=1200",
+  },
+  {
+    id: "pulse-classic-headphones",
+    name: "Pulse Classic Headphones",
+    price: 129,
+    category: "headphones",
+    tag: "Classic",
+    image: "https://images.unsplash.com/photo-1557256080-c76847e4e52a?auto=format&fit=crop&fm=jpg&q=82&w=1200",
+  },
+  {
+    id: "pulse-green-headphones",
+    name: "Pulse Green Headphones",
+    price: 159,
+    category: "headphones",
+    tag: "Fresh drop",
+    image: "https://images.unsplash.com/photo-1752055831529-669caee003c3?auto=format&fit=crop&fm=jpg&q=82&w=1200",
+  },
+  {
+    id: "pulse-turntable-pro",
+    name: "Pulse Turntable Pro",
+    price: 349,
+    category: "studio",
+    tag: "Vinyl studio",
+    image: "https://images.unsplash.com/photo-1642784352365-9cd3b81cdfbc?auto=format&fit=crop&fm=jpg&q=82&w=1200",
   },
 ];
 
