@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Headphones, Mic2, Music2, ShoppingBag, Speaker, X } from "lucide-react";
+import { ArrowRight, Headphones, Mic2, Music2, ShoppingBag, Speaker, X } from "lucide-react";
 
 export const Route = createFileRoute("/demo/pulse-audio")({
   head: () => ({
@@ -15,11 +15,64 @@ export const Route = createFileRoute("/demo/pulse-audio")({
   component: PulseAudioDemo,
 });
 
+const categories = [
+  { name: "All", value: "all" },
+  { name: "Headphones", value: "headphones" },
+  { name: "Earbuds", value: "earbuds" },
+  { name: "Speakers", value: "speakers" },
+  { name: "Studio", value: "studio" },
+  { name: "Vinyl", value: "vinyl" },
+];
+
 const products = [
-  { id: "pulse-pro-headphones", name: "Pulse Pro Headphones", price: 1499, icon: Headphones, tone: "from-blue-600 via-cyan-500 to-slate-900", tag: "Best seller" },
-  { id: "pulse-air-buds", name: "Pulse Air Buds", price: 899, icon: Music2, tone: "from-violet-600 via-fuchsia-500 to-slate-900", tag: "New" },
-  { id: "pulse-boom-speaker", name: "Pulse Boom Speaker", price: 1299, icon: Speaker, tone: "from-sky-500 via-blue-700 to-slate-950", tag: "Popular" },
-  { id: "pulse-studio-mic", name: "Pulse Studio Mic", price: 1099, icon: Mic2, tone: "from-indigo-500 via-blue-600 to-slate-950", tag: "Creator pick" },
+  {
+    id: "pulse-pro-headphones",
+    name: "Pulse Pro Headphones",
+    price: 149,
+    category: "headphones",
+    tag: "Best seller",
+    image: "https://images.unsplash.com/photo-1752055831529-669caee003c3?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+  },
+  {
+    id: "pulse-air-buds",
+    name: "Pulse Air Buds",
+    price: 89,
+    category: "earbuds",
+    tag: "New",
+    image: "https://images.unsplash.com/photo-1686554825516-2a3dfb4ca93d?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+  },
+  {
+    id: "pulse-boom-speaker",
+    name: "Pulse Boom Speaker",
+    price: 129,
+    category: "speakers",
+    tag: "Popular",
+    image: "https://images.unsplash.com/photo-1727061181133-3797c19254f5?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+  },
+  {
+    id: "pulse-studio-mic",
+    name: "Pulse Studio Mic",
+    price: 119,
+    category: "studio",
+    tag: "Creator pick",
+    image: "https://images.unsplash.com/photo-1691392774565-3bea10c45b08?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+  },
+  {
+    id: "pulse-vinyl-one",
+    name: "Pulse Vinyl One",
+    price: 249,
+    category: "vinyl",
+    tag: "Classic",
+    image: "https://images.unsplash.com/photo-1613311106434-89edb8bb30c8?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+  },
+  {
+    id: "pulse-studio-headset",
+    name: "Pulse Studio Headset",
+    price: 179,
+    category: "headphones",
+    tag: "Studio",
+    image: "https://images.unsplash.com/photo-1557256080-c76847e4e52a?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1000",
+  },
 ];
 
 function PulseMark() {
@@ -35,13 +88,18 @@ function PulseMark() {
 }
 
 function money(value: number) {
-  return new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR", maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
 }
 
 function PulseAudioDemo() {
   const [cart, setCart] = useState<string[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [category, setCategory] = useState("all");
   const cartProducts = useMemo(() => products.filter((product) => cart.includes(product.id)), [cart]);
+  const visibleProducts = useMemo(
+    () => category === "all" ? products : products.filter((product) => product.category === category),
+    [category],
+  );
   const total = cartProducts.reduce((sum, product) => sum + product.price, 0);
 
   const addToCart = (id: string) => {
@@ -59,6 +117,11 @@ function PulseAudioDemo() {
               <div className="text-[9px] font-semibold tracking-[0.38em] text-cyan-400">AUDIO</div>
             </div>
           </Link>
+          <nav className="hidden items-center gap-6 text-sm text-white/60 md:flex">
+            <a href="#shop" className="hover:text-white">Shop</a>
+            <a href="#categories" className="hover:text-white">Categories</a>
+            <a href="#about" className="hover:text-white">Why Pulse</a>
+          </nav>
           <button onClick={() => setCartOpen(true)} className="relative rounded-full border border-white/15 p-2.5 hover:bg-white/10" aria-label="Open cart">
             <ShoppingBag className="h-5 w-5" />
             {cart.length > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan-400 px-1 text-[10px] font-bold text-slate-950">{cart.length}</span>}
@@ -68,42 +131,87 @@ function PulseAudioDemo() {
 
       <main>
         <section className="relative overflow-hidden border-b border-white/10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(14,165,233,.28),transparent_35%),radial-gradient(circle_at_20%_70%,rgba(37,99,235,.2),transparent_35%)]" />
-          <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-20 md:grid-cols-2 md:items-center md:py-28">
+          <img
+            src="https://images.unsplash.com/photo-1752055831529-669caee003c3?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1800"
+            alt="Premium headphones"
+            className="absolute inset-0 h-full w-full object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#05070b] via-[#05070b]/90 to-[#05070b]/35" />
+          <div className="relative mx-auto grid min-h-[620px] max-w-6xl gap-10 px-4 py-24 md:grid-cols-2 md:items-center">
             <div>
               <p className="mb-5 text-xs font-bold uppercase tracking-[0.35em] text-cyan-400">Pulse Audio</p>
               <h1 className="max-w-xl text-5xl font-black tracking-tight sm:text-7xl">Feel every beat.</h1>
-              <p className="mt-5 max-w-lg text-lg leading-8 text-white/60">Premium headphones, earbuds, speakers and creator gear built for music that moves you.</p>
-              <a href="#shop" className="mt-8 inline-flex rounded-full bg-white px-6 py-3 font-bold text-slate-950 hover:bg-cyan-300">Shop the collection</a>
+              <p className="mt-5 max-w-lg text-lg leading-8 text-white/65">Premium audio gear for music lovers, creators and everyone who wants their sound to hit different.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a href="#shop" className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-bold text-slate-950 hover:bg-cyan-300">Shop the collection <ArrowRight className="h-4 w-4" /></a>
+                <a href="#categories" className="rounded-full border border-white/20 px-6 py-3 font-bold hover:bg-white/10">Browse categories</a>
+              </div>
+              <div className="mt-8 flex flex-wrap gap-5 text-xs text-white/50">
+                <span>Free shipping over $100</span>
+                <span>30-day returns</span>
+                <span>Secure checkout</span>
+              </div>
             </div>
-            <div className="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center rounded-[2rem] border border-white/10 bg-gradient-to-br from-blue-950 via-slate-900 to-black shadow-2xl shadow-blue-950/50">
-              <div className="absolute h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
-              <Headphones className="relative h-40 w-40 text-cyan-300 drop-shadow-[0_0_35px_rgba(34,211,238,.45)]" strokeWidth={1.2} />
-            </div>
+            <div className="hidden md:block" />
           </div>
         </section>
 
-        <section id="shop" className="mx-auto max-w-6xl px-4 py-16">
-          <div className="mb-8">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-400">Shop</p>
-            <h2 className="mt-2 text-3xl font-black">Audio, your way.</h2>
+        <section id="categories" className="mx-auto max-w-6xl px-4 py-14">
+          <div className="mb-7">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-400">Explore</p>
+            <h2 className="mt-2 text-3xl font-black">Shop by category</h2>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {products.map((product) => {
-              const Icon = product.icon;
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {[
+              { name: "Headphones", value: "headphones", icon: Headphones },
+              { name: "Earbuds", value: "earbuds", icon: Music2 },
+              { name: "Speakers", value: "speakers", icon: Speaker },
+              { name: "Studio gear", value: "studio", icon: Mic2 },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <button key={item.value} onClick={() => { setCategory(item.value); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); }} className="group rounded-3xl border border-white/10 bg-white/[0.04] p-6 text-left transition hover:-translate-y-1 hover:border-cyan-400/40 hover:bg-white/[0.07]">
+                  <Icon className="h-8 w-8 text-cyan-300" strokeWidth={1.5} />
+                  <div className="mt-8 font-bold">{item.name}</div>
+                  <div className="mt-1 text-xs text-white/40">Explore collection →</div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section id="shop" className="mx-auto max-w-6xl px-4 pb-20">
+          <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-400">Collection</p>
+              <h2 className="mt-2 text-3xl font-black">Audio, your way.</h2>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {categories.map((item) => (
+                <button key={item.value} onClick={() => setCategory(item.value)} className={"whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold " + (category === item.value ? "bg-white text-slate-950" : "border border-white/10 text-white/60 hover:text-white")}>
+                  {item.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {visibleProducts.map((product) => {
               const inCart = cart.includes(product.id);
               return (
-                <article key={product.id} className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04]">
-                  <div className={"relative flex aspect-square items-center justify-center bg-gradient-to-br " + product.tone}>
-                    <span className="absolute left-3 top-3 rounded-full bg-black/35 px-3 py-1 text-[10px] font-bold uppercase tracking-wider">{product.tag}</span>
-                    <Icon className="h-24 w-24 text-white/90" strokeWidth={1.1} />
+                <article key={product.id} className="group overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04]">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-slate-900">
+                    <img src={product.image} alt={product.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
+                    <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">{product.tag}</span>
                   </div>
                   <div className="p-5">
-                    <h3 className="font-bold">{product.name}</h3>
-                    <p className="mt-2 text-lg font-black text-cyan-300">{money(product.price)}</p>
-                    <button onClick={() => addToCart(product.id)} className="mt-4 w-full rounded-xl bg-white py-2.5 text-sm font-bold text-slate-950 hover:bg-cyan-300">
-                      {inCart ? "Added to cart" : "Add to cart"}
-                    </button>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400">{product.category}</p>
+                    <h3 className="mt-1 font-bold">{product.name}</h3>
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <p className="text-xl font-black">{money(product.price)}</p>
+                      <button onClick={() => addToCart(product.id)} className="rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-slate-950 hover:bg-cyan-300">
+                        {inCart ? "Added" : "Add to cart"}
+                      </button>
+                    </div>
                   </div>
                 </article>
               );
@@ -111,11 +219,25 @@ function PulseAudioDemo() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-white/[0.025]">
-          <div className="mx-auto max-w-6xl px-4 py-14 text-center">
-            <p className="text-sm text-white/50">This is a live SellUrWay storefront demo.</p>
-            <Link to="/" className="mt-3 inline-block text-sm font-semibold text-cyan-300 hover:underline">Build your own store with SellUrWay →</Link>
+        <section id="about" className="border-y border-white/10 bg-white/[0.025]">
+          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-20 md:grid-cols-3">
+            {[
+              ["01", "Built for sound", "Carefully selected audio gear for everyday listening, travel and studio sessions."],
+              ["02", "Made to look good", "A premium storefront experience with bold photography, clean spacing and a modern dark aesthetic."],
+              ["03", "Shop with confidence", "Clear pricing in USD, simple categories, a cart experience and a polished mobile layout."],
+            ].map(([number, title, body]) => (
+              <div key={number} className="rounded-3xl border border-white/10 bg-black/20 p-7">
+                <div className="text-xs font-bold text-cyan-400">{number}</div>
+                <h3 className="mt-5 text-xl font-black">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/50">{body}</p>
+              </div>
+            ))}
           </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 py-16 text-center">
+          <p className="text-sm text-white/40">This is a live SellUrWay storefront demo.</p>
+          <Link to="/" className="mt-3 inline-block text-sm font-semibold text-cyan-300 hover:underline">Build your own store with SellUrWay →</Link>
         </section>
       </main>
 
@@ -132,7 +254,12 @@ function PulseAudioDemo() {
             ) : (
               <>
                 <div className="mt-8 space-y-3">
-                  {cartProducts.map((product) => <div key={product.id} className="flex items-center justify-between rounded-xl border border-white/10 p-4"><span className="text-sm font-semibold">{product.name}</span><span className="text-sm text-cyan-300">{money(product.price)}</span></div>)}
+                  {cartProducts.map((product) => (
+                    <div key={product.id} className="flex items-center gap-3 rounded-xl border border-white/10 p-3">
+                      <img src={product.image} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                      <div className="min-w-0 flex-1"><div className="truncate text-sm font-semibold">{product.name}</div><div className="text-sm text-cyan-300">{money(product.price)}</div></div>
+                    </div>
+                  ))}
                 </div>
                 <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-5 font-bold"><span>Total</span><span>{money(total)}</span></div>
                 <button className="mt-5 w-full rounded-xl bg-cyan-400 py-3 font-black text-slate-950">Demo checkout</button>
