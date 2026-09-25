@@ -131,7 +131,7 @@ function Landing() {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="h-12 px-6 text-base">
-                  <Link to="/s/$slug" params={{ slug: "demo-kora-home" }}>
+                  <Link to="/demo/pulse-audio">
                     See a live store
                   </Link>
                 </Button>
