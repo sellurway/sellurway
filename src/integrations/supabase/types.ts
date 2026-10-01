@@ -349,6 +349,7 @@ export type Database = {
           order_number?: string
           payment_method?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          paypal_order_id?: string | null
           preferred_delivery_at?: string | null
           selling_mode?: Database["public"]["Enums"]["selling_mode"]
           shipped_at?: string | null
