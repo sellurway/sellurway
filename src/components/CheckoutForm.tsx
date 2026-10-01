@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { createStripeCheckout } from "@/lib/stripe.functions";
+import { createPayPalCheckout } from "@/lib/paypal.functions";
 import { useDeliveryAreas, type PublicStore } from "@/lib/storefront";
 import { formatMoney } from "@/lib/format";
 import type { CartLine } from "@/lib/cart";
@@ -31,6 +32,7 @@ const field =
 export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
   const navigate = useNavigate();
   const startStripeCheckout = useServerFn(createStripeCheckout);
+  const startPayPalCheckout = useServerFn(createPayPalCheckout);
   const { data: areas } = useDeliveryAreas(store.id);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
@@ -51,7 +53,7 @@ export function CheckoutForm({ store, lines, source, onPlaced }: Props) {
   const settings = (store.delivery_settings ?? {}) as Record<string, string>;
   const paymentMethods = useMemo(() => {
     const list = Array.isArray(store.payment_methods)
-      ? (store.payment_methods as string[]).filter((method) => method !== "paypal")
+      ? (store.payment_methods as string[])
       : [];
     if (store.stripe_enabled && !list.includes("card")) list.unshift("card");
     return list.length ? list : ["cash_on_delivery"];
