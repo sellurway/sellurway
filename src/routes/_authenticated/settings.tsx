@@ -119,9 +119,7 @@ function SettingsPage() {
       published: store.published,
       logo: store.logo_url ? [store.logo_url] : [],
       banner: store.banner_url ? [store.banner_url] : [],
-      payment_methods: Array.isArray(store.payment_methods)
-        ? (store.payment_methods as string[]).filter((method) => method !== "paypal")
-        : [],
+      payment_methods: Array.isArray(store.payment_methods) ? (store.payment_methods as string[]) : [],
       delivery_fee: delivery["fee"] == null ? "" : String(delivery["fee"]),
       free_threshold: delivery["free_threshold"] == null ? "" : String(delivery["free_threshold"]),
       min_order: delivery["min_order"] == null ? "" : String(delivery["min_order"]),
