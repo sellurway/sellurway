@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, CreditCard, Loader2, MessageCircle, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { useStore, whatsappLink } from "@/lib/storefront";
@@ -29,11 +28,6 @@ function ConfirmationPage() {
   const store = useStore();
   const [summary, setSummary] = useState<{ total: number; currency: string } | null>(null);
   const [payBusy, setPayBusy] = useState(false);
-  const capturePayPal = useServerFn(capturePayPalPayment);
-
-  const confirmPayment = useServerFn(confirmStripePayment);
-  const startCheckout = useServerFn(createStripeCheckout);
-  const lookup = useServerFn(trackOrder);
 
   useEffect(() => {
     if (!order || typeof window === "undefined") return;
