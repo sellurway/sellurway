@@ -4,6 +4,9 @@
 //     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
+//
+// Security: @tanstack/react-start is pinned to the patched 1.168.60 release.
+// Do not downgrade this dependency or enable the vulnerable-deployment override.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
