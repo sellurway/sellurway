@@ -109,7 +109,7 @@ export const createPayPalSellerOnboarding = createServerFn({ method: "POST" })
               integration_method: "PAYPAL",
               integration_type: "THIRD_PARTY",
               third_party_details: {
-                features: ["PAYMENT", "REFUND"],
+                features: ["PAYMENT"],
               },
             },
           },
@@ -131,6 +131,9 @@ export const createPayPalSellerOnboarding = createServerFn({ method: "POST" })
       const paypalMessage = detail || result.message || result.error || "PayPal seller onboarding could not be started.";
       if (response.status === 401) {
         throw new Error("PayPal has not approved SellUrWay as a marketplace partner yet. The PayPal partner review must be completed before live seller onboarding can start.");
+      }
+      if (response.status === 403) {
+        throw new Error("PayPal denied SellUrWay's partner permissions. Check that the live REST app has the required seller-onboarding/payment permissions enabled and that the SellUrWay partner application has been approved.");
       }
       throw new Error(paypalMessage);
     }
