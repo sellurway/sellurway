@@ -271,6 +271,7 @@ export type Database = {
           order_number: string
           payment_method: string | null
           payment_status: Database["public"]["Enums"]["payment_status"]
+          paypal_order_id: string | null
           preferred_delivery_at: string | null
           selling_mode: Database["public"]["Enums"]["selling_mode"]
           shipped_at: string | null
@@ -309,6 +310,7 @@ export type Database = {
           order_number: string
           payment_method?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          paypal_order_id?: string | null
           preferred_delivery_at?: string | null
           selling_mode?: Database["public"]["Enums"]["selling_mode"]
           shipped_at?: string | null
@@ -703,6 +705,41 @@ export type Database = {
             foreignKeyName: "store_members_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_paypal_credentials: {
+        Row: {
+          client_id: string
+          client_id_last4: string
+          client_secret: string
+          livemode: boolean
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          client_id_last4: string
+          client_secret: string
+          livemode?: boolean
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          client_id_last4?: string
+          client_secret?: string
+          livemode?: boolean
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_paypal_credentials_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
             referencedRelation: "stores"
             referencedColumns: ["id"]
           },
