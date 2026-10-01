@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
 import { ImageUploader } from "@/components/ImageUploader";
 import { StripeConnectCard } from "@/components/StripeConnectCard";
-import { PayPalConnectCard } from "@/components/PayPalConnectCard";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +40,6 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 const PAYMENT_OPTIONS = [
   { id: "card", label: "Card (Stripe)" },
-  { id: "paypal", label: "PayPal" },
   { id: "cash_on_delivery", label: "Cash on delivery" },
   { id: "bank_transfer", label: "Bank transfer" },
   { id: "pay_on_pickup", label: "Pay on pickup" },
@@ -379,8 +377,6 @@ function SettingsPage() {
             Checkout to pay.
           </p>
         </div>
-
-        <PayPalConnectCard storeId={activeStore!.id} />
 
         <StripeConnectCard
           storeId={activeStore!.id}
