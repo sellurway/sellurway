@@ -42,3 +42,5 @@ create policy "Store owners can delete PayPal credentials"
         and s.owner_id = auth.uid()
     )
   );
+
+revoke select (client_id, client_secret) on table public.store_paypal_credentials from anon, authenticated;
