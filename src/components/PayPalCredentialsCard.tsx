@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,9 +13,6 @@ interface Props {
 
 export function PayPalCredentialsCard({ storeId }: Props) {
   const qc = useQueryClient();
-  const getStatus = useServerFn(getPayPalStatus);
-  const connect = useServerFn(connectPayPal);
-  const disconnect = useServerFn(disconnectPayPal);
   const [clientId, setClientId] = useState("");
   const [clientSecret, setClientSecret] = useState("");
 
