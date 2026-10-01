@@ -57,18 +57,24 @@ export const getPayPalSellerConnection = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { storeId: string }) => input)
   .handler(async ({ data, context }) => {
-    const { data: credentials, error } = await context.supabase
-      .from("store_paypal_credentials")
-      .select("client_id_last4,livemode")
-      .eq("store_id", data.storeId)
+    const { data: store, error } = await context.supabase
+      .from("stores")
+      .select("id,theme_settings")
+      .eq("id", data.storeId)
+      .eq("owner_id", context.userId)
       .maybeSingle();
 
     if (error) throw error;
+    if (!store) throw new Error("Store not found.");
+
+    const settings = (store.theme_settings ?? {}) as Record<string, unknown>;
+    const paypal = (settings.paypal ?? {}) as Record<string, unknown>;
+    const connected = paypal.status === "connected";
 
     return {
-      status: credentials ? "connected" : "not_connected",
-      clientIdLast4: credentials?.client_id_last4 ?? null,
-      livemode: credentials?.livemode ?? null,
+      status: connected ? "connected" : "not_connected",
+      clientIdLast4: typeof paypal.clientIdLast4 === "string" ? paypal.clientIdLast4 : null,
+      livemode: paypal.livemode === true,
     };
   });
 
