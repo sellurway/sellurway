@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
 import { ImageUploader } from "@/components/ImageUploader";
 import { StripeConnectCard } from "@/components/StripeConnectCard";
+import { PayPalCredentialsCard } from "@/components/PayPalCredentialsCard";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 const PAYMENT_OPTIONS = [
   { id: "card", label: "Card (Stripe)" },
+  { id: "paypal", label: "PayPal" },
   { id: "cash_on_delivery", label: "Cash on delivery" },
   { id: "bank_transfer", label: "Bank transfer" },
   { id: "pay_on_pickup", label: "Pay on pickup" },
@@ -146,7 +148,7 @@ function SettingsPage() {
         published: form.published,
         logo_url: form.logo[0] ?? null,
         banner_url: form.banner[0] ?? null,
-        payment_methods: form.payment_methods.filter((method) => method !== "paypal"),
+        payment_methods: form.payment_methods,
         delivery_settings: {
           fee: form.delivery_fee === "" ? 0 : Number(form.delivery_fee),
           free_threshold: form.free_threshold === "" ? null : Number(form.free_threshold),
@@ -386,6 +388,8 @@ function SettingsPage() {
           last4={(store as { stripe_key_last4?: string | null } | undefined)?.stripe_key_last4 ?? null}
           livemode={Boolean((store as { stripe_livemode?: boolean } | undefined)?.stripe_livemode)}
         />
+
+        <PayPalCredentialsCard storeId={activeStore!.id} />
 
 
         <div className="surface-card space-y-4 p-5 lg:col-span-2">
