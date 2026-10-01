@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { CreditCard, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -17,8 +16,6 @@ interface Props {
 
 export function StripeConnectCard({ storeId, enabled, last4, livemode }: Props) {
   const qc = useQueryClient();
-  const connect = useServerFn(connectStripe);
-  const disconnect = useServerFn(disconnectStripe);
   const [key, setKey] = useState("");
 
   const save = useMutation({
