@@ -16,8 +16,6 @@ import {
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { THEMES } from "@/lib/themes";
-import { ThemePreview } from "@/components/ThemePreview";
 
 import candle from "@/assets/demo-candle.jpg";
 import mug from "@/assets/demo-mug.jpg";
@@ -65,7 +63,6 @@ const modes = [
 
 const features = [
   { icon: Package, title: "Product management", body: "Add multiple photos, variants, stock, categories and featured products." },
-  { icon: Palette, title: "24 storefront templates", body: "Choose from 24 storefront templates and make your shop look like your brand." },
   { icon: BarChart3, title: "Analytics", body: "Track revenue, orders, average order value and your best-selling products." },
   { icon: Globe2, title: "Sell anywhere", body: "Set your currency, delivery areas and fees for the customers you serve." },
   { icon: ShieldCheck, title: "Secure by default", body: "Your store data is protected with database security and server-side checks." },
@@ -83,7 +80,6 @@ function Landing() {
           <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
             <a href="#how" className="transition hover:text-foreground">How it works</a>
             <a href="#features" className="transition hover:text-foreground">Features</a>
-            <a href="#themes" className="transition hover:text-foreground">Themes</a>
             <Link to="/pricing" className="transition hover:text-foreground">Pricing</Link>
           </nav>
           <div className="flex items-center gap-2">
@@ -222,32 +218,6 @@ function Landing() {
                   <feature.icon className="h-5 w-5 text-primary" />
                   <h3 className="mt-3 font-display text-base font-semibold">{feature.title}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{feature.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="themes" className="border-y bg-surface-tint py-16 md:py-20">
-          <div className="container-page">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Themes that fit your trade.</h2>
-                <p className="mt-3 max-w-xl text-muted-foreground">Explore all 24 storefront templates, each designed to make your products look great on every screen.</p>
-              </div>
-              <Button asChild variant="outline"><Link to="/pricing">Compare plans</Link></Button>
-            </div>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {THEMES.map((theme) => (
-                <div key={theme.id} className="surface-card overflow-hidden">
-                  <ThemePreview theme={theme} />
-                  <div className="flex items-start justify-between gap-2 border-t p-4">
-                    <div>
-                      <p className="font-display text-sm font-semibold">{theme.name}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">{theme.bestFor}</p>
-                    </div>
-                    {theme.premium && <Crown className="h-4 w-4 shrink-0 text-gold" aria-label="Premium theme" />}
-                  </div>
                 </div>
               ))}
             </div>
