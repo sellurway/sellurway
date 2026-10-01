@@ -117,7 +117,9 @@ function SettingsPage() {
       published: store.published,
       logo: store.logo_url ? [store.logo_url] : [],
       banner: store.banner_url ? [store.banner_url] : [],
-      payment_methods: Array.isArray(store.payment_methods) ? (store.payment_methods as string[]) : [],
+      payment_methods: Array.isArray(store.payment_methods)
+        ? (store.payment_methods as string[]).filter((method) => method !== "paypal")
+        : [],
       delivery_fee: delivery["fee"] == null ? "" : String(delivery["fee"]),
       free_threshold: delivery["free_threshold"] == null ? "" : String(delivery["free_threshold"]),
       min_order: delivery["min_order"] == null ? "" : String(delivery["min_order"]),
@@ -144,7 +146,7 @@ function SettingsPage() {
         published: form.published,
         logo_url: form.logo[0] ?? null,
         banner_url: form.banner[0] ?? null,
-        payment_methods: form.payment_methods,
+        payment_methods: form.payment_methods.filter((method) => method !== "paypal"),
         delivery_settings: {
           fee: form.delivery_fee === "" ? 0 : Number(form.delivery_fee),
           free_threshold: form.free_threshold === "" ? null : Number(form.free_threshold),
