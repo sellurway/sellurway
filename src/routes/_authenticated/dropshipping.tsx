@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ExternalLink, Loader2, LockKeyhole, Package, Search, ShoppingBag, Truck } from "lucide-react";
 import { toast } from "sonner";
@@ -50,9 +50,38 @@ function DropshippingPage() {
   const { activeStore, isLifetime } = useAuth();
   const [apiKey, setApiKey] = useState("");
   const [connected, setConnected] = useState(false);
+  const [connectedLast4, setConnectedLast4] = useState("");
   const [keyword, setKeyword] = useState("");
   const [markup, setMarkup] = useState("40");
   const [products, setProducts] = useState<SupplierProduct[]>([]);
+
+  useEffect(() => {
+    if (!activeStore || !isLifetime) return;
+    let cancelled = false;
+    const loadConnection = async () => {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (!sessionData.session?.access_token) return;
+        const response = await fetch("/api/dropshipping/cj", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionData.session.access_token}`,
+          },
+          body: JSON.stringify({ action: "status", storeId: activeStore.id }),
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!cancelled && response.ok && body.connected) {
+          setConnected(true);
+          setConnectedLast4(String(body.last4 || ""));
+        }
+      } catch {
+        // Keep the page usable if Cloudflare is temporarily unavailable.
+      }
+    };
+    void loadConnection();
+    return () => { cancelled = true; };
+  }, [activeStore?.id, isLifetime]);
 
   const connect = useMutation({
     mutationFn: async () => {
@@ -76,7 +105,9 @@ function DropshippingPage() {
     },
     onSuccess: () => {
       setConnected(true);
-      toast.success("CJdropshipping connected.");
+      setConnectedLast4(apiKey.trim().slice(-4));
+      setApiKey("");
+      toast.success("CJdropshipping connected and saved to Cloudflare.");
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -91,7 +122,7 @@ function DropshippingPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${sessionData.session.access_token}`,
         },
-        body: JSON.stringify({ apiKey: apiKey.trim(), action: "search", keyword }),
+        body: JSON.stringify({ action: "search", keyword, storeId: activeStore?.id }),
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body.error || "CJ search failed.");
@@ -120,7 +151,7 @@ function DropshippingPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${sessionData.session.access_token}`,
         },
-        body: JSON.stringify({ apiKey: apiKey.trim(), action: "detail", pid: product.id }),
+        body: JSON.stringify({ action: "detail", pid: product.id, storeId: activeStore.id }),
       });
       const detailBody = await detailResponse.json().catch(() => ({}));
       if (!detailResponse.ok) throw new Error(detailBody.error || "Could not load the CJ product variants.");
@@ -259,7 +290,7 @@ function DropshippingPage() {
                 <h2 className="font-display font-semibold">CJdropshipping</h2>
                 <p className="text-xs text-muted-foreground">Product sourcing + fulfilment API</p>
               </div>
-              <Badge className="ml-auto">{connected ? "Connected" : "Not connected"}</Badge>
+              <Badge className="ml-auto">{connected ? `Connected${connectedLast4 ? ` ••••${connectedLast4}` : ""}` : "Not connected"}</Badge>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="cj-key">Your CJ API key</Label>
@@ -272,7 +303,7 @@ function DropshippingPage() {
                 autoComplete="off"
               />
               <p className="text-xs text-muted-foreground">
-                Your key is used to connect your own CJ account. It is stored for this store so future stock and order sync can run without asking again.
+                Your key is validated and stored in Cloudflare D1 for this store. SellUrWay does not put your CJ key in the browser after you connect.
               </p>
             </div>
             <Button
@@ -324,10 +355,10 @@ function DropshippingPage() {
             <Input
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && apiKey && keyword) search.mutate(); }}
+              onKeyDown={(e) => { if (e.key === "Enter" && keyword && activeStore) search.mutate(); }}
               placeholder="Search CJ products e.g. wireless headphones"
             />
-            <Button disabled={!apiKey.trim() || !keyword.trim() || search.isPending} onClick={() => search.mutate()}>
+            <Button disabled={!connected || !keyword.trim() || search.isPending} onClick={() => search.mutate()}>
               {search.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               <span className="ml-1.5">Search</span>
             </Button>
