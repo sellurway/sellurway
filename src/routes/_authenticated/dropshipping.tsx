@@ -90,8 +90,15 @@ function DropshippingPage() {
     if (!activeStore) return;
     let cancelled = false;
     const loadImportedCount = async () => {
-      const { count } = await supabase.from("products").select("id", { count: "exact", head: true }).eq("store_id", activeStore.id);
-      if (!cancelled) setImportedCount(count ?? 0);
+      const { data } = await supabase
+        .from("products")
+        .select("id,description")
+        .eq("store_id", activeStore.id);
+      const count = (data ?? []).filter((product) =>
+        typeof product.description === "string" &&
+        product.description.includes("SELLURWAY_DROPSHIP:")
+      ).length;
+      if (!cancelled) setImportedCount(count);
     };
     void loadImportedCount();
     return () => { cancelled = true; };
