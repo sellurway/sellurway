@@ -14,7 +14,6 @@ import {
   Sparkles,
   Users,
   Globe2,
-  Truck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -25,7 +24,6 @@ import { useAuth } from "@/hooks/useAuth";
 const NAV = [
   { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { to: "/products", label: "Products", icon: Package },
-  { to: "/dropshipping", label: "Dropshipping", icon: Truck },
   { to: "/orders", label: "Orders", icon: Receipt },
   { to: "/customers", label: "Customers", icon: Users },
   { to: "/themes", label: "Themes", icon: Palette },
