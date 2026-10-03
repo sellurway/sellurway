@@ -9,6 +9,47 @@ function json(data: unknown, status = 200) {
   });
 }
 
+async function requireLifetimeAccess(request: Request) {
+  const authorization = request.headers.get("authorization") ?? "";
+  if (!authorization.startsWith("Bearer ")) {
+    throw new Response(JSON.stringify({ error: "Lifetime access is required for Dropshipping." }), {
+      status: 401,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  const token = authorization.slice(7);
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) throw new Error("SellUrWay database configuration is missing.");
+
+  const userResponse = await fetch(url + "/auth/v1/user", {
+    headers: { apikey: key, Authorization: "Bearer " + token },
+  });
+  const user = await userResponse.json().catch(() => null) as { id?: string };
+  if (!userResponse.ok || !user?.id) {
+    throw new Response(JSON.stringify({ error: "Your session has expired. Please log in again." }), {
+      status: 401,
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  const profileResponse = await fetch(
+    url + "/rest/v1/profiles?id=eq." + encodeURIComponent(user.id) + "&select=plan&limit=1",
+    { headers: { apikey: key, Authorization: "Bearer " + token } },
+  );
+  const profiles = await profileResponse.json().catch(() => []) as Array<{ plan?: string }>;
+  if (!profileResponse.ok || profiles[0]?.plan !== "lifetime") {
+    throw new Response(JSON.stringify({
+      error: "Dropshipping is a SellUrWay Lifetime feature. Upgrade once to unlock it forever.",
+      code: "LIFETIME_REQUIRED",
+    }), {
+      status: 402,
+      headers: { "content-type": "application/json" },
+    });
+  }
+}
+
 async function getAccessToken(apiKey: string) {
   const response = await fetch(`${CJ_BASE}/authentication/getAccessToken`, {
     method: "POST",
@@ -31,6 +72,7 @@ export const Route = createFileRoute("/api/dropshipping/cj")({
     handlers: {
       POST: async ({ request }) => {
         try {
+          await requireLifetimeAccess(request);
           const body = await request.json().catch(() => ({})) as {
             apiKey?: string;
             accessToken?: string;
