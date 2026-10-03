@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { ExternalLink, Loader2, Package, Search, ShoppingBag, Truck } from "lucide-react";
+import { ExternalLink, Loader2, LockKeyhole, Package, Search, ShoppingBag, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, NoStore } from "@/components/DashboardShell";
@@ -47,7 +47,7 @@ function lowestPrice(value: string) {
 }
 
 function DropshippingPage() {
-  const { activeStore } = useAuth();
+  const { activeStore, isLifetime } = useAuth();
   const [apiKey, setApiKey] = useState("");
   const [connected, setConnected] = useState(false);
   const [keyword, setKeyword] = useState("");
@@ -162,6 +162,41 @@ function DropshippingPage() {
   });
 
   if (!activeStore) return <DashboardShell title="Dropshipping"><NoStore /></DashboardShell>;
+
+  if (!isLifetime) {
+    return (
+      <DashboardShell
+        title="Dropshipping"
+        description="Source products from suppliers and import them into your SellUrWay store."
+      >
+        <div className="mx-auto max-w-2xl">
+          <section className="surface-card relative overflow-hidden p-8 text-center">
+            <div aria-hidden className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-gold/15 blur-3xl" />
+            <div className="relative">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-soft">
+                <LockKeyhole className="h-7 w-7 text-gold" />
+              </div>
+              <p className="mt-5 text-sm font-semibold text-gold">LIFETIME FEATURE</p>
+              <h2 className="mt-2 font-display text-3xl font-bold">Unlock Dropshipping</h2>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
+                Connect CJdropshipping, find supplier products and import them into your SellUrWay store.
+                Dropshipping is available only with SellUrWay Lifetime.
+              </p>
+              <div className="mt-6 rounded-xl border bg-muted/40 p-4 text-left text-sm">
+                <p className="font-semibold">One payment. Lifetime access.</p>
+                <p className="mt-1 text-muted-foreground">
+                  Upgrade once and keep Dropshipping, unlimited products and your other Lifetime features forever.
+                </p>
+              </div>
+              <Button asChild size="lg" className="mt-6 w-full sm:w-auto">
+                <Link to="/upgrade">Unlock Dropshipping</Link>
+              </Button>
+            </div>
+          </section>
+        </div>
+      </DashboardShell>
+    );
+  }
 
   return (
     <DashboardShell
