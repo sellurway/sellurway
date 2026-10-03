@@ -111,6 +111,7 @@ function Upgrade() {
                 "All 12 themes, including the 10 premium ones",
                 "Custom theme colours and fonts",
                 "Advanced analytics",
+                "Dropshipping and supplier product importing",
                 "Priority support",
               ].map((i) => (
                 <li key={i} className="flex gap-2">
@@ -125,8 +126,7 @@ function Upgrade() {
               </div>
             ) : pending ? (
               <div className="mt-8 rounded-lg border bg-muted/50 p-4 text-sm">
-                Lifetime is unlocked on your account — unlimited products, all 12 templates and custom colours are
-                available right now. Our team is confirming your PayPal payment in the background.
+                Your payment confirmation is pending. We will unlock Lifetime features after your payment has been verified.
               </div>
 
             ) : (
