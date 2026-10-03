@@ -41,16 +41,37 @@ function lowestPrice(value: string) {
 function DropshippingPage() {
   const { activeStore } = useAuth();
   const [apiKey, setApiKey] = useState("");
+  const [connected, setConnected] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [markup, setMarkup] = useState("40");
   const [products, setProducts] = useState<SupplierProduct[]>([]);
+
+  const connect = useMutation({
+    mutationFn: async () => {
+      if (!activeStore) throw new Error("Create a store first.");
+      const { error } = await supabase.from("store_dropshipping_connections").upsert({
+        store_id: activeStore.id,
+        provider: "cjdropshipping",
+        api_key: apiKey.trim(),
+        api_key_last4: apiKey.trim().slice(-4),
+        enabled: true,
+        updated_at: new Date().toISOString(),
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setConnected(true);
+      toast.success("CJdropshipping connected.");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   const search = useMutation({
     mutationFn: async () => {
       const response = await fetch("/api/dropshipping/cj", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey, action: "search", keyword }),
+        body: JSON.stringify({ apiKey: apiKey.trim(), action: "search", keyword }),
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body.error || "CJ search failed.");
@@ -78,6 +99,7 @@ function DropshippingPage() {
         `<!--SELLURWAY_DROPSHIP:${encodeURIComponent(JSON.stringify({
           supplier: "cjdropshipping",
           supplier_product_id: product.id,
+          supplier_variant_id: null,
           supplier_sku: product.sku,
           supplier_cost: cost,
           markup_percent: Number(markup) || 0,
@@ -135,7 +157,7 @@ function DropshippingPage() {
                 <h2 className="font-display font-semibold">CJdropshipping</h2>
                 <p className="text-xs text-muted-foreground">Product sourcing + fulfilment API</p>
               </div>
-              <Badge className="ml-auto">Ready</Badge>
+              <Badge className="ml-auto">{connected ? "Connected" : "Not connected"}</Badge>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="cj-key">Your CJ API key</Label>
@@ -148,9 +170,18 @@ function DropshippingPage() {
                 autoComplete="off"
               />
               <p className="text-xs text-muted-foreground">
-                Your key is sent to SellUrWay's backend only for the CJ request and is not saved by this page.
+                Your key is used to connect your own CJ account. It is stored for this store so future stock and order sync can run without asking again.
               </p>
             </div>
+            <Button
+              type="button"
+              className="w-full"
+              disabled={!apiKey.trim() || connect.isPending}
+              onClick={() => connect.mutate()}
+            >
+              {connect.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Truck className="mr-1.5 h-4 w-4" />}
+              Connect CJdropshipping
+            </Button>
             <a
               href="https://developers.cjdropshipping.com/en/api/start/token.html"
               target="_blank"
