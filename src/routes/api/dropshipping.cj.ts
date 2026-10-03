@@ -48,6 +48,8 @@ async function requireLifetimeAccess(request: Request) {
       headers: { "content-type": "application/json" },
     });
   }
+
+  return user.id;
 }
 
 async function getAccessToken(apiKey: string) {
@@ -93,7 +95,40 @@ export const Route = createFileRoute("/api/dropshipping/cj")({
           const action = body.action ?? "search";
 
           if (action === "connect") {
-            return json({ connected: true });
+            if (!apiKey) return json({ error: "Enter your CJ API key." }, 400);
+            if (!body.storeId?.trim()) return json({ error: "A store ID is required." }, 400);
+
+            const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+            const { data: store } = await supabaseAdmin
+              .from("stores")
+              .select("id,owner_id")
+              .eq("id", body.storeId.trim())
+              .maybeSingle();
+            if (!store) return json({ error: "Store not found." }, 404);
+            const authorization = request.headers.get("authorization") ?? "";
+            const accessToken = authorization.slice(7);
+            const userResponse = await fetch(
+              (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) + "/auth/v1/user",
+              {
+                headers: {
+                  apikey: process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "",
+                  Authorization: "Bearer " + accessToken,
+                },
+              },
+            );
+            const user = await userResponse.json().catch(() => null) as { id?: string };
+            if (!user?.id || store.owner_id !== user.id) return json({ error: "You do not own this store." }, 403);
+
+            const { error } = await supabaseAdmin.from("store_dropshipping_connections").upsert({
+              store_id: store.id,
+              provider: "cjdropshipping",
+              api_key: apiKey,
+              api_key_last4: apiKey.slice(-4),
+              enabled: true,
+              updated_at: new Date().toISOString(),
+            }, { onConflict: "store_id" });
+            if (error) throw error;
+            return json({ connected: true, last4: apiKey.slice(-4) });
           }
 
 
