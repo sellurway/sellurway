@@ -33,31 +33,47 @@ export const Route = createFileRoute("/api/dropshipping/cj")({
         try {
           const body = await request.json().catch(() => ({})) as {
             apiKey?: string;
-            action?: "search" | "detail";
+            accessToken?: string;
+            action?: "connect" | "search" | "detail" | "stock";
             keyword?: string;
             page?: number;
             size?: number;
             pid?: string;
+            vid?: string;
+            storeId?: string;
           };
 
           const apiKey = body.apiKey?.trim();
-          if (!apiKey) return json({ error: "Enter your CJ API key." }, 400);
-          if (apiKey.length > 200) return json({ error: "That CJ API key is too long." }, 400);
+          if (!apiKey && !body.accessToken) return json({ error: "Enter your CJ API key." }, 400);
+          if (apiKey && apiKey.length > 200) return json({ error: "That CJ API key is too long." }, 400);
 
-          const token = await getAccessToken(apiKey);
+          const token = body.accessToken || await getAccessToken(apiKey!);
           const action = body.action ?? "search";
+
+          if (action === "connect") {
+            return json({ connected: true });
+          }
+
+
+          if (action === "stock") {
+            if (!body.vid?.trim()) return json({ error: "A CJ variant ID is required." }, 400);
+            const response = await fetch(
+              `${CJ_BASE}/product/stock/queryByVid?vid=${encodeURIComponent(body.vid.trim())}`,
+              { headers: { "CJ-Access-Token": token } },
+            );
+            const result = await response.json().catch(() => null);
+            if (!response.ok || result?.code !== 200) {
+              return json({ error: result?.message || "CJ could not load stock." }, 502);
+            }
+            return json({ stock: result.data });
+          }
 
           if (action === "detail") {
             if (!body.pid?.trim()) return json({ error: "A CJ product ID is required." }, 400);
-            const response = await fetch(
-              `${CJ_BASE}/product/productDetail/query`,
+const response = await fetch(
+              `${CJ_BASE}/product/query?pid=${encodeURIComponent(body.pid.trim())}&features=enable_combine`,
               {
-                method: "POST",
-                headers: {
-                  "CJ-Access-Token": token,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id: body.pid.trim() }),
+                headers: { "CJ-Access-Token": token },
               },
             );
             const result = await response.json().catch(() => null);
