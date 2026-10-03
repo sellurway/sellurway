@@ -33,6 +33,14 @@ type SupplierProduct = {
   category: string | null;
 };
 
+type SupplierVariant = {
+  vid?: string;
+  variantSku?: string;
+  variantKey?: string;
+  variantNameEn?: string;
+  variantSellPrice?: number | string;
+};
+
 function lowestPrice(value: string) {
   const first = Number(String(value).split("-")[0]);
   return Number.isFinite(first) ? first : 0;
@@ -92,6 +100,18 @@ function DropshippingPage() {
       const price = Number((cost * (1 + markupRate)).toFixed(2));
       if (!cost || !price) throw new Error("CJ did not return a usable supplier price.");
 
+      const detailResponse = await fetch("/api/dropshipping/cj", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: apiKey.trim(), action: "detail", pid: product.id }),
+      });
+      const detailBody = await detailResponse.json().catch(() => ({}));
+      if (!detailResponse.ok) throw new Error(detailBody.error || "Could not load the CJ product variants.");
+      const rawVariants = Array.isArray(detailBody.product?.variants) ? detailBody.product.variants : [];
+      const variant = (rawVariants[0] ?? null) as SupplierVariant | null;
+      const supplierVariantId = variant?.vid ? String(variant.vid) : null;
+      const supplierSku = variant?.variantSku ? String(variant.variantSku) : product.sku;
+
       const description = [
         "Imported from CJdropshipping.",
         product.category ? `Supplier category: ${product.category}` : "",
@@ -99,8 +119,8 @@ function DropshippingPage() {
         `<!--SELLURWAY_DROPSHIP:${encodeURIComponent(JSON.stringify({
           supplier: "cjdropshipping",
           supplier_product_id: product.id,
-          supplier_variant_id: null,
-          supplier_sku: product.sku,
+          supplier_variant_id: supplierVariantId,
+          supplier_sku: supplierSku,
           supplier_cost: cost,
           markup_percent: Number(markup) || 0,
           sync_enabled: false,
@@ -115,7 +135,7 @@ function DropshippingPage() {
           description,
           price,
           compare_at_price: null,
-          sku: product.sku,
+          sku: supplierSku,
           stock_quantity: Math.max(0, product.inventory),
           track_stock: product.inventory > 0,
           status: "active",
