@@ -76,9 +76,14 @@ function DropshippingPage() {
 
   const search = useMutation({
     mutationFn: async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session?.access_token) throw new Error("Please sign in again.");
       const response = await fetch("/api/dropshipping/cj", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
         body: JSON.stringify({ apiKey: apiKey.trim(), action: "search", keyword }),
       });
       const body = await response.json().catch(() => ({}));
@@ -100,9 +105,14 @@ function DropshippingPage() {
       const price = Number((cost * (1 + markupRate)).toFixed(2));
       if (!cost || !price) throw new Error("CJ did not return a usable supplier price.");
 
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session?.access_token) throw new Error("Please sign in again.");
       const detailResponse = await fetch("/api/dropshipping/cj", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
         body: JSON.stringify({ apiKey: apiKey.trim(), action: "detail", pid: product.id }),
       });
       const detailBody = await detailResponse.json().catch(() => ({}));
