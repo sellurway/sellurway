@@ -57,15 +57,22 @@ function DropshippingPage() {
   const connect = useMutation({
     mutationFn: async () => {
       if (!activeStore) throw new Error("Create a store first.");
-      const { error } = await supabase.from("store_dropshipping_connections").upsert({
-        store_id: activeStore.id,
-        provider: "cjdropshipping",
-        api_key: apiKey.trim(),
-        api_key_last4: apiKey.trim().slice(-4),
-        enabled: true,
-        updated_at: new Date().toISOString(),
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session?.access_token) throw new Error("Please sign in again.");
+      const response = await fetch("/api/dropshipping/cj", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: JSON.stringify({
+          action: "connect",
+          apiKey: apiKey.trim(),
+          storeId: activeStore.id,
+        }),
       });
-      if (error) throw error;
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || "Could not connect CJdropshipping.");
     },
     onSuccess: () => {
       setConnected(true);
