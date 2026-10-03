@@ -65,7 +65,7 @@ function Upgrade() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries();
-      toast.success("Thanks — every premium feature is unlocked on your account.");
+      toast.success("Payment claim submitted. Lifetime will unlock after payment verification.");
     },
     onError: (e: Error) => toast.error(e.message),
 
