@@ -186,30 +186,60 @@ function DropshippingPage() {
         title="Dropshipping"
         description="Source products from suppliers and import them into your SellUrWay store."
       >
-        <div className="mx-auto max-w-2xl">
-          <section className="surface-card relative overflow-hidden p-8 text-center">
-            <div aria-hidden className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-gold/15 blur-3xl" />
-            <div className="relative">
+        <div className="relative min-h-[680px] overflow-hidden rounded-2xl">
+          <div aria-hidden className="pointer-events-none select-none blur-lg opacity-60">
+            <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+              <div className="space-y-5">
+                <section className="surface-card space-y-4 p-5">
+                  <div className="flex items-center gap-3">
+                    <span className="rounded-xl bg-primary/10 p-2"><Truck className="h-5 w-5" /></span>
+                    <div><h2 className="font-display font-semibold">CJdropshipping</h2><p className="text-xs">Product sourcing + fulfilment API</p></div>
+                    <Badge className="ml-auto">Connected</Badge>
+                  </div>
+                  <Input value="CJ API key ••••••••••••••••" readOnly />
+                  <Button className="w-full">Connect CJdropshipping</Button>
+                </section>
+                <section className="surface-card space-y-4 p-5">
+                  <h2 className="font-display font-semibold">Your selling price</h2>
+                  <Input value="40%" readOnly />
+                  <div className="rounded-lg bg-muted p-3 text-sm">Supplier cost $10 · Store price $14</div>
+                </section>
+              </div>
+              <section className="space-y-4">
+                <div className="surface-card flex gap-2 p-4"><Input value="Search CJ products" readOnly /><Button>Search</Button></div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {[1, 2, 3, 4].map((item) => (
+                    <article key={item} className="surface-card overflow-hidden">
+                      <div className="aspect-[4/3] bg-muted" />
+                      <div className="space-y-3 p-4">
+                        <div className="h-5 rounded bg-muted" /><div className="h-4 w-2/3 rounded bg-muted" />
+                        <Button className="w-full">Import product</Button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-background/35 p-6 backdrop-blur-[1px]">
+            <section className="surface-card w-full max-w-md border-gold/40 bg-card/95 p-8 text-center shadow-2xl">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-soft">
                 <LockKeyhole className="h-7 w-7 text-gold" />
               </div>
-              <p className="mt-5 text-sm font-semibold text-gold">LIFETIME FEATURE</p>
+              <p className="mt-5 text-sm font-semibold tracking-wide text-gold">LIFETIME FEATURE</p>
               <h2 className="mt-2 font-display text-3xl font-bold">Unlock Dropshipping</h2>
-              <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
-                Connect CJdropshipping, find supplier products and import them into your SellUrWay store.
-                Dropshipping is available only with SellUrWay Lifetime.
+              <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
+                Connect CJdropshipping, search supplier products and import them into your SellUrWay store.
               </p>
-              <div className="mt-6 rounded-xl border bg-muted/40 p-4 text-left text-sm">
-                <p className="font-semibold">One payment. Lifetime access.</p>
-                <p className="mt-1 text-muted-foreground">
-                  Upgrade once and keep Dropshipping, unlimited products and your other Lifetime features forever.
-                </p>
+              <div className="mt-5 rounded-xl border bg-muted/50 p-4 text-left text-sm">
+                <p className="font-semibold">$10 one-time payment</p>
+                <p className="mt-1 text-muted-foreground">Pay once and keep Dropshipping unlocked for life.</p>
               </div>
-              <Button asChild size="lg" className="mt-6 w-full sm:w-auto">
+              <Button asChild size="lg" className="mt-6 w-full">
                 <Link to="/upgrade">Unlock Dropshipping</Link>
               </Button>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
       </DashboardShell>
     );
