@@ -13,10 +13,20 @@ function json(data: unknown, status = 200) {
 }
 
 function getSupabaseAuthClient(accessToken: string) {
-  const url = process.env["VITE_SUPABASE_URL"] || process.env["SUPABASE_URL"];
-  const key = process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || process.env["SUPABASE_PUBLISHABLE_KEY"];
+  // Vite exposes VITE_* values at build time. This prevents the Dropshipping
+  // server route from depending on Vercel runtime copies of the public client
+  // settings while the actual CJ secret remains in Cloudflare D1.
+  const url =
+    process.env["VITE_SUPABASE_URL"] ||
+    process.env["SUPABASE_URL"] ||
+    import.meta.env.VITE_SUPABASE_URL;
+  const key =
+    process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+    process.env["SUPABASE_PUBLISHABLE_KEY"] ||
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
   if (!url || !key) {
-    throw new Error("SellUrWay authentication is not configured on the server. Add the existing Supabase URL and publishable key environment variables.");
+    throw new Error("SellUrWay authentication is not configured. VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY are required at build time.");
   }
 
   return createClient<Database>(url, key, {
