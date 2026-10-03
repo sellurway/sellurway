@@ -423,26 +423,69 @@ function StorePreview({ storeName, theme, settings, sections, products, currency
   const font = settings.headingFont || theme.heading;
   const featuredIds = settings.selectedProductIds ?? [];
   const featuredProducts = featuredIds.length ? products.filter((p) => featuredIds.includes(p.id)) : products.filter((p) => p.featured).slice(0, 3);
+  const visibleProducts = products.filter((product) => !(settings.showFeatured !== false && product.featured));
+  const ratio = settings.productImageRatio === "portrait" ? "aspect-[4/5]" : settings.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square";
+
+  const card = (product: EditorProduct, extra = "") => (
+    <div className={extra}>
+      <div className={`${ratio} overflow-hidden border`} style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}>
+        {product.images[0] ? <img src={product.images[0]} alt="" className="h-full w-full object-cover transition-transform duration-300" /> : <div className="h-full w-full" style={{ background: `linear-gradient(135deg, ${accent}28, transparent)` }} />}
+      </div>
+      <div className="mt-2">
+        <p className="truncate text-xs font-semibold">{product.name}</p>
+        <p className="text-[11px]" style={{ color: muted }}>{money(product.price)}</p>
+      </div>
+    </div>
+  );
+
+  const heroImage = settings.heroImages?.[0] || settings.heroImageUrl;
+  const hero = (mode: "split" | "editorial" | "immersive" | "minimal" | "lookbook" | "bento") => {
+    const content = <div className={mode === "minimal" ? "mx-auto max-w-xl text-center" : ""}>
+      <div className="mb-3 inline-flex rounded-full border px-3 py-1 text-[10px]" style={{ borderColor: theme.palette.border, color: muted }}>New collection</div>
+      <h1 className={`font-extrabold leading-tight tracking-tight ${mode === "editorial" ? "text-4xl sm:text-6xl" : mode === "immersive" ? "text-4xl sm:text-7xl" : "text-3xl sm:text-5xl"}`} style={{ fontFamily: font }}>{settings.heroHeadline || `Welcome to ${storeName}`}</h1>
+      <p className="mt-3 max-w-md text-sm leading-relaxed" style={{ color: muted }}>{settings.heroSubline || "A storefront designed around your products, not just a colour palette."}</p>
+      <button className="mt-5 px-5 py-3 text-xs font-semibold" style={{ background: accent, color: theme.palette.accentInk, borderRadius: radius }}>Shop now</button>
+    </div>;
+    if (mode === "immersive") return <section className="relative overflow-hidden rounded-none p-7 sm:p-12" style={{ minHeight: 330, background: heroImage ? `linear-gradient(90deg, ${bg}f2 0%, ${bg}aa 55%, transparent 100%), url(${heroImage}) center/cover` : `linear-gradient(135deg, ${accent}55, ${bg})` }}>{content}</section>;
+    if (mode === "editorial") return <section className="space-y-5 py-4"><div className="grid gap-5 sm:grid-cols-[1.4fr_0.6fr] items-end">{content}<div className="h-44 sm:h-64 overflow-hidden" style={{ borderRadius: "0 0 0 28px", background: heroImage ? `url(${heroImage}) center/cover` : `linear-gradient(135deg, ${accent}44, transparent)` }} /></div></section>;
+    if (mode === "lookbook") return <section className="grid gap-4 sm:grid-cols-[0.7fr_1.3fr] items-stretch py-4"><div className="flex items-end p-2 sm:p-5">{content}</div><div className="min-h-[250px] overflow-hidden" style={{ borderRadius: cardRadius, background: heroImage ? `url(${heroImage}) center/cover` : `linear-gradient(145deg, ${accent}55, transparent)` }} /></section>;
+    if (mode === "bento") return <section className="grid gap-3 py-4 sm:grid-cols-3 sm:grid-rows-2"><div className="sm:col-span-2 sm:row-span-2 rounded-2xl p-6 flex items-end" style={{ background: heroImage ? `linear-gradient(0deg, ${bg}ee, transparent), url(${heroImage}) center/cover` : `linear-gradient(135deg, ${accent}55, ${bg})`, borderRadius: cardRadius }}>{content}</div><div className="rounded-2xl p-4" style={{ background: theme.palette.surface, border: `1px solid ${theme.palette.border}` }}><p className="text-[10px] uppercase tracking-wider" style={{ color: muted }}>Curated</p><p className="mt-2 text-sm font-bold">Featured picks</p></div><div className="rounded-2xl p-4" style={{ background: accent, color: theme.palette.accentInk }}><p className="text-[10px] uppercase tracking-wider">Today</p><p className="mt-2 text-sm font-bold">Fresh arrivals</p></div></section>;
+    return <section className={`grid gap-5 py-4 ${mode === "minimal" ? "items-center" : "sm:grid-cols-[1.1fr_0.9fr] sm:items-center"}`}><div>{content}</div><div className="min-h-[210px] overflow-hidden border" style={{ borderColor: theme.palette.border, background: heroImage ? `url(${heroImage}) center/cover` : `linear-gradient(135deg, ${accent}22, transparent)`, borderRadius: cardRadius }} /></section>;
+  };
+
+  const section = (sectionId: SectionId) => {
+    if (sectionId === "hero" && settings.showHero !== false) {
+      const mode = theme.layout === "editorial" ? "editorial" : theme.layout === "immersive" || theme.layout === "showcase" ? "immersive" : theme.layout === "lookbook" ? "lookbook" : theme.layout === "bento" ? "bento" : theme.layout === "minimal" ? "minimal" : "split";
+      return hero(mode);
+    }
+    if (sectionId === "featured" && settings.showFeatured !== false) {
+      const featuredLayout = theme.layout === "bento" ? "grid grid-cols-2 gap-3 sm:grid-cols-4" : theme.layout === "masonry" ? "columns-2 gap-3 sm:columns-3" : theme.layout === "list" ? "space-y-3" : "grid grid-cols-2 gap-3 sm:grid-cols-3";
+      return <section className="mt-8"><div className="mb-3"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>{settings.featuredHeading || "Featured products"}</h2><p className="mt-1 text-xs" style={{ color: muted }}>{settings.featuredSubline || "Shop our most-loved products."}</p></div><div className={featuredLayout}>{featuredProducts.map((product, index) => <div key={product.id} className={theme.layout === "masonry" ? "mb-3 break-inside-avoid" : theme.layout === "list" ? "grid grid-cols-[92px_1fr] gap-3 items-center rounded-xl border p-2" : index === 0 && (theme.layout === "bento" || theme.layout === "editorial") ? "sm:col-span-2" : ""}>{card(product)}</div>)}</div></section>;
+    }
+    if (sectionId === "categories" && settings.showCategories !== false) {
+      const labels = settings.categoryLabels?.length ? settings.categoryLabels : ["New", "Popular", "Sale"];
+      return <section className="mt-8"><h2 className="mb-3 text-lg font-bold" style={{ fontFamily: font }}>Shop by category</h2><div className={theme.layout === "minimal" ? "grid grid-cols-3 border-y" : "flex flex-wrap gap-2"}>{labels.map((label) => <span key={label} className={theme.layout === "minimal" ? "px-3 py-3 text-center text-xs" : "rounded-full border px-3 py-1.5 text-xs"} style={{ borderColor: theme.palette.border }}>{label}</span>)}</div></section>;
+    }
+    if (sectionId === "products") {
+      const columns = settings.productColumns || (theme.layout === "minimal" ? 5 : theme.layout === "catalog" ? 4 : theme.layout === "list" ? 1 : 4);
+      const cls = columns === 2 ? "grid-cols-2" : columns === 3 ? "grid-cols-2 sm:grid-cols-3" : columns === 5 ? "grid-cols-2 sm:grid-cols-5" : "grid-cols-2 sm:grid-cols-4";
+      if (theme.layout === "list") return <section className="mt-8"><h2 className="mb-3 text-lg font-bold" style={{ fontFamily: font }}>All products</h2><div className="space-y-3">{visibleProducts.map((product) => <div key={product.id} className="grid grid-cols-[110px_1fr] gap-3 rounded-xl border p-2" style={{ borderColor: theme.palette.border }}>{card(product)}</div>)}</div></section>;
+      if (theme.layout === "masonry") return <section className="mt-8"><h2 className="mb-3 text-lg font-bold" style={{ fontFamily: font }}>All products</h2><div className="columns-2 gap-3 sm:columns-3">{visibleProducts.map((product) => <div key={product.id} className="mb-3 break-inside-avoid">{card(product)}</div>)}</div></section>;
+      if (theme.layout === "showcase" || theme.layout === "immersive") return <section className="mt-8"><h2 className="mb-3 text-lg font-bold" style={{ fontFamily: font }}>All products</h2><div className="grid gap-4 sm:grid-cols-2">{visibleProducts.map((product) => <div key={product.id}>{card(product)}</div>)}</div></section>;
+      return <section className="mt-8"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>All products</h2><span className="text-xs" style={{ color: muted }}>Sort</span></div><div className={`grid gap-3 ${cls}`}>{visibleProducts.map((product) => <div key={product.id}>{card(product)}</div>)}</div></section>;
+    }
+    return null;
+  };
 
   return <div style={{ background: bg, color: ink } as CSSProperties} className="min-h-[640px]" aria-label="Storefront preview">
     <div className="border-b px-4 py-2 text-center text-[11px]" style={{ borderColor: theme.palette.border, color: muted }}>{settings.announcementText || "Free delivery on selected orders"}</div>
-    <header className="flex items-center justify-between gap-3 px-5 py-4" style={{ borderBottom: `1px solid ${theme.palette.border}` }}>
+    <header className={`flex items-center justify-between gap-3 px-5 py-4 ${theme.layout === "immersive" || theme.layout === "showcase" ? "absolute z-10 w-full border-0" : "border-b"}`} style={{ borderColor: theme.palette.border }}>
       <div className="flex items-center gap-2"><div className="h-8 w-8 rounded-lg" style={{ background: accent }} /><span className="font-semibold" style={{ fontFamily: font }}>{storeName}</span></div>
       <div className="hidden gap-5 text-xs sm:flex" style={{ color: muted }}><span>Shop</span><span>Collections</span><span>About</span></div>
       <div className="h-8 w-8 rounded-full border" style={{ borderColor: theme.palette.border }} />
     </header>
-    <div className="mx-auto max-w-5xl px-5 py-7 sm:px-8 sm:py-10">
-      {sections.map((section) => {
-        if (section === "hero" && settings.showHero !== false) return <section key={section} className="grid gap-5 py-4 sm:grid-cols-[1.1fr_0.9fr] sm:items-center"><div><div className="mb-3 inline-flex rounded-full border px-3 py-1 text-[10px]" style={{ borderColor: theme.palette.border, color: muted }}>New collection</div><h1 className="text-3xl font-extrabold leading-tight sm:text-5xl" style={{ fontFamily: font }}>{settings.heroHeadline || `Welcome to ${storeName}`}</h1><p className="mt-3 max-w-md text-sm leading-relaxed" style={{ color: muted }}>{settings.heroSubline || "A beautiful storefront that is ready for your products and customers."}</p><button className="mt-5 px-5 py-3 text-xs font-semibold text-white" style={{ background: accent, borderRadius: radius }}>Shop now</button></div><div className="min-h-[210px] rounded-2xl border" style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}><div className="h-full min-h-[210px] rounded-2xl" style={{ background: `linear-gradient(135deg, ${accent}22, transparent)` }} /></div></section>;
-        if (section === "featured" && settings.showFeatured !== false) return <section key={section} className="mt-9">
-          {settings.featuredImageUrl && <img src={settings.featuredImageUrl} alt="" className="mb-4 h-28 w-full object-cover sm:h-40" style={{ borderRadius: cardRadius }} />}
-          <div className="mb-3"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>{settings.featuredHeading || "Featured products"}</h2><p className="mt-1 text-xs" style={{ color: muted }}>{settings.featuredSubline || "Shop our most-loved products."}</p></div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{featuredProducts.map((product) => <PreviewCard key={product.id} product={product} accent={accent} theme={theme} cardRadius={cardRadius} />)}</div>
-        </section>;
-        if (section === "categories" && settings.showCategories !== false) return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>Shop by category</h2></div><div className="flex flex-wrap gap-2">{(settings.categoryLabels?.length ? settings.categoryLabels : ["New", "Popular", "Sale"]).map((label) => <span key={label} className="rounded-full border px-3 py-1.5 text-xs" style={{ borderColor: theme.palette.border }}>{label}</span>)}</div></section>;
-        if (section === "products") { const columns = settings.productColumns || 4; const cls = columns === 2 ? "grid-cols-2" : columns === 3 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-4"; const ratio = settings.productImageRatio === "portrait" ? "aspect-[4/5]" : settings.productImageRatio === "landscape" ? "aspect-[4/3]" : "aspect-square"; return <section key={section} className="mt-9"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold" style={{ fontFamily: font }}>All products</h2><span className="text-xs" style={{ color: muted }}>Sort</span></div><div className={`grid gap-3 ${cls}`}>{products.filter((product) => !(settings.showFeatured !== false && product.featured)).map((product) => <div key={product.id}><div className={`${ratio} overflow-hidden border`} style={{ borderColor: theme.palette.border, background: theme.palette.surface, borderRadius: cardRadius }}>{product.images[0] ? <img src={product.images[0]} alt="" className="h-full w-full object-cover" /> : <div className="h-full w-full" style={{ background: `linear-gradient(135deg, ${accent}28, transparent)` }} />}</div><p className="mt-2 text-xs font-medium">{product.name}</p><p className="text-[11px]" style={{ color: muted }}>{money(product.price)}</p></div>)}</div></section>; }
-        return null;
-      })}
+    <div className={`mx-auto px-5 py-7 sm:px-8 sm:py-10 ${theme.layout === "editorial" ? "max-w-7xl" : theme.layout === "lookbook" ? "max-w-5xl" : theme.layout === "minimal" ? "max-w-4xl" : "max-w-5xl"}`}>
+      {sections.map((sectionId) => <div key={sectionId}>{section(sectionId)}</div>)}
     </div>
   </div>;
 }
