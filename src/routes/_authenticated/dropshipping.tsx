@@ -1,0 +1,252 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { ExternalLink, Loader2, Package, Search, ShoppingBag, Truck } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { DashboardShell, NoStore } from "@/components/DashboardShell";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
+import { formatMoney } from "@/lib/format";
+
+export const Route = createFileRoute("/_authenticated/dropshipping")({
+  head: () => ({
+    meta: [
+      { title: "Dropshipping — Sellurway" },
+      { name: "description", content: "Find products from dropshipping suppliers and import them into your Sellurway store." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: DropshippingPage,
+});
+
+type SupplierProduct = {
+  id: string;
+  name: string;
+  image: string | null;
+  sellPrice: string;
+  sku: string | null;
+  inventory: number;
+  category: string | null;
+};
+
+function lowestPrice(value: string) {
+  const first = Number(String(value).split("-")[0]);
+  return Number.isFinite(first) ? first : 0;
+}
+
+function DropshippingPage() {
+  const { activeStore } = useAuth();
+  const [apiKey, setApiKey] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [markup, setMarkup] = useState("40");
+  const [products, setProducts] = useState<SupplierProduct[]>([]);
+
+  const search = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/dropshipping/cj", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey, action: "search", keyword }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || "CJ search failed.");
+      return body.products as SupplierProduct[];
+    },
+    onSuccess: (rows) => {
+      setProducts(rows ?? []);
+      toast.success(`${rows?.length ?? 0} products found`);
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const importProduct = useMutation({
+    mutationFn: async (product: SupplierProduct) => {
+      if (!activeStore) throw new Error("Create a store first.");
+      const cost = lowestPrice(product.sellPrice);
+      const markupRate = Math.max(0, Number(markup) || 0) / 100;
+      const price = Number((cost * (1 + markupRate)).toFixed(2));
+      if (!cost || !price) throw new Error("CJ did not return a usable supplier price.");
+
+      const description = [
+        "Imported from CJdropshipping.",
+        product.category ? `Supplier category: ${product.category}` : "",
+        "",
+        `<!--SELLURWAY_DROPSHIP:${encodeURIComponent(JSON.stringify({
+          supplier: "cjdropshipping",
+          supplier_product_id: product.id,
+          supplier_sku: product.sku,
+          supplier_cost: cost,
+          markup_percent: Number(markup) || 0,
+          sync_enabled: false,
+        }))}-->`,
+      ].filter(Boolean).join("\n");
+
+      const { data: created, error } = await supabase
+        .from("products")
+        .insert({
+          store_id: activeStore.id,
+          name: product.name,
+          description,
+          price,
+          compare_at_price: null,
+          sku: product.sku,
+          stock_quantity: Math.max(0, product.inventory),
+          track_stock: product.inventory > 0,
+          status: "active",
+          featured: false,
+          category_id: null,
+        })
+        .select("id")
+        .single();
+
+      if (error) throw error;
+
+      if (product.image) {
+        const { error: imageError } = await supabase.from("product_images").insert({
+          product_id: created.id,
+          store_id: activeStore.id,
+          url: product.image,
+          position: 0,
+        });
+        if (imageError) throw imageError;
+      }
+    },
+    onSuccess: () => toast.success("Product imported into your store."),
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  if (!activeStore) return <DashboardShell title="Dropshipping"><NoStore /></DashboardShell>;
+
+  return (
+    <DashboardShell
+      title="Dropshipping"
+      description="Find supplier products, set your markup and import them into your store."
+    >
+      <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="space-y-5">
+          <section className="surface-card space-y-4 p-5">
+            <div className="flex items-center gap-3">
+              <span className="rounded-xl bg-primary/10 p-2 text-primary"><Truck className="h-5 w-5" /></span>
+              <div>
+                <h2 className="font-display font-semibold">CJdropshipping</h2>
+                <p className="text-xs text-muted-foreground">Product sourcing + fulfilment API</p>
+              </div>
+              <Badge className="ml-auto">Ready</Badge>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="cj-key">Your CJ API key</Label>
+              <Input
+                id="cj-key"
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Paste your CJ API key"
+                autoComplete="off"
+              />
+              <p className="text-xs text-muted-foreground">
+                Your key is sent to SellUrWay's backend only for the CJ request and is not saved by this page.
+              </p>
+            </div>
+            <a
+              href="https://developers.cjdropshipping.com/en/api/start/token.html"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center text-xs font-medium text-primary hover:underline"
+            >
+              CJ API setup guide <ExternalLink className="ml-1 h-3 w-3" />
+            </a>
+          </section>
+
+          <section className="surface-card space-y-4 p-5">
+            <div>
+              <h2 className="font-display font-semibold">Your selling price</h2>
+              <p className="text-xs text-muted-foreground">Choose the markup SellUrWay applies when importing.</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="markup">Markup percentage</Label>
+              <Input id="markup" inputMode="decimal" value={markup} onChange={(e) => setMarkup(e.target.value)} />
+            </div>
+            <div className="rounded-lg bg-muted p-3 text-sm">
+              Example: a $10 supplier cost with 40% markup becomes <strong>$14</strong>.
+            </div>
+          </section>
+
+          <section className="surface-card p-5">
+            <div className="flex items-center gap-3">
+              <ShoppingBag className="h-5 w-5 text-primary" />
+              <div>
+                <p className="font-medium">What's working now</p>
+                <p className="text-xs text-muted-foreground">Search CJ, view products and import them as normal SellUrWay products.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section className="space-y-4">
+          <div className="surface-card flex gap-2 p-4">
+            <Input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && apiKey && keyword) search.mutate(); }}
+              placeholder="Search CJ products e.g. wireless headphones"
+            />
+            <Button disabled={!apiKey.trim() || !keyword.trim() || search.isPending} onClick={() => search.mutate()}>
+              {search.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              <span className="ml-1.5">Search</span>
+            </Button>
+          </div>
+
+          {products.length === 0 ? (
+            <div className="surface-card p-10 text-center">
+              <Package className="mx-auto h-8 w-8 text-muted-foreground" />
+              <p className="mt-3 font-medium">Search for a supplier product</p>
+              <p className="mt-1 text-sm text-muted-foreground">Results will appear here with supplier cost, stock and an import button.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {products.map((product) => {
+                const cost = lowestPrice(product.sellPrice);
+                const price = cost * (1 + Math.max(0, Number(markup) || 0) / 100);
+                return (
+                  <article key={product.id} className="surface-card overflow-hidden">
+                    <div className="aspect-[4/3] bg-muted">
+                      {product.image ? (
+                        <img src={product.image} alt="" className="h-full w-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center"><Package className="h-8 w-8 text-muted-foreground" /></div>
+                      )}
+                    </div>
+                    <div className="space-y-3 p-4">
+                      <div>
+                        <p className="line-clamp-2 font-medium">{product.name}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Supplier cost {formatMoney(cost, "USD")} · Store price {formatMoney(price, "USD")}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{product.inventory > 0 ? `${product.inventory} in stock` : "Stock unavailable"}</span>
+                        {product.sku && <span className="truncate pl-2">SKU {product.sku}</span>}
+                      </div>
+                      <Button
+                        className="w-full"
+                        disabled={importProduct.isPending}
+                        onClick={() => importProduct.mutate(product)}
+                      >
+                        {importProduct.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Package className="mr-1.5 h-4 w-4" />}
+                        Import product
+                      </Button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
+    </DashboardShell>
+  );
+}
