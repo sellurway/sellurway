@@ -7,13 +7,13 @@ import {
   LifeBuoy,
   LogOut,
   Package,
-  Palette,
   Receipt,
   Settings,
   Shield,
   Sparkles,
   Users,
   Globe2,
+  Truck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -25,14 +25,14 @@ const NAV = [
   { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { to: "/products", label: "Products", icon: Package },
   { to: "/orders", label: "Orders", icon: Receipt },
-  { to: "/customers", label: "Customers", icon: Users },
-  { to: "/themes", label: "Themes", icon: Palette },
-  { to: "/customize", label: "Customize", icon: Sparkles },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/customers", label: "Customers", icon: Users },
+  { to: "/customize", label: "Customize", icon: Sparkles },
+  { to: "/dropshipping", label: "Dropshipping", icon: Truck },
   { to: "/staff", label: "Staff", icon: Users },
   { to: "/domains", label: "Domains", icon: Globe2 },
   { to: "/support", label: "Support", icon: LifeBuoy },
+  { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
 export function DashboardShell({
