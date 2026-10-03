@@ -33,6 +33,7 @@ const rows: { label: string; free: string | boolean; lifetime: string | boolean 
   { label: "Delivery areas & fees", free: true, lifetime: true },
   { label: "Orders & customers", free: true, lifetime: true },
   { label: "Analytics", free: "Basic", lifetime: "Advanced" },
+  { label: "Dropshipping", free: false, lifetime: "CJdropshipping + supplier tools" },
   { label: "Support", free: "Standard", lifetime: "Priority" },
 ];
 
