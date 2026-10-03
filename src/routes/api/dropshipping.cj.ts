@@ -73,7 +73,7 @@ export const Route = createFileRoute("/api/dropshipping/cj")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          await requireLifetimeAccess(request);
+          const userId = await requireLifetimeAccess(request);
           const body = await request.json().catch(() => ({})) as {
             apiKey?: string;
             accessToken?: string;
@@ -104,19 +104,7 @@ export const Route = createFileRoute("/api/dropshipping/cj")({
               .eq("id", body.storeId.trim())
               .maybeSingle();
             if (!store) return json({ error: "Store not found." }, 404);
-            const authorization = request.headers.get("authorization") ?? "";
-            const accessToken = authorization.slice(7);
-            const userResponse = await fetch(
-              (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) + "/auth/v1/user",
-              {
-                headers: {
-                  apikey: process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "",
-                  Authorization: "Bearer " + accessToken,
-                },
-              },
-            );
-            const user = await userResponse.json().catch(() => null) as { id?: string };
-            if (!user?.id || store.owner_id !== user.id) return json({ error: "You do not own this store." }, 403);
+            if (store.owner_id !== userId) return json({ error: "You do not own this store." }, 403);
 
             const { error } = await supabaseAdmin.from("store_dropshipping_connections").upsert({
               store_id: store.id,
