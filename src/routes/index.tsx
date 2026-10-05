@@ -224,6 +224,52 @@ function Landing() {
           </div>
         </section>
 
+
+        <section id="faq" className="border-t bg-surface-tint py-16 md:py-20">
+          <div className="container-page">
+            <p className="text-sm font-medium text-muted-foreground">SellUrWay FAQ</p>
+            <h2 className="mt-2 max-w-2xl font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              People also ask about SellUrWay
+            </h2>
+            <div className="mt-8 grid gap-3 md:max-w-4xl">
+              {[
+                {
+                  question: "What exactly does SellUrWay do?",
+                  answer:
+                    "SellUrWay lets businesses create an online store, add products, manage orders and share a store link with customers from one simple dashboard.",
+                },
+                {
+                  question: "Can SellUrWay work in South Africa?",
+                  answer:
+                    "Yes. SellUrWay is designed for businesses in South Africa and other markets, with support for store currencies, delivery settings and flexible ways to take orders.",
+                },
+                {
+                  question: "How much does SellUrWay cost?",
+                  answer:
+                    "You can start SellUrWay for free with up to 3 products. Paid features are available when your store needs more products and capabilities.",
+                },
+                {
+                  question: "How do I make money with SellUrWay?",
+                  answer:
+                    "Create your store, add products, share your store link, attract customers and take orders. SellUrWay provides the storefront and tools; your business earns from the products or services you sell.",
+                },
+              ].map((item) => (
+                <details key={item.question} className="group rounded-2xl border bg-background px-5 py-4">
+                  <summary className="cursor-pointer list-none font-medium marker:hidden">
+                    <span className="flex items-center justify-between gap-4">
+                      <span>{item.question}</span>
+                      <span className="text-xl text-muted-foreground transition-transform group-open:rotate-45">+</span>
+                    </span>
+                  </summary>
+                  <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+                    {item.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="py-16 md:py-24">
           <div className="container-page">
             <div className="surface-card grid gap-8 p-8 md:grid-cols-[1fr_auto] md:items-center md:p-10">
@@ -237,6 +283,36 @@ function Landing() {
           </div>
         </section>
       </main>
+
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": "https://sellurway.vercel.app/#organization",
+                name: "SellUrWay",
+                url: "https://sellurway.vercel.app/",
+                logo: "https://sellurway.vercel.app/sellurway-original-logo.svg",
+                description:
+                  "SellUrWay is an online store builder that helps businesses create stores, manage products and take orders.",
+              },
+              {
+                "@type": "WebSite",
+                "@id": "https://sellurway.vercel.app/#website",
+                name: "SellUrWay",
+                url: "https://sellurway.vercel.app/",
+                publisher: { "@id": "https://sellurway.vercel.app/#organization" },
+                description:
+                  "Build a professional online store, add products, share your link and start taking orders with SellUrWay.",
+              },
+            ],
+          }),
+        }}
+      />
 
       <footer className="border-t py-10">
         <div className="container-page flex flex-col gap-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
