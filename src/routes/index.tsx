@@ -239,9 +239,9 @@ function Landing() {
                     "SellUrWay lets businesses create an online store, add products, manage orders and share a store link with customers from one simple dashboard.",
                 },
                 {
-                  question: "Can SellUrWay work in South Africa?",
+                  question: "Is SellUrWay available worldwide?",
                   answer:
-                    "Yes. SellUrWay is designed for businesses in South Africa and other markets, with support for store currencies, delivery settings and flexible ways to take orders.",
+                    "Yes. SellUrWay is built for businesses around the world, with support for different store currencies, delivery settings and flexible ways to take orders.",
                 },
                 {
                   question: "How much does SellUrWay cost?",
@@ -249,9 +249,9 @@ function Landing() {
                     "You can start SellUrWay for free with up to 3 products. Paid features are available when your store needs more products and capabilities.",
                 },
                 {
-                  question: "How do I make money with SellUrWay?",
+                  question: "Can I manage my SellUrWay store with staff?",
                   answer:
-                    "Create your store, add products, share your store link, attract customers and take orders. SellUrWay provides the storefront and tools; your business earns from the products or services you sell.",
+                    "SellUrWay is designed to help store owners manage their online business from one dashboard. Staff and team-management capabilities can be used as your business grows, alongside products, orders and storefront management.",
                 },
               ].map((item) => (
                 <details key={item.question} className="group rounded-2xl border bg-background px-5 py-4">
