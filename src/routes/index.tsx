@@ -296,7 +296,7 @@ function Landing() {
                 "@id": "https://sellurway.vercel.app/#organization",
                 name: "SellUrWay",
                 url: "https://sellurway.vercel.app/",
-                logo: "https://sellurway.vercel.app/sellurway-original-logo.svg",
+                logo: "https://sellurway.vercel.app/sellurway-brand.svg",
                 description:
                   "SellUrWay is an online store builder that helps businesses create stores, manage products and take orders.",
               },
