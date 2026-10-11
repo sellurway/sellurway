@@ -1,13 +1,13 @@
 {
-  "name": "Sellurway — Sell your way",
-  "short_name": "Sellurway",
+  "name": "SellUrWay — Your store, your way",
+  "short_name": "SellUrWay",
   "description": "Launch your online store and take orders your way.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#6d3df5",
+  "theme_color": "#168dff",
   "icons": [
-    { "src": "/sellurway-favicon.svg?v=2", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    { "src": "/sellurway-favicon.svg?v=5", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }
