@@ -35,7 +35,7 @@ const websiteJsonLd = {
       url: "https://sellurway.vercel.app/",
       logo: {
         "@type": "ImageObject",
-        url: "https://sellurway.vercel.app/sellurway-favicon.svg",
+        url: "https://sellurway.vercel.app/sellurway-brand.svg",
       },
     },
   ],
@@ -104,7 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#6d3df5" },
+      { name: "theme-color", content: "#168dff" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "SellUrWay" },
       { name: "application-name", content: "SellUrWay" },
@@ -133,9 +133,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=4" },
-      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=4" },
-      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=4" },
+      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=5" },
+      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=5" },
+      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=5" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
