@@ -319,7 +319,7 @@ function ThemesPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {THEMES.map((t) => {
-          const locked = false; // All templates are visible and selectable
+          const locked = t.premium && !isLifetime;
           const active = store?.theme === t.id;
           return (
             <div
@@ -358,7 +358,7 @@ function ThemesPage() {
                     <span>Use this template</span>
                   )}
                 </Button>
-                {!locked && <Button size="sm" variant="outline" onClick={() => editTemplate(t.id)} disabled={save.isPending}>Edit</Button>}
+                {locked ? <Button asChild size="sm" variant="outline"><Link to="/upgrade">Unlock to edit</Link></Button> : <Button size="sm" variant="outline" onClick={() => editTemplate(t.id)} disabled={save.isPending}>Edit</Button>}
                 </div>
               </div>
             </div>
