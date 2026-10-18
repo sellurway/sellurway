@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -58,6 +58,7 @@ const defaultSections: SectionId[] = ["hero", "featured", "categories", "product
 
 function CustomizePage() {
   const { activeStore, isLifetime, user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [panel, setPanel] = useState<Panel>("sections");
   const [selectedSection, setSelectedSection] = useState<SectionId>("hero");
@@ -265,7 +266,7 @@ function CustomizePage() {
                 </div>
               </div>
             ) : (
-              <ThemeSettingsPanel isLifetime={isLifetime} draft={draft} draftTheme={draftTheme} currency={currency} userId={user?.id ?? ""} onTheme={setDraftTheme} onCurrency={setCurrency} onUpdate={updateDraft} />
+              <ThemeSettingsPanel isLifetime={isLifetime} draft={draft} draftTheme={draftTheme} currency={currency} userId={user?.id ?? ""} onTheme={setDraftTheme} onCurrency={setCurrency} onUpdate={updateDraft} onLockedTheme={() => navigate({ to: "/upgrade" })} />
             )}
           </aside>
 
@@ -367,13 +368,13 @@ function ToggleRow({ label, checked, onCheckedChange }: { label: string; checked
   return <div className="flex items-center justify-between gap-3 rounded-xl border bg-muted/20 p-3"><span className="text-sm font-medium">{label}</span><Switch checked={checked} onCheckedChange={onCheckedChange} /></div>;
 }
 
-function ThemeSettingsPanel({ isLifetime, draft, draftTheme, currency, userId, onTheme, onCurrency, onUpdate }: { isLifetime: boolean; draft: ThemeSettings; draftTheme: string; currency: string; userId: string; onTheme: (theme: string) => void; onCurrency: (currency: string) => void; onUpdate: (patch: Partial<ThemeSettings>) => void }) {
+function ThemeSettingsPanel({ isLifetime, draft, draftTheme, currency, userId, onTheme, onCurrency, onUpdate, onLockedTheme }: { isLifetime: boolean; draft: ThemeSettings; draftTheme: string; currency: string; userId: string; onTheme: (theme: string) => void; onCurrency: (currency: string) => void; onUpdate: (patch: Partial<ThemeSettings>) => void; onLockedTheme: () => void }) {
   return <div className="max-h-[700px] overflow-y-auto p-4"><div className="space-y-6">
     <div>
       <p className="text-sm font-semibold">Theme</p>
-      <p className="mt-1 text-xs text-muted-foreground">Choose the storefront foundation.</p>
+      <p className="mt-1 text-xs text-muted-foreground">Tap any locked theme to unlock every premium design with SellUrWay Lifetime.</p>
       <div className="mt-3 grid gap-2">
-        {THEMES.map((theme) => { const locked = theme.premium && !isLifetime; return <button key={theme.id} disabled={locked} onClick={() => onTheme(theme.id)} className={`flex items-center gap-3 rounded-xl border p-2.5 text-left transition ${draftTheme === theme.id ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "hover:bg-muted"} ${locked ? "cursor-not-allowed opacity-55" : ""}`}><div className="h-10 w-10 shrink-0 rounded-lg border" style={{ background: theme.palette.bg }}><div className="m-2 h-3 w-3 rounded-full" style={{ background: theme.palette.accent }} /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="truncate text-sm font-medium">{theme.name}</p><span className="shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">{theme.layout}</span></div><p className="truncate text-[11px] text-muted-foreground">{theme.tagline}</p></div>{theme.premium && <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold">Premium</span>}</button>; })}
+        {THEMES.map((theme) => { const locked = theme.premium && !isLifetime; return <button key={theme.id} type="button" onClick={() => locked ? onLockedTheme() : onTheme(theme.id)} aria-label={locked ? `Unlock ${theme.name} theme` : `Choose ${theme.name} theme`} className={`flex items-center gap-3 rounded-xl border p-2.5 text-left transition ${draftTheme === theme.id ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "hover:bg-muted"} ${locked ? "border-gold/40 bg-gold-soft/20 hover:bg-gold-soft/40" : ""}`}><div className="h-10 w-10 shrink-0 rounded-lg border" style={{ background: theme.palette.bg }}><div className="m-2 h-3 w-3 rounded-full" style={{ background: theme.palette.accent }} /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="truncate text-sm font-medium">{theme.name}</p><span className="shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">{theme.layout}</span></div><p className="truncate text-[11px] text-muted-foreground">{theme.tagline}</p></div>{theme.premium && <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-bold ${locked ? "bg-gold-soft text-gold" : "bg-muted text-muted-foreground"}`}>{locked ? "🔒 Unlock" : "Premium"}</span>}</button>; })}
       </div>
     </div>
     <div className="border-t pt-5">
