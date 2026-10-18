@@ -235,29 +235,68 @@ function DropshippingPage() {
 
   if (!activeStore) return <DashboardShell title="Dropshipping"><NoStore /></DashboardShell>;
 
-  if (importsLocked) {
+  if (!isLifetime) {
     return (
       <DashboardShell
         title="Dropshipping"
-        description="You have used your 2 free product imports."
+        description="Unlock supplier sourcing and product importing with SellUrWay Lifetime."
       >
-        <section className="surface-card mx-auto max-w-xl p-8 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-soft">
-            <LockKeyhole className="h-7 w-7 text-gold" />
+        <div className="mx-auto max-w-5xl space-y-6">
+          <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-background via-background to-primary/10 p-6 shadow-sm sm:p-10">
+            <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
+            <div className="relative grid gap-8 md:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)] md:items-center">
+              <div>
+                <Badge className="mb-4"><LockKeyhole className="mr-1.5 h-3.5 w-3.5" /> SELLURWAY LIFETIME</Badge>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Your next winning product starts here</p>
+                <h2 className="mt-3 max-w-xl font-display text-3xl font-bold leading-tight sm:text-5xl">Stop searching everywhere. Find products to sell in one place.</h2>
+                <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
+                  Connect your CJdropshipping account, discover products, set your own markup and bring products into your SellUrWay store—all from your dashboard.
+                </p>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <Button asChild size="lg" className="w-full sm:w-auto">
+                    <Link to="/upgrade">Unlock Dropshipping <ExternalLink className="ml-2 h-4 w-4" /></Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
+                    <Link to="/upgrade">See Lifetime benefits</Link>
+                  </Button>
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">One-time Lifetime offer · No recurring SellUrWay subscription for these Lifetime features</p>
+              </div>
+              <div className="relative rounded-2xl border bg-background/90 p-5 shadow-lg backdrop-blur">
+                <div className="flex items-center justify-between border-b pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10"><Truck className="h-6 w-6 text-primary" /></div>
+                    <div><p className="font-semibold">Dropshipping toolkit</p><p className="text-xs text-muted-foreground">Included with Lifetime</p></div>
+                  </div>
+                  <LockKeyhole className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <div className="space-y-4 py-5">
+                  {[
+                    { title: "Connect your supplier", detail: "Save your CJdropshipping connection securely." },
+                    { title: "Discover products", detail: "Search supplier products from your dashboard." },
+                    { title: "Set your selling price", detail: "Choose your markup before importing." },
+                    { title: "Build your catalogue", detail: "Bring products and images into your store." },
+                  ].map((item, index) => (
+                    <div key={item.title} className="flex items-start gap-3">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{index + 1}</div>
+                      <div><p className="text-sm font-semibold">{item.title}</p><p className="mt-0.5 text-xs leading-5 text-muted-foreground">{item.detail}</p></div>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-xl border bg-muted/40 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lifetime access</p>
+                  <p className="mt-1 text-lg font-bold">Unlock the full workflow</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Supplier search, connection and importing stay locked until you unlock Lifetime.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border bg-background p-4"><Package className="h-5 w-5 text-primary" /><p className="mt-3 font-semibold">Less manual work</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Keep product sourcing and your store workflow together.</p></div>
+            <div className="rounded-2xl border bg-background p-4"><Search className="h-5 w-5 text-primary" /><p className="mt-3 font-semibold">Research before you import</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Review supplier products and your planned selling price.</p></div>
+            <div className="rounded-2xl border bg-background p-4"><ShoppingBag className="h-5 w-5 text-primary" /><p className="mt-3 font-semibold">Grow your catalogue</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Import products into your own SellUrWay storefront.</p></div>
           </div>
-          <p className="mt-5 text-sm font-semibold tracking-wide text-gold">2 FREE IMPORTS USED</p>
-          <h2 className="mt-2 font-display text-3xl font-bold">Unlock more dropshipping</h2>
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
-            You can import 2 products for free. Unlock Dropshipping to import unlimited products and keep using CJdropshipping.
-          </p>
-          <div className="mt-5 rounded-xl border bg-muted/50 p-4 text-left text-sm">
-            <p className="font-semibold">$10 one-time payment</p>
-            <p className="mt-1 text-muted-foreground">Pay once and keep Dropshipping unlocked for life.</p>
-          </div>
-          <Button asChild size="lg" className="mt-6 w-full">
-            <Link to="/upgrade">Unlock Dropshipping</Link>
-          </Button>
-        </section>
+        </div>
       </DashboardShell>
     );
   }
