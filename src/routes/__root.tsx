@@ -133,9 +133,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=5" },
-      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=5" },
-      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=5" },
+      { rel: "icon", type: "image/svg+xml", href: "/sellurway-favicon.svg?v=6" },
+      { rel: "shortcut icon", href: "/sellurway-favicon.svg?v=6" },
+      { rel: "apple-touch-icon", href: "/sellurway-favicon.svg?v=6" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
