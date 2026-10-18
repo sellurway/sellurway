@@ -92,10 +92,10 @@ function Upgrade() {
               <Crown className="h-4 w-4 text-gold" /> SellUrWay Lifetime
             </p>
             <h2 className="mt-4 max-w-lg font-display text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Your business deserves room to grow.
+              Build the store you imagined. Unlock every possibility.
             </h2>
             <p className="mt-3 max-w-lg text-base leading-relaxed text-muted-foreground">
-              Stop counting products or holding back your ideas. Unlock the tools to build a bigger, better online store — with one payment, not another monthly bill.
+              Your store should look like your brand—not every other shop. Get every premium storefront theme, unlimited products, dropshipping and growth tools with one simple payment. No recurring SellUrWay subscription and no monthly platform fee for these Lifetime features.
             </p>
             <h1 className="mt-3 font-display text-4xl font-extrabold tracking-tight">
               ${LIFETIME_PRICE_USD} <span className="text-base font-medium text-muted-foreground">one time</span>
@@ -112,10 +112,10 @@ function Upgrade() {
 
             <div className="mt-7 grid gap-3 sm:grid-cols-2">
               {[
-                { title: "Sell without limits", detail: "Add unlimited products as your catalogue grows." },
-                { title: "Make your store yours", detail: "Unlock all 12 themes, plus custom colours and fonts." },
+                { title: "Grow without product limits", detail: "Add unlimited products instead of stopping when your catalogue takes off." },
+                { title: "Stand out with every premium theme", detail: "Unlock all 24 storefront designs, from luxury and fashion to tech, food and modern marketplaces. Switch designs whenever your brand evolves." },
                 { title: "Know what’s working", detail: "Use advanced analytics to understand your store." },
-                { title: "Explore more products", detail: "Unlock dropshipping and supplier product importing." },
+                { title: "Find products to sell", detail: "Unlock dropshipping and supplier product importing to expand your catalogue." },
               ].map((feature) => (
                 <div key={feature.title} className="rounded-xl border bg-background/80 p-4">
                   <div className="flex items-center gap-2 font-semibold">
@@ -131,7 +131,8 @@ function Upgrade() {
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
               <span>✓ One-time payment</span>
               <span>✓ No recurring SellUrWay subscription</span>
-              <span>✓ Priority support</span>
+              <span>✓ Premium themes included</span>
+              <span>✓ Pay once, keep Lifetime</span>
             </div>
 
             {isLifetime ? (
