@@ -262,3 +262,143 @@ function DropshippingPage() {
     );
   }
 
+  return (
+    <DashboardShell
+      title="Dropshipping"
+      description="Find products, set your markup, and import them into your store."
+    >
+      <div className="space-y-6">
+        <section className="surface-card space-y-4 p-5">
+          <div className="flex items-start gap-3">
+            <div className="rounded-xl bg-muted p-3"><Truck className="h-6 w-6" /></div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg font-semibold">CJdropshipping connection</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Connect your supplier account. Your API key is stored securely in Cloudflare.
+              </p>
+            </div>
+            {connected && <Badge variant="secondary">Connected{connectedLast4 ? ` ····${connectedLast4}` : ""}</Badge>}
+          </div>
+          {!connected ? (
+            <form
+              className="space-y-3"
+              onSubmit={(event) => {
+                event.preventDefault();
+                connect.mutate();
+              }}
+            >
+              <Label htmlFor="cj-api-key">CJdropshipping API key</Label>
+              <Input
+                id="cj-api-key"
+                type="password"
+                autoComplete="off"
+                value={apiKey}
+                onChange={(event) => setApiKey(event.target.value)}
+                placeholder="Paste your CJ API key"
+              />
+              <Button type="submit" disabled={!apiKey.trim() || connect.isPending}>
+                {connect.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Connecting…</> : "Connect CJdropshipping"}
+              </Button>
+            </form>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Your supplier account is connected. Search for products below to start importing.
+            </p>
+          )}
+        </section>
+
+        <section className="surface-card space-y-4 p-5">
+          <div>
+            <h2 className="text-lg font-semibold">Find products</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {importedCount} of {isLifetime ? "unlimited" : importLimit} free product imports used.
+            </p>
+          </div>
+          <form
+            className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_150px_auto]"
+            onSubmit={(event) => {
+              event.preventDefault();
+              search.mutate();
+            }}
+          >
+            <Input
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              placeholder="Search products, e.g. wireless headphones"
+              aria-label="Search supplier products"
+            />
+            <div className="relative">
+              <Label htmlFor="dropship-markup" className="sr-only">Markup percentage</Label>
+              <Input
+                id="dropship-markup"
+                type="number"
+                min="0"
+                max="1000"
+                value={markup}
+                onChange={(event) => setMarkup(event.target.value)}
+                placeholder="Markup %"
+                aria-label="Markup percentage"
+              />
+            </div>
+            <Button type="submit" disabled={!connected || !keyword.trim() || search.isPending}>
+              {search.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+              Search
+            </Button>
+          </form>
+          {!connected && <p className="text-sm text-muted-foreground">Connect CJdropshipping above before searching.</p>}
+        </section>
+
+        {search.isPending && (
+          <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" /> Searching supplier products…
+          </div>
+        )}
+
+        {!search.isPending && products.length === 0 && (
+          <div className="surface-card py-12 text-center">
+            <Package className="mx-auto h-9 w-9 text-muted-foreground" />
+            <h3 className="mt-3 font-semibold">Your product results will appear here</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Search CJdropshipping to find products you can sell.</p>
+          </div>
+        )}
+
+        {products.length > 0 && (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {products.map((product) => {
+              const cost = lowestPrice(product.sellPrice);
+              const sellPrice = cost * (1 + Math.max(0, Number(markup) || 0) / 100);
+              return (
+                <article key={product.id} className="surface-card overflow-hidden">
+                  {product.image ? (
+                    <img src={product.image} alt={product.name} className="aspect-square w-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="flex aspect-square items-center justify-center bg-muted"><ShoppingBag className="h-10 w-10 text-muted-foreground" /></div>
+                  )}
+                  <div className="space-y-3 p-4">
+                    <h3 className="font-semibold">{product.name}</h3>
+                    {product.category && <p className="text-xs text-muted-foreground">{product.category}</p>}
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">Supplier: {formatMoney(cost)}</span>
+                      <span className="font-semibold">Your price: {formatMoney(sellPrice)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {product.inventory > 0 ? `${product.inventory} in supplier stock` : "Supplier stock not available"}
+                    </p>
+                    <Button
+                      className="w-full"
+                      disabled={importsLocked || importProduct.isPending}
+                      onClick={() => importProduct.mutate(product)}
+                    >
+                      {importProduct.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ExternalLink className="mr-2 h-4 w-4" />}
+                      Import product
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </DashboardShell>
+  );
+}
