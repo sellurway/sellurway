@@ -14,10 +14,10 @@ import { getLifetimeLocalPrice, LIFETIME_PRICE_USD, PAYPAL_CHECKOUT_URL } from "
 export const Route = createFileRoute("/_authenticated/upgrade")({
   head: () => ({
     meta: [
-      { title: "Upgrade to Lifetime — Sellurway" },
-      { name: "description", content: "Unlock unlimited products and premium themes with a one-time $10 Sellurway upgrade." },
-      { property: "og:title", content: "Sellurway Lifetime" },
-      { property: "og:description", content: "One payment of $10 for unlimited products, forever." },
+      { title: "SellUrWay Lifetime — Grow Your Store for $10 Once" },
+      { name: "description", content: "Unlock unlimited products, premium storefront themes, advanced analytics and dropshipping with one $10 payment. No recurring SellUrWay subscription." },
+      { property: "og:title", content: "SellUrWay Lifetime — One Payment, More Possibilities" },
+      { property: "og:description", content: "Unlock unlimited products, premium themes, analytics and dropshipping with one $10 payment." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -88,8 +88,14 @@ function Upgrade() {
         <div className="relative overflow-hidden rounded-[var(--radius-2xl)] border border-gold/40 bg-card p-8 shadow-[var(--shadow-lift)]">
           <div aria-hidden className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-gold/15 blur-3xl" />
           <div className="relative">
-            <p className="inline-flex items-center gap-1.5 text-sm font-medium">
-              <Crown className="h-4 w-4 text-gold" /> Sellurway Lifetime
+            <p className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold-soft/60 px-3 py-1.5 text-sm font-semibold">
+              <Crown className="h-4 w-4 text-gold" /> SellUrWay Lifetime
+            </p>
+            <h2 className="mt-4 max-w-lg font-display text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+              Your business deserves room to grow.
+            </h2>
+            <p className="mt-3 max-w-lg text-base leading-relaxed text-muted-foreground">
+              Stop counting products or holding back your ideas. Unlock the tools to build a bigger, better online store — with one payment, not another monthly bill.
             </p>
             <h1 className="mt-3 font-display text-4xl font-extrabold tracking-tight">
               ${LIFETIME_PRICE_USD} <span className="text-base font-medium text-muted-foreground">one time</span>
@@ -97,28 +103,36 @@ function Upgrade() {
             {priceLoading ? (
               <p className="mt-2 text-sm text-muted-foreground">Checking prices for your country…</p>
             ) : price?.converted ? (
-              <p className="mt-2 text-sm text-muted-foreground">
-                About {formatMoney(price.amount, price.currency)} in your country ({price.country}). PayPal charges the
-                USD amount and converts at checkout.
+              <p className="mt-3 text-sm text-muted-foreground">
+                About {formatMoney(price.amount, price.currency)} in your country ({price.country}). PayPal charges in USD and converts at checkout.
               </p>
             ) : (
               <p className="mt-2 text-sm text-muted-foreground">Charged in USD by PayPal.</p>
             )}
 
-            <ul className="mt-6 space-y-2.5 text-sm">
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
               {[
-                "Unlimited products",
-                "All 12 themes, including the 10 premium ones",
-                "Custom theme colours and fonts",
-                "Advanced analytics",
-                "Dropshipping and supplier product importing",
-                "Priority support",
-              ].map((i) => (
-                <li key={i} className="flex gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {i}
-                </li>
+                { title: "Sell without limits", detail: "Add unlimited products as your catalogue grows." },
+                { title: "Make your store yours", detail: "Unlock all 12 themes, plus custom colours and fonts." },
+                { title: "Know what’s working", detail: "Use advanced analytics to understand your store." },
+                { title: "Explore more products", detail: "Unlock dropshipping and supplier product importing." },
+              ].map((feature) => (
+                <div key={feature.title} className="rounded-xl border bg-background/80 p-4">
+                  <div className="flex items-center gap-2 font-semibold">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold-soft">
+                      <Check className="h-3.5 w-3.5 text-gold" />
+                    </span>
+                    {feature.title}
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{feature.detail}</p>
+                </div>
               ))}
-            </ul>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
+              <span>✓ One-time payment</span>
+              <span>✓ No recurring SellUrWay subscription</span>
+              <span>✓ Priority support</span>
+            </div>
 
             {isLifetime ? (
               <div className="mt-8 rounded-lg border bg-muted/50 p-4 text-sm">
@@ -126,7 +140,7 @@ function Upgrade() {
               </div>
             ) : pending ? (
               <div className="mt-8 rounded-lg border bg-muted/50 p-4 text-sm">
-                Your payment confirmation is pending. We will unlock Lifetime features after your payment has been verified.
+                Your payment claim has been received. We’ll update your account as soon as it’s processed.
               </div>
 
             ) : (
@@ -173,10 +187,6 @@ function Upgrade() {
                     </button>
                   </div>
                 )}
-                <p className="text-xs text-muted-foreground">
-                  Payments are confirmed manually. After you pay, tap “I have paid” and our team unlocks Lifetime on
-                  your account.
-                </p>
               </div>
             )}
           </div>
