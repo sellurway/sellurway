@@ -27,12 +27,12 @@ type Product = {
 };
 
 const products: Product[] = [
-  { id: "chukka-black", name: "Make My Shoe — Chukka", category: "Sneakers", price: 1499, tag: "Bestseller", colour: "Black", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1100&q=85" },
-  { id: "x202-tan", name: "X202 — Everyday Classic", category: "Sneakers", price: 1299, tag: "Made to move", colour: "Tan", image: "https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?auto=format&fit=crop&w=1100&q=85" },
-  { id: "igoduka-traveller", name: "Igoduka — Traveller", category: "Footwear", price: 2699, tag: "Statement piece", colour: "Earth", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1100&q=85" },
-  { id: "signature-tee", name: "Signature T-Shirt", category: "Clothing", price: 299, tag: "Everyday essential", colour: "Black", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1100&q=85" },
-  { id: "golfer", name: "Modern Golfer", category: "Clothing", price: 499, colour: "Cream", image: "https://images.unsplash.com/photo-1627225924765-552d49cf47ad?auto=format&fit=crop&w=1100&q=85" },
-  { id: "signature-cap", name: "Chase the Sun Cap", category: "Accessories", price: 199, oldPrice: 350, tag: "Special price", colour: "Black", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=1100&q=85" },
+  { id: "goduka-grey-beige", name: "Modern Mbadada Goduka — Grey Beige Sole", category: "Sneakers", price: 2500, oldPrice: 3000, tag: "Sale", colour: "Ice Grey", image: "https://www.modernmbadada.co.za/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-05-at-16.42.17-300x300.jpeg" },
+  { id: "goduka-white", name: "Modern Mbadada Goduka — White", category: "Sneakers", price: 2500, oldPrice: 3000, tag: "Sale", colour: "White", image: "https://www.modernmbadada.co.za/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-05-at-16.42.16-1-300x300.jpeg" },
+  { id: "goduka-beige-brown", name: "Modern Mbadada Goduka — Beige Brown", category: "Sneakers", price: 2500, oldPrice: 3000, tag: "New season", colour: "Beige / Brown", image: "https://www.modernmbadada.co.za/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-05-at-16.42.21-300x300.jpeg" },
+  { id: "goduka-green", name: "Modern Mbadada Goduka — Green Leather", category: "Sneakers", price: 2500, oldPrice: 3000, tag: "Premium leather", colour: "Green", image: "https://www.modernmbadada.co.za/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-05-at-16.42.22-300x300.jpeg" },
+  { id: "mpintshi-green-white", name: "Modern Mbadada Mpintshi — Green / White Sole", category: "Sneakers", price: 1999, oldPrice: 2500, tag: "Sale", colour: "Green / White", image: "https://www.modernmbadada.co.za/wp-content/uploads/2026/02/ec044981-426d-4ac7-a186-453dcdf45c4a-300x300.jpg" },
+  { id: "chukka-black", name: "Modern Mbadada × CobblerX — Chukka Black", category: "Footwear", price: 1499, tag: "Signature edition", colour: "Black", image: "https://www.modernmbadada.co.za/wp-content/uploads/2025/03/2025_02_21_Modern_Mbaddada_5788_017-300x300.jpg" },
 ];
 
 const categories = ["All", "Sneakers", "Footwear", "Clothing", "Accessories"];
@@ -96,13 +96,13 @@ function ModernMbadadaDemo() {
 
       <main>
         <section className="relative isolate min-h-[620px] overflow-hidden bg-[#24251f] text-white sm:min-h-[700px]">
-          <img src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=2200&q=90" alt="Contemporary streetwear collection" className="absolute inset-0 -z-20 h-full w-full object-cover object-center opacity-70" />
+          <img src="https://www.modernmbadada.co.za/wp-content/uploads/2024/05/Modern-Mbadada-winter-range4-2-scaled.jpg" alt="Contemporary streetwear collection" className="absolute inset-0 -z-20 h-full w-full object-cover object-center opacity-70" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/40 to-black/5" />
           <div className="mx-auto flex min-h-[620px] max-w-7xl items-end px-5 pb-14 pt-24 sm:min-h-[700px] sm:items-center sm:px-10 sm:pb-20">
             <div className="max-w-2xl">
               <div className="mb-6 inline-flex items-center gap-2 border border-white/40 px-3 py-2 text-[9px] font-bold uppercase tracking-[0.24em] sm:text-[10px]"><span className="h-2 w-2 rounded-full bg-[#d9f36a]" /> Rooted here. Ready everywhere.</div>
               <h1 className="max-w-2xl text-6xl font-black uppercase leading-[0.88] tracking-[-0.075em] sm:text-8xl lg:text-[104px]">Chase<br />the sun<span className="text-[#d9f36a]">.</span></h1>
-              <p className="mt-6 max-w-md text-sm leading-7 text-white/80 sm:text-base">A new expression of South African heritage. Everyday pieces, bold footwear and streetwear made for your own kind of journey.</p>
+              <p className="mt-6 max-w-md text-sm leading-7 text-white/80 sm:text-base">South African heritage meets modern footwear. Explore the real Modern Mbadada product range, from signature Chukka editions to the Goduka and Mpintshi collections.</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#shop" className="inline-flex items-center gap-3 bg-[#d9f36a] px-6 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-black transition hover:bg-white">Shop the collection <ArrowRight size={16} /></a>
                 <a href="#story" className="inline-flex items-center border border-white/60 px-6 py-4 text-[10px] font-black uppercase tracking-[0.18em] transition hover:bg-white hover:text-black">Our story</a>
@@ -121,7 +121,7 @@ function ModernMbadadaDemo() {
 
         <section id="shop" className="mx-auto max-w-7xl px-4 py-16 sm:px-7 sm:py-24">
           <div className="mb-9 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-            <div><p className="text-[10px] font-black uppercase tracking-[0.25em] text-black/50">The edit / 001</p><h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">Wear your story.</h2><p className="mt-3 max-w-md text-sm leading-6 text-black/60">The pieces you reach for. The ones that say something without saying a word.</p></div>
+            <div><p className="text-[10px] font-black uppercase tracking-[0.25em] text-black/50">The edit / 001</p><h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">Wear your story.</h2><p className="mt-3 max-w-md text-sm leading-6 text-black/60">Shop the actual Modern Mbadada styles and colourways, with product photography sourced from the brand’s own website.</p></div>
             <a href="#story" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] underline decoration-1 underline-offset-4">Discover Modern Mbadada <ArrowRight size={14} /></a>
           </div>
           <div className="mb-7 flex gap-2 overflow-x-auto pb-2">
@@ -150,7 +150,7 @@ function ModernMbadadaDemo() {
         </section>
 
         <section id="story" className="grid bg-[#20211d] text-white md:grid-cols-2">
-          <div className="relative min-h-[380px] overflow-hidden sm:min-h-[540px]"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=85" alt="Modern streetwear and self-expression" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-80" /></div>
+          <div className="relative min-h-[380px] overflow-hidden sm:min-h-[540px]"><img src="https://www.modernmbadada.co.za/wp-content/uploads/2024/09/Modern-Mbadada0640.jpg" alt="Modern streetwear and self-expression" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-80" /></div>
           <div className="flex items-center px-6 py-14 sm:px-12 sm:py-20 lg:px-20">
             <div className="max-w-xl"><p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#d9f36a]">More than a look</p><h2 className="mt-5 text-4xl font-black uppercase leading-[0.95] tracking-[-0.06em] sm:text-6xl">Our roots.<br />Our road.<br /><span className="text-[#d9f36a]">Our story.</span></h2><p className="mt-6 text-sm leading-7 text-white/65">Inspired by the ingenuity and spirit behind imbadada, Modern Mbadada brings a heritage classic into a new era. It's a celebration of home, ambition, self-expression and the journeys that shape us.</p><p className="mt-4 text-sm leading-7 text-white/65">From the everyday to the unforgettable, wear your story proudly — wherever the road takes you.</p><a href="#shop" className="mt-8 inline-flex items-center gap-3 bg-[#d9f36a] px-6 py-4 text-[9px] font-black uppercase tracking-[0.18em] text-black hover:bg-white">Explore the collection <ArrowRight size={15} /></a></div>
           </div>
@@ -172,7 +172,7 @@ function ModernMbadadaDemo() {
           <div><div className="text-2xl font-black uppercase tracking-[-0.08em]">MODERN MBADADA®</div><p className="mt-2 text-[9px] font-bold uppercase tracking-[0.24em] text-white/50">Chase the Sun · South Africa</p></div>
           <div className="text-[9px] font-bold uppercase leading-6 tracking-[0.15em] text-white/60"><p>Concept storefront powered by SellUrWay</p><Link to="/" className="mt-1 inline-flex items-center gap-2 text-[#d9f36a] hover:text-white">Build your own store <ArrowRight size={13} /></Link></div>
         </div>
-        <div className="mx-auto mt-8 max-w-7xl border-t border-white/15 pt-4 text-[9px] text-white/40">© {new Date().getFullYear()} Modern Mbadada concept · Product photography shown for demonstration.</div>
+        <div className="mx-auto mt-8 max-w-7xl border-t border-white/15 pt-4 text-[9px] text-white/40">© {new Date().getFullYear()} Modern Mbadada demo storefront · Product images sourced from the brand website.</div>
       </footer>
 
       {notice && <div role="status" className="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 bg-black px-5 py-3 text-xs font-bold text-white shadow-xl"><Check size={15} className="mr-2 inline text-[#d9f36a]" />{notice}</div>}
