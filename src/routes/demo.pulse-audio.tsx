@@ -35,7 +35,7 @@ const products: Product[] = [
   { id: "chukka-black", name: "Modern Mbadada × CobblerX — Chukka Black", category: "Footwear", price: 1499, tag: "Signature edition", colour: "Black", image: "https://www.modernmbadada.co.za/wp-content/uploads/2025/03/2025_02_21_Modern_Mbaddada_5788_017-300x300.jpg" },
 ];
 
-const categories = ["All", "Sneakers", "Footwear", "Clothing", "Accessories"];
+const categories = ["All", "Sneakers", "Footwear"];
 const zar = (amount: number) => new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR", maximumFractionDigits: 0 }).format(amount);
 
 function ModernMbadadaDemo() {
@@ -79,7 +79,7 @@ function ModernMbadadaDemo() {
           <nav className="hidden items-center gap-7 text-[11px] font-bold uppercase tracking-[0.14em] md:flex">
             <a href="#shop" className="hover:opacity-60">Shop all</a>
             <button onClick={() => { setCategory("Sneakers"); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); }} className="hover:opacity-60">Sneakers</button>
-            <button onClick={() => { setCategory("Clothing"); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); }} className="hover:opacity-60">Clothing</button>
+            <button onClick={() => { setCategory("Footwear"); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); }} className="hover:opacity-60">Footwear</button>
             <a href="#story" className="hover:opacity-60">Our story</a>
           </nav>
           <div className="flex items-center gap-1 sm:gap-3">
