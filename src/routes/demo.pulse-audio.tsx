@@ -18,7 +18,7 @@ export const Route = createFileRoute("/demo/pulse-audio")({
 type Product = { id: string; name: string; subtitle: string; price: number; category: string; image: string; color: string; tag?: string };
 
 const products: Product[] = [
-  { id: "strawberry-cloud", name: "Strawberry Cloud", subtitle: "Strawberry ripple · vanilla bean", price: 48, category: "Scoops", image: "https://images.unsplash.com/photo- strawberry", color: "#f8dce0", tag: "Bestseller" },
+  { id: "strawberry-cloud", name: "Strawberry Cloud", subtitle: "Strawberry ripple · vanilla bean", price: 48, category: "Scoops", image: "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=900&q=85", color: "#f8dce0", tag: "Bestseller" },
   { id: "choc-hazelnut", name: "Choc-a-Lot", subtitle: "Dark chocolate · roasted hazelnut", price: 52, category: "Scoops", image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=900&q=85", color: "#e8d6c5", tag: "Fan favourite" },
   { id: "mango-sorbet", name: "Mango Tango", subtitle: "Sun-ripened mango · bright citrus", price: 45, category: "Scoops", image: "https://images.unsplash.com/photo-1501446529957-6226bd447c46?auto=format&fit=crop&w=900&q=85", color: "#f9e7b0", tag: "Dairy free" },
   { id: "waffle-sundae", name: "The Waffle Party", subtitle: "Warm waffle · three scoops · sauce", price: 89, category: "Sundaes", image: "https://images.unsplash.com/photo-1560008581-09826d1de69e?auto=format&fit=crop&w=900&q=85", color: "#f4d7b7", tag: "Made for sharing" },
